@@ -1,84 +1,445 @@
 ---
 /**
- * A pretend terminal with autocomplete on "/" — used to teach slash commands.
+ * A Claude Code imitation. Streaming output, working-directory line,
+ * arrow-key slash menu, and an "allow / deny" prompt when Claude would
+ * run a tool that touches your machine.
  */
+interface Props {
+  cwd?: string;
+}
+const { cwd = "~/my-project" } = Astro.props;
 ---
 
-<div class="term" data-term>
-  <div class="row">
-    <span class="prompt">~</span>
-    <span class="you">$</span>
-    <span>claude</span>
+<div class="term-app" data-term style={`--cwd: '${cwd}';`}>
+  <div class="term-head">
+    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    <span class="tt">{cwd} — claude</span>
   </div>
-  <p class="out">Welcome to Claude Code (pretend edition). Try typing <code>/</code> to see slash commands.</p>
-  <div class="row">
-    <span class="prompt">›</span>
-    <input type="text" placeholder="Type / for commands…" data-term-input autocomplete="off" spellcheck="false" />
+  <div class="term-body" data-term-body>
+    <div class="line out">Welcome to Claude Code (pretend edition).</div>
+    <div class="line out muted">Try: <code>/help</code> · <code>fix the bug</code> · <code>list files</code></div>
   </div>
+
   <div class="menu" data-term-menu>
-    <div><code>/help</code> — what can I do?</div>
-    <div><code>/agents</code> — list specialized assistants</div>
-    <div><code>/plan</code> — plan first, code later</div>
-    <div><code>/clear</code> — start a fresh chat</div>
-    <div><code>/exit</code> — leave the session</div>
+    <div class="menu-row" data-cmd="/help" data-i="0"><code>/help</code><span>show what I can do</span></div>
+    <div class="menu-row" data-cmd="/agents" data-i="1"><code>/agents</code><span>list specialized assistants</span></div>
+    <div class="menu-row" data-cmd="/plan" data-i="2"><code>/plan</code><span>plan first, code later</span></div>
+    <div class="menu-row" data-cmd="/clear" data-i="3"><code>/clear</code><span>start a fresh chat</span></div>
+    <div class="menu-row" data-cmd="/model" data-i="4"><code>/model</code><span>switch model (Sonnet/Opus/Haiku)</span></div>
+    <div class="menu-row" data-cmd="/exit" data-i="5"><code>/exit</code><span>leave the session</span></div>
   </div>
-  <div data-term-log></div>
+
+  <div class="prompt-row" data-prompt-row>
+    <span class="cwd">{cwd}</span>
+    <span class="caret">›</span>
+    <input type="text" data-term-input placeholder="Type a request, or / for commands…" autocomplete="off" spellcheck="false" />
+  </div>
 </div>
 
+<style>
+  .term-app {
+    background: #1c1916;
+    color: #e8dec8;
+    border-radius: var(--radius);
+    margin: 1.4rem 0;
+    box-shadow: var(--shadow);
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .term-head {
+    background: #2a2521;
+    padding: 0.5rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-bottom: 1px solid #322b25;
+  }
+  .term-head .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+  }
+  .term-head .dot.red { background: #ff5f56; }
+  .term-head .dot.yellow { background: #ffbd2e; }
+  .term-head .dot.green { background: #27c93f; }
+  .term-head .tt {
+    margin-left: 0.7rem;
+    color: #b6ad9b;
+    font-size: 0.78rem;
+  }
+  .term-body {
+    padding: 0.9rem 1rem 0.4rem;
+    min-height: 200px;
+    max-height: 360px;
+    overflow: auto;
+    white-space: pre-wrap;
+  }
+  .line { margin: 0.05rem 0; }
+  .line.you { color: #f4d8c8; }
+  .line.you::before { content: "› "; color: #f0a05a; }
+  .line.cmd { color: #f0c594; }
+  .line.cmd::before { content: "› "; color: #f0a05a; }
+  .line.out { color: #c9bfa9; }
+  .line.out.muted { color: #847a68; }
+  .line.tool { color: #9ec4a7; }
+  .line.tool::before { content: "● "; }
+  .line.error { color: #e88a76; }
+  .line.assistant { color: #e8dec8; }
+  .approve {
+    margin: 0.4rem 0;
+    background: #25201c;
+    border: 1px solid #3c352e;
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+  }
+  .approve .head { color: #f0a05a; font-weight: 600; margin-bottom: 0.3rem; }
+  .approve .body { color: #c9bfa9; }
+  .approve .actions {
+    margin-top: 0.4rem;
+    display: flex;
+    gap: 0.4rem;
+  }
+  .approve button {
+    background: #322b25;
+    color: #e8dec8;
+    border: 1px solid #4a4036;
+    border-radius: 6px;
+    padding: 0.15rem 0.6rem;
+    font: inherit;
+    cursor: pointer;
+  }
+  .approve button.allow { background: #2f4a35; border-color: #426b4d; color: #cfe5d4; }
+  .approve button.deny { background: #3a2522; border-color: #5a3631; color: #ecc7bf; }
+  .prompt-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem 0.7rem;
+    border-top: 1px solid #322b25;
+    background: #1a1714;
+  }
+  .prompt-row .cwd {
+    color: #9ec4a7;
+    font-size: 0.78rem;
+  }
+  .prompt-row .caret { color: #f0a05a; }
+  .prompt-row input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: inherit;
+    font: inherit;
+    flex: 1;
+    caret-color: var(--accent);
+  }
+  .menu {
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    left: 1rem;
+    right: 1rem;
+    background: #25201c;
+    border: 1px solid #3c352e;
+    border-radius: 8px;
+    padding: 0.35rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .menu.open { display: block; }
+  .menu-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0.6rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .menu-row code { color: #f0c594; }
+  .menu-row span { color: #9a907e; }
+  .menu-row.sel { background: #322b25; }
+</style>
+
 <script>
-  const RESPONSES: Record<string, string> = {
-    "/help": "I can read files, write code, run commands, and call specialized agents. Try: 'add a button to the homepage'.",
-    "/agents": "Available: code-reviewer · tdd-guide · build-error-resolver · planner · security-reviewer · doc-updater",
-    "/plan": "Plan mode is on. I'll outline the steps and wait for your OK before touching files.",
-    "/clear": "(chat cleared)",
-    "/exit": "Bye! Run `claude` again any time.",
-  };
+  type Step = { kind: "tool" | "out" | "assistant"; text: string; needsApproval?: boolean };
 
-  document.querySelectorAll<HTMLElement>("[data-term]").forEach((term) => {
-    const input = term.querySelector<HTMLInputElement>("[data-term-input]")!;
-    const menu = term.querySelector<HTMLElement>("[data-term-menu]")!;
-    const log = term.querySelector<HTMLElement>("[data-term-log]")!;
+  interface Scenario {
+    steps: Step[];
+  }
 
-    function appendLine(cmd: string, response: string) {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `<span class="prompt">›</span><span class="you">${cmd}</span>`;
-      log.appendChild(row);
-      const out = document.createElement("p");
-      out.className = "out";
-      out.textContent = response;
-      log.appendChild(out);
+  const SCENARIOS: { match: RegExp; scenario: Scenario }[] = [
+    {
+      match: /^\/help$/i,
+      scenario: {
+        steps: [
+          { kind: "out", text: "I can read your files, edit them, run commands, and call specialized agents." },
+          { kind: "out", text: "Useful slash commands: /agents · /plan · /model · /clear · /exit" },
+          { kind: "out", text: "Or just describe what you want: \"add a dark-mode toggle to the homepage\"." },
+        ],
+      },
+    },
+    {
+      match: /^\/agents$/i,
+      scenario: {
+        steps: [
+          { kind: "tool", text: "Reading ~/.claude/agents/" },
+          { kind: "out", text: "  code-reviewer · reviews code after I write it" },
+          { kind: "out", text: "  tdd-guide      · enforces tests-first when adding features" },
+          { kind: "out", text: "  planner        · designs an approach before touching files" },
+          { kind: "out", text: "  build-error-resolver · fixes failing builds" },
+          { kind: "out", text: "  security-reviewer · flags risky code paths" },
+        ],
+      },
+    },
+    {
+      match: /^\/plan$/i,
+      scenario: {
+        steps: [
+          { kind: "out", text: "Plan mode on. I'll outline steps before touching files, and wait for your OK." },
+        ],
+      },
+    },
+    {
+      match: /^\/clear$/i,
+      scenario: { steps: [{ kind: "out", text: "(chat cleared)" }] },
+    },
+    {
+      match: /^\/model$/i,
+      scenario: {
+        steps: [
+          { kind: "out", text: "Available: claude-opus-4-7 · claude-sonnet-4-6 · claude-haiku-4-5" },
+          { kind: "out", text: "Currently using: claude-sonnet-4-6 (the default — fast, strong on code)" },
+        ],
+      },
+    },
+    {
+      match: /^\/exit$/i,
+      scenario: { steps: [{ kind: "out", text: "Bye! Reopen with `claude` any time. Conversation saved." }] },
+    },
+    {
+      match: /list files|show files|what files/i,
+      scenario: {
+        steps: [
+          { kind: "tool", text: "Listing your project files" },
+          { kind: "out", text: "  README.md\n  package.json\n  src/\n    index.ts\n    server.ts\n  tests/\n  .env.example" },
+        ],
+      },
+    },
+    {
+      match: /fix.*bug|crash|error|not working/i,
+      scenario: {
+        steps: [
+          { kind: "assistant", text: "Let me look. I'll need to read a couple of files first." },
+          { kind: "tool", text: "Reading package.json", needsApproval: true },
+          { kind: "tool", text: "Reading src/server.ts" },
+          { kind: "tool", text: "Running npm test" },
+          { kind: "out", text: "  FAIL  tests/server.test.ts\n    expected DATABASE_URL, got undefined" },
+          { kind: "assistant", text: "Found it — the app reads DATABASE_URL but .env doesn't define one. Want me to add a placeholder to .env.example and a clearer startup error if it's missing?" },
+        ],
+      },
+    },
+    {
+      match: /add.*toggle|dark mode|add.*button|add.*feature/i,
+      scenario: {
+        steps: [
+          { kind: "assistant", text: "Sure. I'll scan the relevant files, propose a change, then make it." },
+          { kind: "tool", text: "Reading src/Header.tsx" },
+          { kind: "tool", text: "Reading src/styles/theme.css" },
+          { kind: "assistant", text: "Plan:\n  1. Add `useTheme` hook (reads/writes localStorage)\n  2. Add toggle button to Header\n  3. Add `.dark` CSS variants in theme.css" },
+          { kind: "tool", text: "Writing src/hooks/useTheme.ts", needsApproval: true },
+          { kind: "tool", text: "Editing src/Header.tsx" },
+          { kind: "tool", text: "Editing src/styles/theme.css" },
+          { kind: "assistant", text: "Done — 3 files changed. Want me to run the tests?" },
+        ],
+      },
+    },
+    {
+      match: /hi|hello|hey/i,
+      scenario: { steps: [{ kind: "assistant", text: "Hi! What are we building? You can describe a task in your own words, or type / for built-in commands." }] },
+    },
+  ];
+
+  function pickScenario(cmd: string): Scenario {
+    const t = cmd.trim();
+    for (const r of SCENARIOS) if (r.match.test(t)) return r.scenario;
+    return {
+      steps: [
+        { kind: "assistant", text: `(pretend) I'd respond to "${t}" by reading your project and proposing a change. In the real CLI I'd actually do it.` },
+      ],
+    };
+  }
+
+  function delay(ms: number) {
+    return new Promise<void>((r) => setTimeout(r, ms));
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-term]").forEach((root) => {
+    const body = root.querySelector<HTMLElement>("[data-term-body]")!;
+    const input = root.querySelector<HTMLInputElement>("[data-term-input]")!;
+    const menu = root.querySelector<HTMLElement>("[data-term-menu]")!;
+    const rows = Array.from(menu.querySelectorAll<HTMLElement>(".menu-row"));
+    let sel = 0;
+    let busy = false;
+
+    function paintMenuSel() {
+      rows.forEach((r, i) => r.classList.toggle("sel", i === sel));
     }
+
+    function openMenu() {
+      menu.classList.add("open");
+      sel = 0;
+      paintMenuSel();
+    }
+    function closeMenu() {
+      menu.classList.remove("open");
+    }
+
+    function pushLine(kind: string, text: string) {
+      const div = document.createElement("div");
+      div.className = `line ${kind}`;
+      div.textContent = text;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+      return div;
+    }
+
+    function askApproval(label: string): Promise<boolean> {
+      return new Promise((resolve) => {
+        const box = document.createElement("div");
+        box.className = "approve";
+        box.innerHTML = `
+          <div class="head">Claude wants to do this</div>
+          <div class="body">${label}</div>
+          <div class="actions">
+            <button class="allow">Allow</button>
+            <button class="deny">Deny</button>
+          </div>
+        `;
+        body.appendChild(box);
+        body.scrollTop = body.scrollHeight;
+        box.querySelector<HTMLButtonElement>(".allow")!.addEventListener("click", () => {
+          box.remove();
+          resolve(true);
+        });
+        box.querySelector<HTMLButtonElement>(".deny")!.addEventListener("click", () => {
+          box.remove();
+          resolve(false);
+        });
+      });
+    }
+
+    async function streamLine(kind: string, text: string) {
+      const div = pushLine(kind, "");
+      for (let i = 0; i < text.length; i++) {
+        div.textContent = text.slice(0, i + 1);
+        body.scrollTop = body.scrollHeight;
+        // groups of multiple chars per tick for speed
+        if (i % 3 !== 0) continue;
+        await delay(8);
+      }
+    }
+
+    async function run(cmd: string) {
+      busy = true;
+      input.disabled = true;
+      pushLine(cmd.startsWith("/") ? "cmd" : "you", cmd);
+      const sc = pickScenario(cmd);
+      for (const step of sc.steps) {
+        await delay(200);
+        if (step.kind === "tool" && step.needsApproval) {
+          const ok = await askApproval(step.text);
+          if (!ok) {
+            pushLine("error", "denied — skipping.");
+            continue;
+          }
+        }
+        if (step.kind === "tool") {
+          await streamLine("tool", step.text);
+        } else if (step.kind === "assistant") {
+          await streamLine("assistant", step.text);
+        } else {
+          pushLine("out", step.text);
+        }
+      }
+      busy = false;
+      input.disabled = false;
+      input.focus();
+    }
+
+    input.addEventListener("focus", () => {
+      if (input.value === "" || input.value === "/") openMenu();
+    });
+    input.addEventListener("blur", () => setTimeout(closeMenu, 100));
 
     input.addEventListener("input", () => {
       const v = input.value;
-      if (v.startsWith("/") && v.length <= 1) {
-        menu.classList.add("open");
-      } else if (v === "") {
-        menu.classList.add("open");
-        // also leave it open on focus
+      if (v === "" || v === "/") openMenu();
+      else if (v.startsWith("/")) {
+        // filter rows by prefix
+        const q = v.toLowerCase();
+        rows.forEach((r) => {
+          const cmd = r.dataset.cmd!.toLowerCase();
+          r.style.display = cmd.startsWith(q) ? "grid" : "none";
+        });
+        const visible = rows.filter((r) => r.style.display !== "none");
+        sel = Math.min(sel, Math.max(0, visible.length - 1));
+        if (visible.length === 0) closeMenu();
+        else menu.classList.add("open");
+        // paint sel within visible
+        rows.forEach((r) => r.classList.remove("sel"));
+        if (visible[sel]) visible[sel].classList.add("sel");
       } else {
-        menu.classList.remove("open");
+        rows.forEach((r) => (r.style.display = "grid"));
+        closeMenu();
       }
     });
 
-    input.addEventListener("focus", () => {
-      if (input.value === "" || input.value === "/") menu.classList.add("open");
-    });
-
-    input.addEventListener("blur", () => {
-      // small delay so click on menu items can still register if we made them clickable later
-      setTimeout(() => menu.classList.remove("open"), 80);
-    });
-
     input.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter") return;
-      const cmd = input.value.trim();
-      if (!cmd) return;
-      const reply = RESPONSES[cmd] ?? `Pretending to run: "${cmd}". In the real CLI I'd read your files and answer for real.`;
-      appendLine(cmd, reply);
-      input.value = "";
-      menu.classList.remove("open");
+      const visible = rows.filter((r) => r.style.display !== "none");
+      if (menu.classList.contains("open") && visible.length > 0) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          sel = (sel + 1) % visible.length;
+          rows.forEach((r) => r.classList.remove("sel"));
+          visible[sel].classList.add("sel");
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          sel = (sel - 1 + visible.length) % visible.length;
+          rows.forEach((r) => r.classList.remove("sel"));
+          visible[sel].classList.add("sel");
+          return;
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeMenu();
+          return;
+        }
+        if (e.key === "Tab" || (e.key === "Enter" && (input.value === "" || input.value === "/"))) {
+          e.preventDefault();
+          input.value = visible[sel].dataset.cmd!;
+          closeMenu();
+          return;
+        }
+      }
+      if (e.key === "Enter" && !busy) {
+        const cmd = input.value.trim();
+        if (!cmd) return;
+        input.value = "";
+        closeMenu();
+        run(cmd);
+      }
     });
+
+    rows.forEach((r) =>
+      r.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        input.value = r.dataset.cmd!;
+        closeMenu();
+        input.focus();
+      })
+    );
+
+    paintMenuSel();
   });
 </script>

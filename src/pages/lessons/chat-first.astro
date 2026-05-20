@@ -12,36 +12,50 @@ const lesson = LESSONS.find((l) => l.id === "chat-first")!;
   <main>
     <LessonShell lesson={lesson}>
       <p>
-        The chat product lives at <code class="inline">claude.ai</code>. After you sign in,
-        you get a single text box. That's it. The whole experience is: you type, it replies.
+        Below is an imitation of the real <code class="inline">claude.ai</code> interface.
+        Same sidebar of chats, same centered conversation, same suggestion chips, same
+        artifact panel on the right when relevant. Drive it like you'd drive the real thing.
       </p>
 
-      <h2>The shape of a chat</h2>
-      <ol class="steps">
-        <li>You type a message at the bottom of the screen and press <kbd>Enter</kbd>.</li>
-        <li>Claude's reply appears above, streaming word-by-word. That's normal — it's "thinking out loud".</li>
-        <li>You reply, it replies, you reply. Each new message can refer to anything earlier in the conversation.</li>
-      </ol>
-
-      <h2>Try it</h2>
-      <p>This is a tiny imitation, but it answers most everyday prompts. Click a suggestion or type your own.</p>
       <ChatSim
-        starter="What can I help with? Try asking me to write something, summarize something, or explain something."
-        prompts={["Write a thank-you note", "Summarize the news in one line", "Explain Bitcoin like I'm 10"]}
+        prompts={[
+          "Hi",
+          "Write a thank-you note",
+          "Plan a 3-day Tokyo trip",
+          "Build me a simple webpage",
+        ]}
       />
 
-      <h2>Three habits that make chats better</h2>
+      <h2>Things to try</h2>
+      <ol class="steps">
+        <li><strong>Send "Hi"</strong> — short replies stay in the message thread.</li>
+        <li><strong>Ask for a Tokyo itinerary</strong> — Claude opens an artifact panel on the right. Same in the real app: anything long or self-contained moves out of the scrollback.</li>
+        <li><strong>Click "Build me a simple webpage"</strong> — notice the artifact title (a filename) and how you'd take that with you.</li>
+        <li><strong>Hit "+ New chat"</strong> in the sidebar. Conversations are stored, but each is its own context.</li>
+      </ol>
+
+      <h2>What the real app adds</h2>
       <ul>
-        <li><strong>Say what you want, then say why.</strong> "Rewrite this in a warmer tone — it's for my manager."</li>
-        <li><strong>Give an example of "good".</strong> "Like this paragraph, but two sentences shorter."</li>
-        <li><strong>Course-correct.</strong> If the answer is off, don't start over — just say what's wrong. "Drop the bullet points. Make it sound less corporate."</li>
+        <li>An account, so chats persist across devices.</li>
+        <li><strong>File upload</strong> on the composer — drop in PDFs, images, spreadsheets.</li>
+        <li><strong>Model picker</strong> — Sonnet for everyday, Opus for hard problems, Haiku for speed.</li>
+        <li><strong>Projects</strong> (next lesson) — folders that share files and instructions.</li>
       </ul>
 
-      <Reveal q="What if I make a typo?">
-        Claude can usually figure it out. It's also fine to hit edit on your own message and resend — the chat will branch from that point.
+      <h2>Three habits that pay off</h2>
+      <ul>
+        <li><strong>Say what you want, then say why.</strong> "Rewrite this in a warmer tone — it's for my manager."</li>
+        <li><strong>Give an example.</strong> "Like this paragraph, but two sentences shorter."</li>
+        <li><strong>Course-correct, don't restart.</strong> "Drop the bullet points. Make it sound less corporate."</li>
+      </ul>
+
+      <Reveal q="Why does the reply 'stream' word-by-word?">
+        Models generate one token at a time. You see the answer as it forms — which means you can
+        stop early if it's going the wrong direction (the real app has a Stop button).
       </Reveal>
-      <Reveal q="How long can a chat get?">
-        Long. A single conversation can hold tens of thousands of words. If you reach the end, start a new chat — but consider a "project" first (next lesson).
+      <Reveal q="Can I edit my message after I send it?">
+        Yes — the real app lets you edit a past message, which branches the conversation from that point.
+        Useful when a small wording change would have led to a much better answer.
       </Reveal>
     </LessonShell>
   </main>

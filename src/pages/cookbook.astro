@@ -1,0 +1,244 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface Recipe {
+  title: string;
+  product: string;
+  outcome: string;
+  prompt: string;
+}
+
+const RECIPES: { group: string; recipes: Recipe[] }[] = [
+  {
+    group: "Write & think",
+    recipes: [
+      {
+        title: "Turn rough notes into a polished email",
+        product: "claude.ai",
+        outcome: "An email draft + a subject line + two alternatives",
+        prompt:
+          "Here are my rough notes for an email. Produce three things:\n1) A clean version in a warm but direct tone — no corporate puffery.\n2) A one-sentence subject line.\n3) Two alternatives — shorter and more formal — so I can pick.\nAsk one clarifying question if anything is unclear.\n\nNotes:\n[paste here]",
+      },
+      {
+        title: "Summarize a long document in three lengths",
+        product: "claude.ai",
+        outcome: "TL;DR + paragraph + bulleted breakdown",
+        prompt:
+          "Summarize the attached document at three lengths so I can pick:\n- one-sentence TL;DR\n- one-paragraph summary\n- bulleted breakdown of the most important 5–8 points\nKeep numbers and proper nouns exact.",
+      },
+      {
+        title: "Turn a transcript into action items",
+        product: "claude.ai",
+        outcome: "Owners, due dates, blockers",
+        prompt:
+          "Read the attached meeting transcript and extract: (a) decisions made, (b) action items with owner + due date if mentioned, (c) any blockers. Format as three short markdown sections.",
+      },
+    ],
+  },
+  {
+    group: "Make a web thing",
+    recipes: [
+      {
+        title: "A one-page portfolio",
+        product: "claude.ai (artifact) or Claude Design",
+        outcome: "Self-contained HTML page",
+        prompt:
+          "Build a single-page website. Self-contained HTML (style and JS inline, no external files).\nPurpose: a one-page \"what I'm working on\" portfolio.\nSections: short intro, three projects with title + one-line description, a contact link.\nStyle: warm, minimal, generous whitespace, serif headings. Works offline, no external assets.",
+      },
+      {
+        title: "A pricing page (three tiers)",
+        product: "Claude Design",
+        outcome: "Production-ready React/HTML",
+        prompt:
+          "A pricing page with three tiers: Starter (free), Pro ($12/mo), Team ($29/seat).\nVisual style: modern, warm, generous whitespace. Pro tier highlighted as recommended.\nEach card: name, price, 3 features, CTA button. Mobile-responsive, single column on small screens.",
+      },
+      {
+        title: "A landing page hero you can ship today",
+        product: "Claude Design",
+        outcome: "Hero section + a CTA",
+        prompt:
+          "Build a hero section for a product called [name] that does [one-sentence description].\nAudience: [who].\nTone: [pick: playful / serious / premium / retro].\nInclude: headline (max 8 words), supporting subhead, primary CTA button, secondary link. Above the fold on a laptop.",
+      },
+    ],
+  },
+  {
+    group: "Code & build",
+    recipes: [
+      {
+        title: "Add a feature to an existing project",
+        product: "Claude Code",
+        outcome: "Working code in your repo",
+        prompt:
+          "I want to add a [feature] to my project. Before writing any code:\n1) Read the relevant files and tell me which ones you'd change.\n2) Propose a one-paragraph plan.\n3) List any risks or open questions.\nThen wait for my OK before editing.",
+      },
+      {
+        title: "Fix a failing build / test",
+        product: "Claude Code",
+        outcome: "Green build, diagnosis explained",
+        prompt:
+          "The build is failing with the error below. Read the relevant files, find the root cause, and propose a fix. If there are multiple possible causes, list them and recommend which to try first.\n\nError:\n[paste here]",
+      },
+      {
+        title: "Write a small CLI to automate a chore",
+        product: "Claude Code",
+        outcome: "A working script",
+        prompt:
+          "Write a Python script `[name].py` that:\n- Takes [inputs] as arguments.\n- Does [the thing].\n- Prints what it's about to do and asks for confirmation before any destructive change.\nThen run it against a tiny sample I can `mkdir`/`touch` into existence as a sanity check.",
+      },
+    ],
+  },
+  {
+    group: "Delegate at scale",
+    recipes: [
+      {
+        title: "Tiny refactor across the codebase",
+        product: "Claude Cowork",
+        outcome: "A PR you can merge",
+        prompt:
+          "Repo: [repo].\nGoal: rename `oldName` to `newName` everywhere it appears, including imports, exports, tests, and docs. Don't touch comments that reference the old behavior.\nVerify by running the existing test suite. Open a PR when green.",
+      },
+      {
+        title: "Dependency bump pass",
+        product: "Claude Cowork",
+        outcome: "PR with deps updated + tests green",
+        prompt:
+          "Repo: [repo].\nBump all dependencies to their latest minor version. Run the test suite. If any tests break, stop and open a draft PR explaining what broke. If they pass, open a normal PR.",
+      },
+    ],
+  },
+  {
+    group: "Run an open-source agent",
+    recipes: [
+      {
+        title: "Install Hermes Agent and give it a task",
+        product: "Hermes (Nous Research)",
+        outcome: "A persistent background assistant",
+        prompt:
+          "(Run in Claude Code)\n/plugin marketplace add sypsyp97/claude-hermes\n/plugin install claude-hermes@claude-hermes\n/claude-hermes:start\n\nThen send Hermes:\n\"Every weekday at 9am, read my Linear inbox and draft three follow-up replies for me to review.\"",
+      },
+      {
+        title: "Quick aider session",
+        product: "aider",
+        outcome: "Terminal pair-programming",
+        prompt:
+          "(Run in terminal)\npip install aider-chat\nexport ANTHROPIC_API_KEY=sk-ant-…\ncd my-project\naider --model sonnet\n\nThen describe the change you want and aider edits the files + commits to git.",
+      },
+    ],
+  },
+];
+---
+
+<Layout title="Cookbook · Learn Claude" description="Copy-paste starter prompts for Claude products.">
+  <main>
+    <p><span class="track-pill">Reference · paste & adapt</span></p>
+    <h1>Cookbook</h1>
+    <p class="lede">
+      Starter prompts grouped by goal. Pick the closest one, paste it into the named product, fill the
+      brackets with your specifics, send. Each is meant as a launchpad, not a final form.
+    </p>
+
+    {
+      RECIPES.map((g) => (
+        <section class="track-section">
+          <div class="track-header">
+            <h2>{g.group}</h2>
+          </div>
+          <div class="recipe-list">
+            {g.recipes.map((r) => (
+              <article class="recipe">
+                <header>
+                  <h3>{r.title}</h3>
+                  <span class="track-pill">{r.product}</span>
+                </header>
+                <p class="recipe-outcome"><strong>You'll get:</strong> {r.outcome}</p>
+                <div class="recipe-prompt">
+                  <button class="copy-btn" data-copy>Copy</button>
+                  <pre data-prompt>{r.prompt}</pre>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </main>
+</Layout>
+
+<style>
+  .recipe-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    margin-top: 0.75rem;
+  }
+  .recipe {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+  }
+  .recipe header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .recipe h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+  .recipe-outcome {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin: 0.4rem 0 0.6rem;
+  }
+  .recipe-prompt {
+    position: relative;
+  }
+  .recipe-prompt pre {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 0.7rem 0.85rem;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 0.83rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .copy-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const pre = btn.parentElement?.querySelector<HTMLElement>("[data-prompt]");
+      const text = pre?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        const old = btn.textContent;
+        btn.textContent = "Copied ✓";
+        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
+      } catch {
+        btn.textContent = "Press Ctrl/⌘+C";
+      }
+    });
+  });
+</script>

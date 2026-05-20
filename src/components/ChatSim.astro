@@ -1,89 +1,513 @@
 ---
+/**
+ * A claude.ai imitation. Sidebar of past chats, central conversation,
+ * streaming replies, suggestion chips, and an artifact panel that pops
+ * out when the user asks for "a page", "a doc", "a table", etc.
+ *
+ * Self-contained: no network, no AI. Pattern-matched canned replies.
+ */
 interface Props {
-  starter?: string;
   prompts?: string[];
+  height?: string;
 }
-
-const { starter, prompts = [] } = Astro.props;
+const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build me a simple webpage"], height = "440px" } = Astro.props;
 ---
 
-<div class="chat-sim" data-chatsim>
-  <div class="bubbles" data-bubbles>
-    {starter ? <div class="bubble claude">{starter}</div> : null}
-  </div>
-  <div class="input-row">
-    <input type="text" placeholder="Type something and press Enter…" data-input />
-    <button data-send>Send</button>
-  </div>
-  {
-    prompts.length ? (
-      <p class="hint">
-        Try one:
-        {prompts.map((p, i) => (
-          <>
-            {i > 0 ? " · " : " "}
-            <a href="#" data-prompt={p}>{p}</a>
-          </>
-        ))}
-      </p>
-    ) : null
-  }
+<div class="chat-app" data-chatapp style={`height: ${height};`}>
+  <aside class="chat-side">
+    <button class="new-chat" data-new-chat>+ New chat</button>
+    <ul class="chat-list" data-chat-list>
+      <li class="active">New chat</li>
+      <li>Q4 launch brief</li>
+      <li>Tokyo itinerary draft</li>
+      <li>SQL refresher</li>
+    </ul>
+    <div class="side-foot">claude.ai · pretend</div>
+  </aside>
+
+  <section class="chat-main">
+    <header class="chat-head">
+      <span class="model-pill">Claude</span>
+      <span class="title" data-chat-title>New chat</span>
+    </header>
+
+    <div class="bubbles" data-bubbles>
+      <div class="empty" data-empty>
+        <h3>What can I help with?</h3>
+        <p>This is a faithful imitation. Click a suggestion or type your own message.</p>
+      </div>
+    </div>
+
+    <div class="chips" data-chips>
+      {prompts.map((p) => <button class="chip" data-prompt={p}>{p}</button>)}
+    </div>
+
+    <form class="composer" data-composer>
+      <textarea
+        rows="1"
+        placeholder="Reply to Claude…"
+        data-input
+        autocomplete="off"
+        spellcheck="false"
+      ></textarea>
+      <button type="submit" class="send" data-send aria-label="Send">↑</button>
+    </form>
+  </section>
+
+  <aside class="artifact" data-artifact hidden>
+    <header>
+      <span class="art-title" data-art-title>Artifact</span>
+      <button class="art-close" data-art-close aria-label="Close artifact">×</button>
+    </header>
+    <div class="art-body" data-art-body></div>
+  </aside>
 </div>
 
+<style>
+  .chat-app {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1.4rem 0;
+    background: #fff;
+    font-size: 0.92rem;
+    box-shadow: var(--shadow);
+  }
+  .chat-app[data-art-open="true"] {
+    grid-template-columns: 180px 1fr 300px;
+  }
+  .chat-side {
+    background: #f6f1ea;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .new-chat {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+    border: none;
+  }
+  .new-chat:hover {
+    background: #443c35;
+  }
+  .chat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    overflow: auto;
+  }
+  .chat-list li {
+    padding: 0.4rem 0.55rem;
+    border-radius: 8px;
+    cursor: default;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chat-list li.active {
+    background: rgba(193, 99, 58, 0.12);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .side-foot {
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 0.3rem;
+    border-top: 1px dashed var(--line);
+  }
+  .chat-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: #fff;
+  }
+  .chat-head {
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .model-pill {
+    font-size: 0.72rem;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .chat-head .title {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  .bubbles {
+    flex: 1;
+    overflow: auto;
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .empty {
+    text-align: center;
+    margin: auto;
+    max-width: 320px;
+    color: var(--ink-soft);
+  }
+  .empty h3 {
+    margin: 0 0 0.3rem;
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .bubble {
+    max-width: 80%;
+    padding: 0.55rem 0.85rem;
+    border-radius: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  .bubble.you {
+    align-self: flex-end;
+    background: var(--ink);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.claude {
+    align-self: flex-start;
+    background: var(--surface-2);
+    color: var(--ink);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.claude.streaming::after {
+    content: "▍";
+    color: var(--accent);
+    margin-left: 1px;
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0 1.1rem;
+  }
+  .chip {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .chip:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+    padding: 0.7rem 1.1rem 0.9rem;
+  }
+  .composer textarea {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 0.55rem 0.9rem;
+    font: inherit;
+    resize: none;
+    max-height: 110px;
+    line-height: 1.4;
+  }
+  .composer textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .send {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .send:disabled {
+    background: #d9c4b6;
+    cursor: not-allowed;
+  }
+  .send:hover:not(:disabled) {
+    background: #a8552f;
+  }
+  .artifact {
+    border-left: 1px solid var(--line);
+    background: #fbf6ef;
+    display: flex;
+    flex-direction: column;
+  }
+  .artifact header {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    background: #f3ede4;
+  }
+  .art-title {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .art-close {
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 0.3rem;
+  }
+  .art-body {
+    flex: 1;
+    overflow: auto;
+    padding: 0.9rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .art-body h4 { margin: 0 0 0.4rem; font-size: 1rem; }
+  .art-body h5 { margin: 0.8rem 0 0.2rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .art-body p { margin: 0.3rem 0; }
+  .art-body ul { padding-left: 1.1rem; margin: 0.3rem 0; }
+  @media (max-width: 720px) {
+    .chat-app { grid-template-columns: 1fr; }
+    .chat-app[data-art-open="true"] { grid-template-columns: 1fr; }
+    .chat-side { display: none; }
+    .artifact { display: none; }
+  }
+</style>
+
 <script>
-  // Tiny, deterministic "Claude-like" responder. No network calls — it's all canned,
-  // but the matching makes it feel like a real chat.
-  const REPLIES: { match: RegExp; reply: string }[] = [
-    { match: /^hi|^hello|^hey/i, reply: "Hi! I'm Claude. Ask me anything, or paste something you want help with." },
-    { match: /your name|who are you/i, reply: "I'm Claude — an AI assistant made by Anthropic. Think of me as a curious, patient colleague." },
-    { match: /summari[sz]e|tl;?dr/i, reply: "Sure — paste the text and tell me how short you want it (one line, one paragraph, bullets)." },
-    { match: /python|javascript|code|function|bug/i, reply: "Happy to help with code. Share the snippet and tell me what you expect to happen versus what you're seeing." },
-    { match: /email|message|write/i, reply: "Give me the audience, the goal, and a couple of facts — I'll draft something you can edit." },
-    { match: /plan|trip|itinerary|holiday|vacation/i, reply: "Tell me the dates, who's going, and your budget. I'll lay out an itinerary you can tweak." },
-    { match: /recipe|dinner|cook/i, reply: "Tell me what's in the fridge and any constraints (vegetarian, 20 minutes, etc.) and I'll suggest a few options." },
-    { match: /joke|funny/i, reply: "Why did the developer go broke? Because they used up all their cache." },
-    { match: /sorry|stupid|dumb/i, reply: "No bad questions here. Ask away — I'd rather you ask twice than guess once." },
+  type Reply = { text: string; artifact?: { title: string; html: string } };
+
+  const REPLIES: { match: RegExp; reply: Reply }[] = [
+    {
+      match: /thank[- ]?you note|thanks note|note of thanks/i,
+      reply: {
+        text:
+          "Here's a warm, short version. Open it in the side panel to edit — tell me the recipient and what you're thanking them for and I'll personalise it.",
+        artifact: {
+          title: "Thank-you note · draft 1",
+          html:
+            "<h4>Thank-you note</h4>" +
+            "<p>Dear [name],</p>" +
+            "<p>Thank you — really. The way you stepped in this week made a difference I won't forget. I appreciate not just <em>what</em> you did but <em>how</em> you did it: quietly, without needing a fuss, exactly when it mattered.</p>" +
+            "<p>I owe you a coffee (or three).</p>" +
+            "<p>With gratitude,<br/>[you]</p>",
+        },
+      },
+    },
+    {
+      match: /tokyo|japan|itinerary|trip|holiday|vacation/i,
+      reply: {
+        text:
+          "Three days, relaxed pace, mix of classic + neighbourhood. I'll put a draft in the side panel — tell me the season and your budget for hotels and I'll tighten it.",
+        artifact: {
+          title: "Tokyo · 3-day plan",
+          html:
+            "<h4>Tokyo, 3 days</h4>" +
+            "<h5>Day 1 · Shibuya & Harajuku</h5>" +
+            "<ul><li>Morning: Meiji Shrine (quiet, calming)</li>" +
+            "<li>Lunch: Yoyogi Park snack run</li>" +
+            "<li>Afternoon: Takeshita Street, Omotesando design walk</li>" +
+            "<li>Sunset: Shibuya crossing from Sky's observation deck</li></ul>" +
+            "<h5>Day 2 · Asakusa & Akihabara</h5>" +
+            "<ul><li>Senso-ji at opening, before the crowds</li>" +
+            "<li>Riverside walk to Tokyo Skytree (optional climb)</li>" +
+            "<li>Akihabara for arcades, retro games, anything Showa-era</li></ul>" +
+            "<h5>Day 3 · Tsukiji + your choice</h5>" +
+            "<ul><li>Tsukiji outer market for breakfast</li>" +
+            "<li>Pick one: Ghibli Museum (book ahead!) / TeamLab Planets / Yanaka old-town stroll</li></ul>",
+        },
+      },
+    },
+    {
+      match: /website|webpage|landing page|simple page|html page/i,
+      reply: {
+        text:
+          "Here's a starter — single-page, self-contained, easy to extend. I'll put the source in the side panel. Tell me the actual content (title, your bio, three projects) and I'll fill it in.",
+        artifact: {
+          title: "portfolio.html (preview)",
+          html:
+            "<h4>What I'm working on</h4>" +
+            "<p style='color:var(--ink-soft); font-style: italic;'>(Live preview of a one-page portfolio — serif headings, warm palette, three project cards.)</p>" +
+            "<h5>Projects</h5>" +
+            "<ul><li><strong>Sourdough log.</strong> A small site tracking hydration vs. crumb structure.</li>" +
+            "<li><strong>City sounds.</strong> Field recordings from cities I've lived in.</li>" +
+            "<li><strong>Bookshelf.</strong> What I'm reading and why.</li></ul>" +
+            "<p><a href='#'>Get in touch →</a></p>",
+        },
+      },
+    },
+    {
+      match: /summari[sz]e|tl;?dr/i,
+      reply: { text: "Sure — paste the text and tell me how short (one line, one paragraph, bullets)." },
+    },
+    {
+      match: /python|javascript|code|function|bug|script/i,
+      reply: {
+        text:
+          "Happy to help with code. Share the snippet and tell me what you expect to happen versus what you're seeing. If it's longer than a paragraph I'll open it as an artifact you can edit.",
+      },
+    },
+    {
+      match: /hi$|hello|hey|^who are you|your name/i,
+      reply: { text: "Hi — I'm Claude. I can write, analyse, plan, draft code, and build small things alongside you. What are you working on?" },
+    },
+    {
+      match: /email|message|write to|draft/i,
+      reply: { text: "Give me the audience, the goal, and any constraints. I'll draft something you can edit." },
+    },
+    {
+      match: /sorry|stupid|dumb/i,
+      reply: { text: "No bad questions here. Ask away — I'd rather you ask twice than guess once." },
+    },
   ];
 
-  function reply(text: string): string {
+  function reply(text: string): Reply {
     const t = text.trim();
-    if (!t) return "Type something first and I'll respond.";
+    if (!t) return { text: "Type something first and I'll respond." };
     for (const r of REPLIES) if (r.match.test(t)) return r.reply;
-    return "Got it. In a real chat I'd answer that in a few sentences and ask a clarifying question if needed.";
+    return {
+      text:
+        "Got it. In a real chat I'd answer that with a few sentences and maybe a quick clarifying question. Try one of the suggestions below — they show how a longer response or an artifact looks.",
+    };
   }
 
-  document.querySelectorAll<HTMLElement>("[data-chatsim]").forEach((root) => {
-    const bubbles = root.querySelector<HTMLElement>("[data-bubbles]")!;
-    const input = root.querySelector<HTMLInputElement>("[data-input]")!;
-    const send = root.querySelector<HTMLButtonElement>("[data-send]")!;
+  function streamText(target: HTMLElement, text: string, onDone: () => void) {
+    target.classList.add("streaming");
+    let i = 0;
+    const tick = () => {
+      i = Math.min(text.length, i + Math.max(1, Math.round(Math.random() * 4)));
+      target.textContent = text.slice(0, i);
+      if (i < text.length) {
+        setTimeout(tick, 18 + Math.random() * 18);
+      } else {
+        target.classList.remove("streaming");
+        onDone();
+      }
+    };
+    tick();
+  }
 
-    function push(role: "you" | "claude", text: string) {
+  document.querySelectorAll<HTMLElement>("[data-chatapp]").forEach((root) => {
+    const bubbles = root.querySelector<HTMLElement>("[data-bubbles]")!;
+    const empty = root.querySelector<HTMLElement>("[data-empty]")!;
+    const input = root.querySelector<HTMLTextAreaElement>("[data-input]")!;
+    const sendBtn = root.querySelector<HTMLButtonElement>("[data-send]")!;
+    const form = root.querySelector<HTMLFormElement>("[data-composer]")!;
+    const chips = root.querySelectorAll<HTMLButtonElement>("[data-prompt]");
+    const newChat = root.querySelector<HTMLButtonElement>("[data-new-chat]")!;
+    const artifact = root.querySelector<HTMLElement>("[data-artifact]")!;
+    const artBody = root.querySelector<HTMLElement>("[data-art-body]")!;
+    const artTitle = root.querySelector<HTMLElement>("[data-art-title]")!;
+    const artClose = root.querySelector<HTMLButtonElement>("[data-art-close]")!;
+    const title = root.querySelector<HTMLElement>("[data-chat-title]")!;
+
+    let busy = false;
+
+    function pushBubble(role: "you" | "claude", text: string): HTMLElement {
+      empty.style.display = "none";
       const div = document.createElement("div");
       div.className = `bubble ${role}`;
-      div.textContent = text;
+      div.textContent = role === "you" ? text : "";
       bubbles.appendChild(div);
       bubbles.scrollTop = bubbles.scrollHeight;
+      return div;
+    }
+
+    function openArtifact(t: string, html: string) {
+      artTitle.textContent = t;
+      artBody.innerHTML = html;
+      artifact.hidden = false;
+      root.dataset.artOpen = "true";
+    }
+
+    function closeArtifact() {
+      artifact.hidden = true;
+      delete root.dataset.artOpen;
+    }
+
+    function setTitleFromFirst(text: string) {
+      title.textContent = text.slice(0, 40);
     }
 
     function submit(value: string) {
+      if (busy) return;
       const t = value.trim();
       if (!t) return;
-      push("you", t);
+      busy = true;
+      sendBtn.disabled = true;
+      pushBubble("you", t);
       input.value = "";
-      // Tiny delay so the reply feels typed, not instant.
-      setTimeout(() => push("claude", reply(t)), 260);
+      input.style.height = "auto";
+      if (bubbles.querySelectorAll(".bubble.you").length === 1) setTitleFromFirst(t);
+
+      const r = reply(t);
+      // tiny "thinking" delay
+      setTimeout(() => {
+        const claude = pushBubble("claude", "");
+        streamText(claude, r.text, () => {
+          if (r.artifact) openArtifact(r.artifact.title, r.artifact.html);
+          busy = false;
+          sendBtn.disabled = false;
+        });
+      }, 280);
     }
 
-    send.addEventListener("click", () => submit(input.value));
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      submit(input.value);
+    });
     input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submit(input.value);
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        submit(input.value);
+      }
+    });
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 110) + "px";
     });
 
-    root.querySelectorAll<HTMLAnchorElement>("[data-prompt]").forEach((a) => {
-      a.addEventListener("click", (e) => {
-        e.preventDefault();
-        submit(a.dataset.prompt ?? "");
-      });
+    chips.forEach((b) =>
+      b.addEventListener("click", () => {
+        submit(b.dataset.prompt ?? "");
+      })
+    );
+
+    newChat.addEventListener("click", () => {
+      bubbles.innerHTML = "";
+      bubbles.appendChild(empty);
+      empty.style.display = "";
+      title.textContent = "New chat";
+      closeArtifact();
     });
+
+    artClose.addEventListener("click", closeArtifact);
   });
 </script>

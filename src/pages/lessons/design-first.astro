@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
+import DesignSim from "../../components/DesignSim.astro";
 import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
@@ -11,21 +12,21 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
   <main>
     <LessonShell lesson={lesson}>
       <p>
-        <strong>Claude Design</strong> (at <code class="inline">claude.ai/design</code>) turns a sentence
-        into a working piece of interface. Describe the screen you want; you get a real, interactive prototype
-        in seconds — buttons that click, inputs that type, animations that animate.
+        <strong>Claude Design</strong> turns a sentence into a working piece of interface.
+        Below is an imitation: prompt input on the left, a live preview on the right.
+        Hit <strong>Generate</strong>, then try the variant chips ("Bakery hero",
+        "Login form", "Pricing") and the style buttons (Warm / Dark / Brutalist).
       </p>
 
-      <h2>What it's for</h2>
-      <ul>
-        <li><strong>Visuals you can show.</strong> Pitches, landing pages, mood boards, prototypes.</li>
-        <li><strong>Reusable components.</strong> A pricing table, a loader animation, a hero section — copy-pasted into your real project.</li>
-        <li><strong>Design exploration.</strong> Get six versions of an idea in the time it would take to sketch one.</li>
-      </ul>
+      <DesignSim />
 
-      <h2>What it's not for</h2>
-      <p>It's not a full code generator for your production app — that's where Claude Code shines.
-      Design is for the <em>visual</em> layer: how it looks, how it feels, how it behaves on hover.</p>
+      <h2>Things to notice</h2>
+      <ul>
+        <li><strong>Words shape the output.</strong> "Pricing" gets a three-tier table. "Login form" gets a centred login. "Bakery" gets a hero with imagery vibes.</li>
+        <li><strong>Style words pull the design</strong> in a direction — "premium dark mode" lights up the Dark variant; "raw, brutalist" pulls the Brutalist variant.</li>
+        <li><strong>You can iterate.</strong> Edit the prompt or pick a different style; press Generate again. The real product keeps a history of versions you can roll back to.</li>
+        <li><strong>It exports.</strong> "Copy code" gives you the HTML — paste it into your project.</li>
+      </ul>
 
       <h2>Writing a first prompt</h2>
       <div class="card">
@@ -47,15 +48,7 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
         <li><strong>Inspiration:</strong> "like Linear", "like a Japanese menu", "like an old paperback".</li>
       </ul>
 
-      <div class="tip">
-        <strong>Don't over-specify on the first try.</strong> Get a rough version in front of your eyes,
-        then iterate. It's much easier to react to a draft than to predict perfection.
-      </div>
-
-      <Reveal q="Can I export the code?">
-        Yes. Once you're happy, the design panel gives you the HTML/CSS/React you can drop into your project.
-      </Reveal>
-      <Reveal q="Does it use my real brand colours?">
+      <Reveal q="Can it use my real brand colours?">
         Tell it. "Use #1F2937 for headings and #F97316 for accents." Or upload a brand guide and reference it.
       </Reveal>
     </LessonShell>

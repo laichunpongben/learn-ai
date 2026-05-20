@@ -1,0 +1,369 @@
+---
+/**
+ * A Claude Design imitation. Prompt input on the left, canvas preview
+ * on the right. The "model" matches a few canned components and renders
+ * them. Variant buttons let the user shuffle styles.
+ */
+---
+
+<div class="dsim" data-dsim>
+  <aside class="ds-left">
+    <h4>Prompt</h4>
+    <textarea data-ds-prompt placeholder="A pricing table with three tiers, modern and warm">A pricing table with three tiers, modern and warm</textarea>
+    <div class="ds-chips">
+      <button class="chip" data-ds-suggest="A hero section for a sourdough bakery, hand-drawn feel">Bakery hero</button>
+      <button class="chip" data-ds-suggest="A login form, premium dark mode">Login form</button>
+      <button class="chip" data-ds-suggest="A pricing table with three tiers, modern and warm">Pricing</button>
+    </div>
+    <button class="ds-gen" data-ds-gen>Generate ✨</button>
+    <h4 style="margin-top: 1rem;">Variants</h4>
+    <div class="ds-variants" data-ds-variants>
+      <button class="vbtn" data-variant="warm">Warm</button>
+      <button class="vbtn" data-variant="dark">Dark</button>
+      <button class="vbtn" data-variant="brutalist">Brutalist</button>
+    </div>
+    <p class="ds-foot">claude.ai/design · pretend</p>
+  </aside>
+  <section class="ds-canvas" data-ds-canvas>
+    <div class="ds-bar">
+      <span class="ds-dot red"></span><span class="ds-dot yellow"></span><span class="ds-dot green"></span>
+      <span class="ds-url" data-ds-url>preview.html</span>
+      <span class="ds-spacer"></span>
+      <button class="ds-copy" data-ds-copy>Copy code</button>
+    </div>
+    <div class="ds-frame" data-ds-frame>
+      <div class="ds-empty">Press <strong>Generate</strong> to render the prompt on the left.</div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .dsim {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1.4rem 0;
+    background: #fff;
+    box-shadow: var(--shadow);
+    min-height: 420px;
+  }
+  .ds-left {
+    background: #f6f1ea;
+    border-right: 1px solid var(--line);
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .ds-left h4 { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  .ds-left textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.5rem 0.6rem;
+    font: inherit;
+    font-size: 0.88rem;
+    background: #fff;
+  }
+  .ds-left textarea:focus { outline: none; border-color: var(--accent); }
+  .ds-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0.5rem 0;
+  }
+  .ds-chips .chip {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .ds-chips .chip:hover { background: var(--surface-2); color: var(--ink); }
+  .ds-gen {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+    margin-top: 0.3rem;
+  }
+  .ds-gen:hover { background: #a8552f; }
+  .ds-gen:disabled { background: #d9c4b6; cursor: not-allowed; }
+  .ds-variants { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .vbtn {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.3rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .vbtn:hover { background: var(--surface-2); }
+  .vbtn.sel { background: var(--accent-soft); border-color: #e8c2a8; color: #6a3520; }
+  .ds-foot {
+    margin-top: auto;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--line);
+  }
+  .ds-canvas {
+    background: var(--surface-2);
+    display: flex;
+    flex-direction: column;
+  }
+  .ds-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    background: #f3ede4;
+  }
+  .ds-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .ds-dot.red { background: #ff5f56; }
+  .ds-dot.yellow { background: #ffbd2e; }
+  .ds-dot.green { background: #27c93f; }
+  .ds-url {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    margin-left: 0.5rem;
+  }
+  .ds-spacer { flex: 1; }
+  .ds-copy {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .ds-frame {
+    flex: 1;
+    overflow: auto;
+    padding: 1.4rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+  .ds-empty {
+    margin: auto;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+
+  /* ===== Themes applied inside generated previews ===== */
+  .preview {
+    width: 100%;
+    max-width: 760px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+  .preview.warm { background: #fbf6ef; color: #2a2521; }
+  .preview.dark { background: #15171b; color: #e9e6e0; }
+  .preview.brutalist { background: #fffdf2; color: #111; border: 3px solid #111; border-radius: 0; box-shadow: 6px 6px 0 #111; }
+
+  /* hero */
+  .pv-hero { padding: 2rem 1.6rem; }
+  .pv-hero h1 { font-family: Georgia, serif; font-size: 2rem; margin: 0 0 0.4rem; }
+  .preview.brutalist .pv-hero h1 { font-family: 'Arial Black', sans-serif; text-transform: uppercase; }
+  .pv-hero p { margin: 0 0 1rem; opacity: 0.8; }
+  .pv-hero .pv-cta {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #c1633a;
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .preview.dark .pv-hero .pv-cta { background: #f4a26a; color: #1c1916; }
+  .preview.brutalist .pv-hero .pv-cta { background: #111; color: #fffdf2; border-radius: 0; }
+
+  /* pricing */
+  .pv-pricing { padding: 1.4rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
+  .pv-card { padding: 1rem; border: 1px solid currentColor; border-radius: 12px; opacity: 0.95; }
+  .preview.warm .pv-card { background: #fff; border-color: #e3dccf; }
+  .preview.dark .pv-card { background: #1d2025; border-color: #2a2e36; }
+  .preview.brutalist .pv-card { border-radius: 0; border-width: 3px; }
+  .pv-card.hot { background: #c1633a; color: #fff; border-color: transparent; }
+  .preview.dark .pv-card.hot { background: #f4a26a; color: #1c1916; }
+  .pv-card h3 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+  .pv-card .price { font-size: 1.6rem; font-weight: 700; margin: 0.3rem 0 0.6rem; }
+  .pv-card ul { padding-left: 1rem; font-size: 0.85rem; margin: 0; }
+  .pv-card .buy {
+    display: inline-block;
+    margin-top: 0.6rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    text-decoration: none;
+    color: inherit;
+  }
+  .preview.brutalist .pv-card .buy { border-radius: 0; border-width: 2px; }
+
+  /* login */
+  .pv-login { padding: 2rem; max-width: 360px; margin: 0 auto; }
+  .pv-login h2 { margin: 0 0 1rem; font-size: 1.3rem; }
+  .pv-field { display: flex; flex-direction: column; gap: 0.25rem; margin: 0.5rem 0; }
+  .pv-field label { font-size: 0.78rem; opacity: 0.7; }
+  .pv-field input {
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    opacity: 0.9;
+  }
+  .preview.brutalist .pv-field input { border-radius: 0; border-width: 2px; }
+  .pv-login .pv-cta { width: 100%; text-align: center; padding: 0.6rem; }
+
+  @media (max-width: 720px) {
+    .dsim { grid-template-columns: 1fr; }
+    .ds-left { border-right: none; border-bottom: 1px solid var(--line); }
+    .pv-pricing { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  type Kind = "hero" | "pricing" | "login" | "generic";
+  type Variant = "warm" | "dark" | "brutalist";
+
+  function detectKind(prompt: string): Kind {
+    const t = prompt.toLowerCase();
+    if (/pricing|tier|price/.test(t)) return "pricing";
+    if (/login|sign[- ]?in|auth/.test(t)) return "login";
+    if (/hero|landing|bakery|restaurant|product page/.test(t)) return "hero";
+    return "generic";
+  }
+
+  function detectVariant(prompt: string): Variant {
+    const t = prompt.toLowerCase();
+    if (/dark|premium|midnight/.test(t)) return "dark";
+    if (/brutalist|raw|bold|swiss/.test(t)) return "brutalist";
+    return "warm";
+  }
+
+  function render(kind: Kind, variant: Variant, prompt: string): string {
+    const cls = `preview ${variant}`;
+    if (kind === "pricing") {
+      return `<div class="${cls}">
+        <div class="pv-pricing">
+          <div class="pv-card">
+            <h3>Starter</h3><p class="price">Free</p>
+            <ul><li>Up to 3 projects</li><li>Community support</li><li>Generous limits</li></ul>
+            <a href="#" class="buy">Start free</a>
+          </div>
+          <div class="pv-card hot">
+            <h3>Pro</h3><p class="price">$12<small>/mo</small></p>
+            <ul><li>Unlimited projects</li><li>Priority support</li><li>Advanced features</li></ul>
+            <a href="#" class="buy">Choose Pro</a>
+          </div>
+          <div class="pv-card">
+            <h3>Team</h3><p class="price">$29<small>/seat</small></p>
+            <ul><li>Shared workspaces</li><li>Audit log</li><li>SSO</li></ul>
+            <a href="#" class="buy">Talk to us</a>
+          </div>
+        </div>
+      </div>`;
+    }
+    if (kind === "login") {
+      return `<div class="${cls}">
+        <div class="pv-login">
+          <h2>Welcome back</h2>
+          <div class="pv-field"><label>Email</label><input type="email" placeholder="you@example.com"/></div>
+          <div class="pv-field"><label>Password</label><input type="password" placeholder="••••••••"/></div>
+          <a href="#" class="pv-cta">Sign in</a>
+        </div>
+      </div>`;
+    }
+    if (kind === "hero") {
+      return `<div class="${cls}">
+        <div class="pv-hero">
+          <h1>Real sourdough. Real slowly.</h1>
+          <p>Loaves baked overnight, ready by the time you've made coffee.</p>
+          <a href="#" class="pv-cta">Order this week</a>
+        </div>
+      </div>`;
+    }
+    return `<div class="${cls}"><div class="pv-hero"><h1>Generic preview</h1><p>${prompt.slice(0, 140)}</p><a href="#" class="pv-cta">Primary action</a></div></div>`;
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-dsim]").forEach((root) => {
+    const promptEl = root.querySelector<HTMLTextAreaElement>("[data-ds-prompt]")!;
+    const genBtn = root.querySelector<HTMLButtonElement>("[data-ds-gen]")!;
+    const frame = root.querySelector<HTMLElement>("[data-ds-frame]")!;
+    const url = root.querySelector<HTMLElement>("[data-ds-url]")!;
+    const variants = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-variant]"));
+    const chips = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-ds-suggest]"));
+    const copy = root.querySelector<HTMLButtonElement>("[data-ds-copy]")!;
+
+    let currentVariant: Variant = "warm";
+    let currentKind: Kind = "pricing";
+
+    function paintVariants() {
+      variants.forEach((b) => b.classList.toggle("sel", b.dataset.variant === currentVariant));
+    }
+    paintVariants();
+
+    function regenerate() {
+      const prompt = promptEl.value.trim();
+      currentKind = detectKind(prompt);
+      frame.innerHTML = render(currentKind, currentVariant, prompt);
+      url.textContent = `${currentKind}.html`;
+    }
+
+    genBtn.addEventListener("click", () => {
+      genBtn.disabled = true;
+      currentVariant = detectVariant(promptEl.value);
+      paintVariants();
+      frame.innerHTML = `<div class="ds-empty">✨ Generating…</div>`;
+      setTimeout(() => {
+        regenerate();
+        genBtn.disabled = false;
+      }, 600);
+    });
+
+    variants.forEach((b) =>
+      b.addEventListener("click", () => {
+        currentVariant = b.dataset.variant as Variant;
+        paintVariants();
+        regenerate();
+      })
+    );
+
+    chips.forEach((c) =>
+      c.addEventListener("click", () => {
+        promptEl.value = c.dataset.dsSuggest!;
+        promptEl.focus();
+      })
+    );
+
+    copy.addEventListener("click", async () => {
+      const html = frame.innerHTML;
+      try {
+        await navigator.clipboard.writeText(html);
+        copy.textContent = "Copied ✓";
+        setTimeout(() => (copy.textContent = "Copy code"), 1500);
+      } catch {
+        copy.textContent = "Press Ctrl/⌘+C";
+        setTimeout(() => (copy.textContent = "Copy code"), 1500);
+      }
+    });
+  });
+</script>

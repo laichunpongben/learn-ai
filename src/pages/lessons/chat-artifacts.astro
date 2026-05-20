@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
+import ChatSim from "../../components/ChatSim.astro";
 import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
@@ -11,32 +12,35 @@ const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
   <main>
     <LessonShell lesson={lesson}>
       <p>
-        When Claude produces something <strong>longer or self-contained</strong> — a document, a chunk of code, a small webpage —
-        it splits it out into a side panel called an <strong>artifact</strong>. The chat keeps the running conversation;
+        When Claude produces something <strong>self-contained</strong> — a document, a chunk of code, a small webpage —
+        it pops out into a side panel called an <strong>artifact</strong>. The chat keeps the running conversation;
         the artifact holds the thing you're building.
       </p>
+
+      <p>Drive the imitation below: click "Write a thank-you note", "Plan a Tokyo trip",
+      or "Build me a webpage" and watch the right side open.</p>
+
+      <ChatSim
+        prompts={[
+          "Write a thank-you note",
+          "Plan a 3-day Tokyo trip",
+          "Build me a simple webpage",
+        ]}
+      />
 
       <h2>Why this matters</h2>
       <ul>
         <li><strong>You don't lose it in the scrollback.</strong> The artifact stays pinned to the side.</li>
-        <li><strong>You can iterate.</strong> "Make it shorter", "Use bullet points", "Try a friendlier tone" — Claude updates the artifact in place.</li>
+        <li><strong>You can iterate.</strong> In the real app: "Make it shorter", "Use bullet points", "Try a friendlier tone" — Claude updates the artifact in place.</li>
         <li><strong>You can take it with you.</strong> Copy, download, or (for code) preview it live.</li>
       </ul>
-
-      <h2>Try this in a real chat</h2>
-      <ol class="steps">
-        <li>Open <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>.</li>
-        <li>Type: <em>"Write a one-page brief for moving from Hong Kong to Singapore. Cover visa, schools, cost of living."</em></li>
-        <li>Watch the right side. The brief appears there, not in the chat thread.</li>
-        <li>Now say: <em>"Add a section on transport."</em> The artifact updates.</li>
-      </ol>
 
       <div class="callout">
         <strong>What counts as an artifact?</strong> Anything that's a <em>thing you'd want to keep</em>: a long write-up,
         a working snippet of code, an HTML page you can preview, a flowchart, a table. Casual chat replies stay in the conversation.
       </div>
 
-      <h2>Artifacts you'll see most often</h2>
+      <h2>Common artifact types</h2>
       <ul>
         <li><strong>Documents</strong> — letters, briefs, summaries, plans.</li>
         <li><strong>Code</strong> — a single file you can copy or run.</li>

@@ -1,0 +1,107 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "capabilities")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        "AI assistant" undersells it. With the four Claude products you can produce
+        <strong>documents, scripts, web pages, prototypes, deployed apps, and end-to-end automations</strong> —
+        without leaving a chat box for most of them.
+      </p>
+      <p>This lesson is the map. Pick the row that fits what you want to make.</p>
+
+      <h2>Things you can ship today, in a single chat</h2>
+      <div class="card">
+        <p style="margin-top: 0;"><strong>Where:</strong> claude.ai</p>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Writing.</strong> Briefs, emails, ad copy, blog posts, speeches, eulogies, contracts (drafts).</li>
+          <li><strong>Analysis.</strong> Paste a spreadsheet or PDF and ask for trends, summaries, anomalies.</li>
+          <li><strong>Planning.</strong> Trip itineraries, project plans, meeting agendas, budgets.</li>
+          <li><strong>Learning aids.</strong> Flashcards, study guides, lecture summaries, practice problems.</li>
+          <li><strong>One-page apps.</strong> A unit converter, a tip calculator, a personality quiz — runs inside an artifact.</li>
+          <li><strong>Diagrams.</strong> Flowcharts, sequence diagrams, mind maps — exported as images or Mermaid.</li>
+        </ul>
+      </div>
+
+      <h2>Things you can build this week</h2>
+      <div class="card">
+        <p style="margin-top: 0;"><strong>Where:</strong> Claude Code (terminal) or Claude Design (visual)</p>
+        <ul style="margin-bottom: 0;">
+          <li><strong>A personal CLI.</strong> "Summarize my open browser tabs", "rename these photos by date".</li>
+          <li><strong>A small website.</strong> Portfolio, landing page, event RSVP, small game, family blog.</li>
+          <li><strong>A Chrome extension.</strong> Replace boring buttons, add a "summarize this page" command.</li>
+          <li><strong>A bot.</strong> Slack, Discord, Telegram — answers questions, posts daily summaries.</li>
+          <li><strong>Internal tools.</strong> A dashboard pulling data from a Google Sheet, a form that emails the team.</li>
+          <li><strong>Data pipelines.</strong> "Read this CSV, clean these columns, save as Parquet, plot the result."</li>
+        </ul>
+      </div>
+
+      <h2>Things teams ship in production</h2>
+      <div class="card">
+        <p style="margin-top: 0;"><strong>Where:</strong> Claude API, often coordinated through Claude Code or Cowork</p>
+        <ul style="margin-bottom: 0;">
+          <li><strong>Customer-facing apps</strong> with Claude as the brain — support, tutoring, writing tools, code review.</li>
+          <li><strong>Agent workflows</strong> — Claude reads, decides, calls APIs, writes back results. Think "research bot that emails a digest each morning".</li>
+          <li><strong>Document pipelines</strong> — invoices, contracts, medical records: parsed, classified, summarized at scale.</li>
+          <li><strong>Embedded copilots</strong> inside existing products — a "help me write this" button next to any text field.</li>
+        </ul>
+      </div>
+
+      <h2>The capability cheat-sheet</h2>
+      <p>What can Claude read and produce? Almost any text-shaped thing, plus some non-text:</p>
+      <table style="width: 100%; border-collapse: collapse; margin: 0.6rem 0;">
+        <thead>
+          <tr style="background: var(--surface-2);">
+            <th style="text-align: left; padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Input</th>
+            <th style="text-align: left; padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Plain text, prose, instructions</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Plain text, prose, structured replies</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Source code in any language</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Source code, patches, explanations, tests</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">PDFs, Word docs, slides</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Summaries, rewrites, extractions</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Images (photos, screenshots, charts)</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Descriptions, transcriptions, classifications</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">CSVs, JSON, tables</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Cleaned data, analysis, charts</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Whole codebases (Claude Code)</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Edits, refactors, new features, working apps</td></tr>
+          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">A sentence describing UI</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Working HTML/React (Claude Design)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>"Which product should I open?"</h2>
+      <ul class="steps">
+        <li><strong>Need a document, plan, or analysis right now?</strong> → claude.ai.</li>
+        <li><strong>Want to build a working tool you'll use over and over?</strong> → Claude Code.</li>
+        <li><strong>Have a list of small chores against a codebase?</strong> → Claude Cowork.</li>
+        <li><strong>Need to make it look like something?</strong> → Claude Design.</li>
+        <li><strong>Embedding Claude into your own product?</strong> → Claude API (covered after this tour in the docs).</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Permission to start small.</strong> Most useful tools are tiny — a 30-line script, a one-page site,
+        a Claude.ai project with a good system prompt. You don't need a grand vision. You need one thing
+        you'd find slightly annoying to do by hand.
+      </div>
+
+      <h2>Where to find prompts you can just copy</h2>
+      <p>The <a href="/cookbook">Cookbook</a> page has copy-paste starter prompts organized by goal —
+      writing, coding, web, automation, design. When you finish the tour, that's your launchpad.</p>
+
+      <Reveal q="Do I need a paid plan?">
+        Most of what's in "today" works on a free Claude.ai account. Heavy use, very long files, and Claude Code
+        usage tend to lead people to a paid plan. Start free; upgrade when you hit a limit you care about.
+      </Reveal>
+      <Reveal q="What can Claude not do?">
+        Real-time anything (live trading, current sports scores) unless you give it tools to fetch. It also
+        can't take physical actions or sign legal documents. And it should not be the only check on
+        anything safety-critical — medical, legal, financial decisions need a human in the loop.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

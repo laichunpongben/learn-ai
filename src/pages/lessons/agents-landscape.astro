@@ -1,0 +1,83 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "agents-landscape")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        Anthropic ships four polished apps (chat, code, cowork, design). On top of those,
+        an <strong>open-source ecosystem</strong> uses Claude as the brain inside other tools —
+        background daemons, autonomous agents, terminal companions, multi-agent runtimes.
+        These are not made by Anthropic; they call Claude through the public API.
+      </p>
+
+      <h2>Why this matters to you</h2>
+      <ul>
+        <li><strong>Different shapes.</strong> Claude.ai is a chat. Claude Code is pair programming. But you might want Claude as a <em>background process</em>, a <em>multi-agent council</em>, or a <em>persistent assistant with long-term memory</em>. That's where open-source agents come in.</li>
+        <li><strong>You stay in control.</strong> They run on your machine (or your server) with your API key. Your data doesn't leave your boundary unless you let it.</li>
+        <li><strong>They're extensible.</strong> Write tools, add memory backends, plug into your own services. Anthropic's apps are deliberately opinionated; these are deliberately not.</li>
+      </ul>
+
+      <h2>Notable projects</h2>
+      <div class="card">
+        <h3 style="margin-top: 0;">Hermes Agent (Nous Research)</h3>
+        <p>An open-source autonomous agent that runs as a background daemon. Persistent memory across sessions,
+        executes tasks on a schedule, responds on Telegram and Discord, transcribes voice commands.
+        Installs as a Claude Code plugin or via curl. <strong>Setup is covered in the next-but-one lesson.</strong></p>
+        <p style="margin-bottom: 0;"><a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener">github.com/NousResearch/hermes-agent</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top: 0;">OpenClaw</h3>
+        <p>An open-source agent runtime that wraps Claude (and other LLMs) in a persistent execution loop.
+        Custom tool schemas, memory backends, webhook triggers, scheduled execution. Can coordinate Claude Code,
+        Codex, Gemini, and Cursor Agent as one unified runtime — useful when you want multi-agent "councils".</p>
+        <p style="margin-bottom: 0;"><a href="https://docs.openclaw.ai" target="_blank" rel="noopener">docs.openclaw.ai</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top: 0;">aider</h3>
+        <p>The terminal-native predecessor to Claude Code. Pair-programming AI in your CLI that edits files,
+        runs tests, and uses git as its memory. Works with Claude, GPT, and others. Very mature, very popular.</p>
+        <p style="margin-bottom: 0;"><a href="https://aider.chat" target="_blank" rel="noopener">aider.chat</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top: 0;">OpenHands (formerly OpenDevin)</h3>
+        <p>An autonomous software engineer in a web UI. You describe a task; it spins up a sandbox, writes code,
+        runs it, debugs, ships. Closer to Cowork in feel, but local and customisable.</p>
+        <p style="margin-bottom: 0;"><a href="https://github.com/All-Hands-AI/OpenHands" target="_blank" rel="noopener">github.com/All-Hands-AI/OpenHands</a></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-top: 0;">Continue · Cline · Goose</h3>
+        <p>IDE-embedded copilots. Continue and Cline live inside VS Code; Goose (from Block) is CLI + desktop.
+        Each plugs into Claude (and other models) to give you "Claude inside your editor" rather than "your editor inside Claude".</p>
+      </div>
+
+      <h2>How they all relate</h2>
+      <ul>
+        <li><strong>Anthropic's apps</strong> are polished, supported, and prescriptive — they pick the right defaults so you can move fast.</li>
+        <li><strong>Open-source agents</strong> are flexible, hackable, and unopinionated — they let you change the defaults, the surface, and the loop.</li>
+        <li><strong>Underneath, the model is the same.</strong> You're paying for Claude either way; you're just picking what wraps it.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Decision rule.</strong> Start with Anthropic's apps. Reach for open-source agents when you need
+        something the apps can't do: background execution, persistent cross-session memory, custom tool integrations,
+        multi-agent orchestration, or running fully on your own infrastructure.
+      </div>
+
+      <Reveal q="Do these cost extra?">
+        The tools themselves are free (open source). You pay Anthropic for the API calls Claude makes when these tools
+        invoke the model. Usage varies wildly — a persistent daemon can rack up tokens; a code-edit-on-demand tool spends much less.
+      </Reveal>
+      <Reveal q="Can I use a different model?">
+        Most of these are model-agnostic. Hermes Agent supports Anthropic, OpenAI, OpenRouter, Ollama (local), etc.
+        OpenClaw integrates 20+ providers. You can mix-and-match for cost and quality.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

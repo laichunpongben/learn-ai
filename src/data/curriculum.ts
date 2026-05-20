@@ -1,4 +1,4 @@
-export type TrackId = "start" | "chat" | "code" | "cowork" | "design";
+export type TrackId = "start" | "chat" | "code" | "cowork" | "design" | "agents" | "ship";
 
 export interface Lesson {
   id: string;
@@ -14,44 +14,50 @@ export interface Track {
   title: string;
   tagline: string;
   accent: string;
-  emoji: string;
 }
 
 export const TRACKS: Track[] = [
   {
     id: "start",
     title: "Start Here",
-    tagline: "What Claude is and what it can do for you.",
+    tagline: "What Claude is, and what you can build with it.",
     accent: "#f0a05a",
-    emoji: "•",
   },
   {
     id: "chat",
     title: "Claude.ai — Chat",
-    tagline: "Have a conversation. Ask anything.",
+    tagline: "Drive a faithful imitation of the real app, no account needed.",
     accent: "#d4895a",
-    emoji: "•",
   },
   {
     id: "code",
     title: "Claude Code — Coding",
-    tagline: "An AI pair-programmer in your terminal.",
+    tagline: "A pretend terminal that behaves like the real CLI.",
     accent: "#7a9eaf",
-    emoji: "•",
   },
   {
     id: "cowork",
     title: "Claude Cowork — Parallel Work",
-    tagline: "Run many tasks at once and review the results.",
+    tagline: "A task dashboard imitation — submit, watch, review diffs.",
     accent: "#9e8aac",
-    emoji: "•",
   },
   {
     id: "design",
     title: "Claude Design — Visual UI",
-    tagline: "Describe an interface, see it built.",
+    tagline: "A canvas that renders your prompt as a real-looking screen.",
     accent: "#c97b8a",
-    emoji: "•",
+  },
+  {
+    id: "agents",
+    title: "Beyond Anthropic's apps — Open-source agents",
+    tagline: "Hermes Agent, OpenClaw, and the broader ecosystem on top of Claude.",
+    accent: "#5b9aa0",
+  },
+  {
+    id: "ship",
+    title: "Ship Something",
+    tagline: "Pick one. Build it. Keep it.",
+    accent: "#5a8f7a",
   },
 ];
 
@@ -59,24 +65,32 @@ export const LESSONS: Lesson[] = [
   {
     id: "welcome",
     slug: "welcome",
-    title: "What is Claude, really?",
-    blurb: "A friendly intro to AI assistants — no jargon.",
+    title: "What Claude is, in 3 minutes",
+    blurb: "The shortest possible intro. No jargon.",
     minutes: 3,
+    track: "start",
+  },
+  {
+    id: "capabilities",
+    slug: "capabilities",
+    title: "What can you actually build?",
+    blurb: "A capability map with real examples — from a doc to a deployed app.",
+    minutes: 4,
     track: "start",
   },
   {
     id: "chat-first",
     slug: "chat-first",
-    title: "Your first chat",
-    blurb: "Open claude.ai, type something, watch it reply.",
+    title: "Drive the chat",
+    blurb: "Imitation of claude.ai. Sidebar, streaming, suggestion chips.",
     minutes: 3,
     track: "chat",
   },
   {
     id: "chat-projects",
     slug: "chat-projects",
-    title: "Projects: a folder for related chats",
-    blurb: "Group conversations and attach reference files.",
+    title: "Projects: build a custom assistant",
+    blurb: "Drop in files + instructions to make a focused helper for one job.",
     minutes: 3,
     track: "chat",
   },
@@ -84,15 +98,15 @@ export const LESSONS: Lesson[] = [
     id: "chat-artifacts",
     slug: "chat-artifacts",
     title: "Artifacts: when Claude makes a thing",
-    blurb: "Documents, code, and diagrams in a side panel.",
+    blurb: "Ask for a doc or a webpage — watch the side panel open.",
     minutes: 3,
     track: "chat",
   },
   {
     id: "code-what",
     slug: "code-what",
-    title: "What Claude Code is",
-    blurb: "A coding assistant that lives in your terminal.",
+    title: "What Claude Code lets you build",
+    blurb: "A coding assistant in your terminal — for tools, scripts, real apps.",
     minutes: 4,
     track: "code",
   },
@@ -107,8 +121,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "code-slash",
     slug: "code-slash",
-    title: "Slash commands and agents",
-    blurb: "Type / to summon helpers. Skills, agents, plan mode.",
+    title: "Drive a pretend Claude Code session",
+    blurb: "Slash menu, streaming output, approve/deny tool prompts.",
     minutes: 4,
     track: "code",
   },
@@ -116,33 +130,65 @@ export const LESSONS: Lesson[] = [
     id: "cowork-what",
     slug: "cowork-what",
     title: "Why run things in parallel?",
-    blurb: "Many isolated tasks at once, each in its own sandbox.",
+    blurb: "Hand off small, well-scoped jobs. Review the diffs later.",
     minutes: 3,
     track: "cowork",
   },
   {
     id: "cowork-flow",
     slug: "cowork-flow",
-    title: "Sending a task, reviewing the diff",
-    blurb: "From prompt to pull request without a terminal.",
+    title: "Drive a pretend Cowork dashboard",
+    blurb: "Click Run all, watch tasks complete, approve the diffs.",
     minutes: 4,
     track: "cowork",
   },
   {
     id: "design-first",
     slug: "design-first",
-    title: "From a sentence to a screen",
-    blurb: "Describe a UI in plain English, see it rendered.",
+    title: "Sentence in, screen out",
+    blurb: "Type a prompt, hit Generate, see a real-looking component.",
     minutes: 3,
     track: "design",
   },
   {
     id: "design-iterate",
     slug: "design-iterate",
-    title: "Iterating visually",
-    blurb: "Tweak, swap, refine — until it looks right.",
+    title: "Iterating: variants and refinement",
+    blurb: "Swap styles, ask for a tweak, copy the code.",
     minutes: 3,
     track: "design",
+  },
+  {
+    id: "agents-landscape",
+    slug: "agents-landscape",
+    title: "What lives on top of Claude?",
+    blurb: "OpenClaw, Hermes Agent, aider, OpenHands — the open-source ecosystem.",
+    minutes: 4,
+    track: "agents",
+  },
+  {
+    id: "agents-api",
+    slug: "agents-api",
+    title: "The Claude API in 4 minutes",
+    blurb: "How any tool gets access to Claude. The key, the SDK, the call.",
+    minutes: 4,
+    track: "agents",
+  },
+  {
+    id: "agents-setup",
+    slug: "agents-setup",
+    title: "Set up Hermes Agent (worked example)",
+    blurb: "Step-by-step install of one popular open-source agent.",
+    minutes: 6,
+    track: "agents",
+  },
+  {
+    id: "ship-it",
+    slug: "ship-it",
+    title: "Ship your first tool in 20 minutes",
+    blurb: "Pick one: a writing tool, a tiny webpage, or a personal script. Build it now.",
+    minutes: 8,
+    track: "ship",
   },
 ];
 

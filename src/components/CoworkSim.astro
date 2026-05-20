@@ -1,0 +1,395 @@
+---
+/**
+ * A Claude Cowork imitation. Task list on the left, task detail on the right.
+ * Clicking "Run all" makes the queued tasks progress through running → done.
+ * Each completed task reveals a diff and approve/discard actions.
+ */
+---
+
+<div class="cowork" data-cowork>
+  <aside class="cw-side">
+    <div class="cw-toolbar">
+      <strong>Tasks</strong>
+      <span class="cw-spacer"></span>
+      <button class="cw-run" data-cw-run>▶ Run all</button>
+    </div>
+    <ul class="cw-list" data-cw-list>
+      <li class="cw-row sel" data-task="t1">
+        <span class="cw-st" data-st="t1">queued</span>
+        <span class="cw-name">Add dark mode toggle to header</span>
+      </li>
+      <li class="cw-row" data-task="t2">
+        <span class="cw-st" data-st="t2">queued</span>
+        <span class="cw-name">Footer is missing the copyright year</span>
+      </li>
+      <li class="cw-row" data-task="t3">
+        <span class="cw-st" data-st="t3">queued</span>
+        <span class="cw-name">Bump deps to latest minor, run tests</span>
+      </li>
+      <li class="cw-row" data-task="t4">
+        <span class="cw-st" data-st="t4">queued</span>
+        <span class="cw-name">Loading spinner on the upload form</span>
+      </li>
+    </ul>
+    <button class="cw-new" data-cw-new>+ New task</button>
+  </aside>
+  <section class="cw-main">
+    <div class="cw-detail" data-cw-detail>
+      <div class="cw-head">
+        <h3 data-cw-title>Add dark mode toggle to header</h3>
+        <span class="cw-st-big" data-cw-status>queued</span>
+      </div>
+      <p class="cw-prompt" data-cw-prompt>
+        On the header, add a sun/moon toggle button. Clicking it should toggle a `.dark` class on the document root and persist in localStorage. Match the existing icon style. Don't change any auth.
+      </p>
+      <div class="cw-section" data-cw-empty>
+        <p style="color: var(--ink-soft); margin: 0;">Press <strong>▶ Run all</strong> to see Cowork pick this up.</p>
+      </div>
+      <div class="cw-section" data-cw-diff hidden>
+        <h4>Proposed changes</h4>
+        <pre class="diff" data-cw-diff-body></pre>
+        <div class="cw-actions">
+          <button class="cw-approve" data-cw-approve>Merge</button>
+          <button class="cw-comment" data-cw-comment>Request changes</button>
+          <button class="cw-discard" data-cw-discard>Discard</button>
+        </div>
+        <div class="cw-flash" data-cw-flash></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .cowork {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1.4rem 0;
+    background: #fff;
+    font-size: 0.92rem;
+    box-shadow: var(--shadow);
+    min-height: 360px;
+  }
+  .cw-side {
+    background: #f6f1ea;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+  }
+  .cw-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    gap: 0.4rem;
+  }
+  .cw-toolbar strong { font-size: 0.9rem; }
+  .cw-spacer { flex: 1; }
+  .cw-run {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .cw-run:hover { background: #a8552f; }
+  .cw-run:disabled { background: #d9c4b6; cursor: not-allowed; }
+  .cw-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+    flex: 1;
+    overflow: auto;
+  }
+  .cw-row {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 0.4rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 8px;
+    cursor: pointer;
+    align-items: center;
+  }
+  .cw-row:hover { background: rgba(0,0,0,0.04); }
+  .cw-row.sel { background: rgba(193, 99, 58, 0.12); }
+  .cw-name {
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cw-st {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .cw-st[data-state="running"] { background: #fde7c8; color: #88521f; border-color: #f0c594; }
+  .cw-st[data-state="done"]    { background: #d8ecdb; color: #285d34; border-color: #abd1b1; }
+  .cw-st[data-state="failed"]  { background: #f6d3ce; color: #7a2f23; border-color: #e1a89e; }
+  .cw-st[data-state="merged"]  { background: #c6d6e8; color: #234974; border-color: #92add0; }
+  .cw-new {
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--ink-soft);
+    padding: 0.4rem;
+    margin: 0.3rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .cw-new:hover { background: rgba(0,0,0,0.04); color: var(--ink); }
+  .cw-main {
+    overflow: auto;
+    padding: 1rem 1.1rem;
+  }
+  .cw-head { display: flex; align-items: baseline; gap: 0.6rem; }
+  .cw-head h3 { margin: 0; font-size: 1.1rem; }
+  .cw-st-big {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .cw-prompt {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 0.9rem;
+    border-radius: 4px;
+    font-size: 0.92rem;
+    margin: 0.6rem 0 1rem;
+    color: var(--ink-soft);
+  }
+  .cw-section h4 { margin: 0.8rem 0 0.4rem; font-size: 0.9rem; }
+  pre.diff {
+    background: #1c1916;
+    color: #e8dec8;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    overflow: auto;
+    max-height: 220px;
+    line-height: 1.4;
+  }
+  pre.diff .ad { color: #9ec4a7; }
+  pre.diff .rm { color: #e88a76; }
+  pre.diff .hd { color: #f0a05a; }
+  .cw-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+  }
+  .cw-actions button {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .cw-approve { background: #d8ecdb !important; border-color: #abd1b1 !important; color: #285d34 !important; }
+  .cw-discard { background: #f6d3ce !important; border-color: #e1a89e !important; color: #7a2f23 !important; }
+  .cw-flash {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--good);
+    min-height: 1.2em;
+  }
+  @media (max-width: 720px) {
+    .cowork { grid-template-columns: 1fr; }
+    .cw-side { border-right: none; border-bottom: 1px solid var(--line); }
+  }
+</style>
+
+<script>
+  type State = "queued" | "running" | "done" | "merged" | "failed";
+
+  interface Task {
+    id: string;
+    title: string;
+    prompt: string;
+    diff: string;
+    state: State;
+  }
+
+  const TASKS: Record<string, Omit<Task, "state">> = {
+    t1: {
+      id: "t1",
+      title: "Add dark mode toggle to header",
+      prompt:
+        "On the header, add a sun/moon toggle button. Clicking it should toggle a `.dark` class on the document root and persist in localStorage. Match the existing icon style. Don't change any auth.",
+      diff:
+        `<span class="hd">diff --git a/src/Header.tsx b/src/Header.tsx</span>
+@@
+   <nav>
+     <Logo />
++    <ThemeToggle />
+     <UserMenu />
+   </nav>
+<span class="hd">diff --git a/src/hooks/useTheme.ts b/src/hooks/useTheme.ts</span> (new file)
+<span class="ad">+ export function useTheme() {
++   const [theme, setTheme] = useState&lt;'light' | 'dark'&gt;(
++     () =&gt; (localStorage.getItem('theme') as any) ?? 'light'
++   );
++   useEffect(() =&gt; {
++     document.documentElement.classList.toggle('dark', theme === 'dark');
++     localStorage.setItem('theme', theme);
++   }, [theme]);
++   return { theme, toggle: () =&gt; setTheme(t =&gt; t === 'dark' ? 'light' : 'dark') };
++ }</span>`,
+    },
+    t2: {
+      id: "t2",
+      title: "Footer is missing the copyright year",
+      prompt: "The footer says '© Acme'. Make it '© {current year} Acme' — automatically updating.",
+      diff:
+        `<span class="hd">diff --git a/src/Footer.tsx b/src/Footer.tsx</span>
+@@
+-  <p>© Acme</p>
++  <p>© {new Date().getFullYear()} Acme</p>`,
+    },
+    t3: {
+      id: "t3",
+      title: "Bump deps to latest minor, run tests",
+      prompt: "Run a minor bump on all dependencies. If tests stay green, ship it. If anything breaks, stop and report.",
+      diff:
+        `<span class="hd">diff --git a/package.json b/package.json</span>
+@@
+-    "astro": "^5.10.0",
+-    "react": "^18.2.0",
+-    "zod": "^3.22.0"
+<span class="ad">+    "astro": "^5.14.0",
++    "react": "^18.3.1",
++    "zod": "^3.23.8"</span>
+
+<span class="hd">tests: 87 passed, 0 failed</span>`,
+    },
+    t4: {
+      id: "t4",
+      title: "Loading spinner on the upload form",
+      prompt: "When the user submits the upload form, show a spinner inside the button and disable the form until the response returns.",
+      diff:
+        `<span class="hd">diff --git a/src/UploadForm.tsx b/src/UploadForm.tsx</span>
+@@
+-  <button type="submit">Upload</button>
++  <button type="submit" disabled={uploading}>
++    {uploading ? <Spinner /> : 'Upload'}
++  </button>`,
+    },
+  };
+
+  function delay(ms: number) {
+    return new Promise<void>((r) => setTimeout(r, ms));
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-cowork]").forEach((root) => {
+    const list = root.querySelector<HTMLElement>("[data-cw-list]")!;
+    const runBtn = root.querySelector<HTMLButtonElement>("[data-cw-run]")!;
+    const title = root.querySelector<HTMLElement>("[data-cw-title]")!;
+    const prompt = root.querySelector<HTMLElement>("[data-cw-prompt]")!;
+    const status = root.querySelector<HTMLElement>("[data-cw-status]")!;
+    const empty = root.querySelector<HTMLElement>("[data-cw-empty]")!;
+    const diffSec = root.querySelector<HTMLElement>("[data-cw-diff]")!;
+    const diffBody = root.querySelector<HTMLElement>("[data-cw-diff-body]")!;
+    const approve = root.querySelector<HTMLButtonElement>("[data-cw-approve]")!;
+    const comment = root.querySelector<HTMLButtonElement>("[data-cw-comment]")!;
+    const discard = root.querySelector<HTMLButtonElement>("[data-cw-discard]")!;
+    const flash = root.querySelector<HTMLElement>("[data-cw-flash]")!;
+    const newBtn = root.querySelector<HTMLButtonElement>("[data-cw-new]")!;
+
+    const states: Record<string, State> = { t1: "queued", t2: "queued", t3: "queued", t4: "queued" };
+    let selected = "t1";
+
+    function paintState(id: string) {
+      const pill = root.querySelector<HTMLElement>(`[data-st="${id}"]`);
+      if (!pill) return;
+      pill.textContent = states[id];
+      pill.dataset.state = states[id];
+    }
+
+    function selectTask(id: string) {
+      selected = id;
+      const t = TASKS[id];
+      title.textContent = t.title;
+      prompt.textContent = t.prompt;
+      const st = states[id];
+      status.textContent = st;
+      list.querySelectorAll<HTMLElement>(".cw-row").forEach((r) => r.classList.toggle("sel", r.dataset.task === id));
+      // diff visible only for done/merged
+      if (st === "done" || st === "merged") {
+        empty.hidden = true;
+        diffSec.hidden = false;
+        diffBody.innerHTML = t.diff;
+        flash.textContent = st === "merged" ? "Merged. Branch deleted." : "";
+        approve.disabled = st === "merged";
+        discard.disabled = st === "merged";
+      } else {
+        empty.hidden = false;
+        diffSec.hidden = true;
+      }
+    }
+
+    list.querySelectorAll<HTMLElement>(".cw-row").forEach((row) => {
+      row.addEventListener("click", () => selectTask(row.dataset.task!));
+    });
+
+    runBtn.addEventListener("click", async () => {
+      runBtn.disabled = true;
+      const ids = Object.keys(states).filter((k) => states[k] === "queued");
+      // Kick off in parallel with staggered completion to show "concurrent" feel.
+      const promises = ids.map(async (id, idx) => {
+        await delay(150 + idx * 90);
+        states[id] = "running";
+        paintState(id);
+        if (id === selected) selectTask(id);
+        await delay(1100 + Math.random() * 900);
+        states[id] = "done";
+        paintState(id);
+        if (id === selected) selectTask(id);
+      });
+      await Promise.all(promises);
+      runBtn.disabled = false;
+    });
+
+    approve.addEventListener("click", () => {
+      if (states[selected] !== "done") return;
+      states[selected] = "merged";
+      paintState(selected);
+      selectTask(selected);
+    });
+
+    discard.addEventListener("click", () => {
+      if (states[selected] === "merged") return;
+      states[selected] = "queued";
+      paintState(selected);
+      selectTask(selected);
+      flash.textContent = "Discarded. Task is back in the queue.";
+      setTimeout(() => (flash.textContent = ""), 2200);
+    });
+
+    comment.addEventListener("click", () => {
+      flash.textContent = "Comment sent. Cowork would re-run with your feedback.";
+      setTimeout(() => (flash.textContent = ""), 2200);
+    });
+
+    newBtn.addEventListener("click", () => {
+      flash.textContent = "(In the real app, a 'New task' form opens here.)";
+      setTimeout(() => (flash.textContent = ""), 2200);
+    });
+
+    // initial paint
+    Object.keys(states).forEach(paintState);
+    selectTask("t1");
+  });
+</script>

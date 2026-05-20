@@ -12,22 +12,29 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
   <main>
     <LessonShell lesson={lesson}>
       <p>
-        Inside Claude Code, typing <code class="inline">/</code> opens a small menu of built-in
-        commands. They're shortcuts for things you'd otherwise type out — "switch model",
-        "show me running tasks", "make a new git commit".
+        Below is a faithful imitation of Claude Code. It streams output the same way,
+        uses the same slash menu (arrow keys + Enter), and shows the same
+        "Claude wants to do this — Allow / Deny" approval prompts before touching your machine.
+        Drive it like you would the real CLI.
       </p>
 
-      <h2>Try it</h2>
-      <p>Pretend terminal. Type <code class="inline">/</code> to see the menu, then try one of the commands.</p>
-      <FakeTerminal />
+      <FakeTerminal cwd="~/my-project" />
 
-      <h2>Commands worth knowing on day one</h2>
+      <h2>Things to try</h2>
+      <ol class="steps">
+        <li>Press <kbd>/</kbd> and use <kbd>↑</kbd>/<kbd>↓</kbd> + <kbd>Enter</kbd> to pick a command. Try <code class="inline">/agents</code>.</li>
+        <li>Type "<em>fix the bug</em>" — Claude reads files, runs your tests, finds the cause.</li>
+        <li>Type "<em>add a dark mode toggle</em>" — you'll get an Allow/Deny prompt before any file is written.</li>
+        <li>Type "<em>list files</em>" — note the tool call is visible (the "● Listing your project files" line).</li>
+      </ol>
+
+      <h2>Slash commands worth knowing on day one</h2>
       <ul>
-        <li><code class="inline">/help</code> — full list of commands.</li>
+        <li><code class="inline">/help</code> — what I can do.</li>
         <li><code class="inline">/clear</code> — start a fresh chat (keeps your project context).</li>
-        <li><code class="inline">/plan</code> — turn on plan mode: Claude outlines steps before touching anything.</li>
-        <li><code class="inline">/agents</code> — list specialized assistants (see below).</li>
-        <li><code class="inline">/exit</code> — quit.</li>
+        <li><code class="inline">/plan</code> — plan mode: Claude outlines steps before touching files.</li>
+        <li><code class="inline">/agents</code> — list specialized assistants.</li>
+        <li><code class="inline">/model</code> — switch Sonnet/Opus/Haiku.</li>
       </ul>
 
       <h2>Agents: specialized helpers</h2>
@@ -37,7 +44,7 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
         <li><strong>tdd-guide</strong> — enforces "write the test first" when you're adding a feature.</li>
         <li><strong>build-error-resolver</strong> — narrows in on a failing build and fixes only what's needed.</li>
       </ul>
-      <p>You don't usually call them directly — Claude reaches for them when the work matches. You'll just notice that the right kind of helper showed up.</p>
+      <p>You don't usually call them directly — Claude reaches for them when the work matches.</p>
 
       <h2>Skills</h2>
       <p>A <strong>skill</strong> is a reusable recipe (Markdown + maybe a script) for "how we do X here". A skill called <em>hotel-research</em> tells Claude exactly how to research hotels for you: which sites to check, what to summarize, what to skip. Skills live in <code class="inline">~/.claude/skills/</code>; you can write your own.</p>
@@ -51,9 +58,9 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
         </ul>
       </div>
 
-      <Reveal q="Do I have to learn all of these to start?">
-        Not at all. Just open <code class="inline">claude</code> and chat. The slash menu and agents are there
-        when you're curious — you'll discover them naturally.
+      <Reveal q="What's the deal with Allow / Deny?">
+        Claude Code never silently modifies your machine. Anything that reads, writes, or runs a command
+        asks first. You can grant standing permission for trusted operations.
       </Reveal>
     </LessonShell>
   </main>

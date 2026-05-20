@@ -1,0 +1,99 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "ship-it")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        You've read enough. The last thing standing between you and "I can build with Claude" is
+        actually making a thing. So make a thing — right now, before you close this tab.
+      </p>
+      <p>Three options. Pick the one closest to what you do day-to-day:</p>
+
+      <h2>Option A · A custom writing assistant (no install)</h2>
+      <p><strong>What you'll have:</strong> a saved Claude.ai project that turns rough notes into polished writing in <em>your</em> voice. Reusable forever.</p>
+      <ol class="steps">
+        <li>Go to <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> and click <strong>Projects → New project</strong>.</li>
+        <li>Name it "My writing partner". For description: "Helps me turn rough notes into clean prose."</li>
+        <li>In <strong>Custom instructions</strong>, paste:
+          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">You are my writing partner. When I paste rough notes, you produce three things:
+1. A clean version in my voice — direct, no jargon, no corporate puffery.
+2. A one-sentence summary I can use as a subject line or headline.
+3. Two alternative versions (shorter, more formal) so I can pick.
+Always ask one clarifying question if context is missing.</pre>
+        </li>
+        <li>Optional: drag in two or three samples of your best writing as <strong>knowledge files</strong>. Claude will match the style.</li>
+        <li>Start a new chat inside the project. Paste any rough notes. You're done — you've just built a personal tool.</li>
+      </ol>
+      <p><strong>Extend it.</strong> Add a knowledge file with your team's tone guide. Add an instruction: "If I paste a Slack message, suggest 3 reply options."</p>
+
+      <h2>Option B · A tiny live webpage (no install, ~10 min)</h2>
+      <p><strong>What you'll have:</strong> a working webpage you can share — your portfolio, an event invite, a small calculator, whatever you need this week.</p>
+      <ol class="steps">
+        <li>Go to <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>. Start a new chat (you can use the Design product later for fancier UI, but chat-artifacts work great for v1).</li>
+        <li>Paste a prompt like:
+          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">Build a single-page website for me. Self-contained HTML (style and JS inline, no external files).
+
+Purpose: a one-page "what I'm working on" portfolio.
+Sections: short intro, three projects with title + one-line description, a contact link.
+Style: warm, minimal, generous whitespace, serif headings.
+Constraint: works offline, no external assets.</pre>
+        </li>
+        <li>Watch the artifact panel appear on the right. The page renders live.</li>
+        <li>Iterate: "Use a darker background", "Make the projects clickable", "Add a small animation on hover".</li>
+        <li>Hit the <strong>download</strong> button on the artifact, or copy the HTML. Open it in your browser. <em>That's a website you made.</em></li>
+      </ol>
+      <p><strong>Extend it.</strong> Drop the HTML into a free host (GitHub Pages, Cloudflare Pages, Netlify) — drag-and-drop, no command line needed.</p>
+
+      <h2>Option C · A personal script with Claude Code (requires install)</h2>
+      <p><strong>What you'll have:</strong> a script on your computer that does something tedious automatically. Ours: rename a folder of photos to <code class="inline">2026-05-21__001.jpg</code> based on each photo's date.</p>
+      <ol class="steps">
+        <li>Finish the <a href="/lessons/code-install">install lesson</a> if you haven't yet.</li>
+        <li>In your terminal: <code class="inline">mkdir photo-renamer && cd photo-renamer</code></li>
+        <li>Run <code class="inline">claude</code>. At the prompt, paste:
+          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">Write a Python script `rename.py` that:
+- Takes one argument: a folder path.
+- Finds all .jpg/.jpeg/.png files in that folder.
+- Reads each file's EXIF date (fallback to file mtime).
+- Renames it to `YYYY-MM-DD__NNN.ext`, padded to 3 digits, in order.
+- Prints what it's about to do and asks me to confirm before renaming anything.
+
+Then create a `samples/` folder with two fake-named .jpg files using `touch`, and run the script against it as a sanity check.</pre>
+        </li>
+        <li>Claude reads files, writes the script, runs the sanity check, and reports back. Approve the actions it asks about.</li>
+        <li>Now try it on a real folder of photos: <code class="inline">python rename.py ~/Pictures/Vacation2026</code></li>
+      </ol>
+      <p><strong>Extend it.</strong> "Add a <code class="inline">--dry-run</code> flag." "Also generate a thumbnail in <code class="inline">thumbs/</code>." "Wrap it in a tiny GUI."</p>
+
+      <div class="divider"></div>
+
+      <h2>What you just learned</h2>
+      <ul>
+        <li>A "tool" doesn't have to be code. A Claude.ai project with a good system prompt <em>is</em> a tool — one you'll use every week.</li>
+        <li>The prompt pattern that works: <strong>goal → constraints → success criteria → ask one clarifying question</strong>.</li>
+        <li>Iteration is the unit of progress. Get a draft, react to it, ask for a small change.</li>
+        <li>You don't need to know what model is running, what an API is, or how the model "decides". You just need to know what you want.</li>
+      </ul>
+
+      <div class="tip">
+        <strong>Next step.</strong> Skim the <a href="/cookbook">Cookbook</a> — it's a list of starter prompts grouped by goal.
+        Find one that matches something you'd love to have, paste it into the right product, iterate. That's the whole job.
+      </div>
+
+      <Reveal q="What if I get stuck?">
+        Tell Claude exactly what's going wrong. Paste the error. Say what you expected.
+        The model is very good at debugging itself when you give it the symptom.
+      </Reveal>
+      <Reveal q="Can I share what I built?">
+        Yes — Claude.ai projects can be shared on team plans. Webpages and scripts are yours; do what you like with them.
+        For things that need to stay private (with company data), use your work account, not your personal one.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
