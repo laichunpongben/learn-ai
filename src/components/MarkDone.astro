@@ -11,60 +11,29 @@ const { id } = Astro.props;
 </div>
 
 <script>
-  const KEY = "learn-ai.progress.v1";
-
-  type Progress = { done: string[]; lastVisited?: string; startedAt?: string };
-
-  function read(): Progress {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return { done: [] };
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed.done)) return { done: [] };
-      return parsed;
-    } catch {
-      return { done: [] };
-    }
-  }
-
-  function write(p: Progress): void {
-    localStorage.setItem(KEY, JSON.stringify(p));
-    window.dispatchEvent(new CustomEvent("ct:progress", { detail: p }));
-  }
+  import { isDone, markDone, markUndone } from "../scripts/progress";
 
   function paint(root: HTMLElement, id: string) {
-    const cur = read();
-    const done = cur.done.includes(id);
+    const done = isDone(id);
     const btn = root.querySelector<HTMLButtonElement>("[data-toggle]");
     const status = root.querySelector<HTMLElement>("[data-status]");
     if (!btn || !status) return;
-    if (done) {
-      btn.textContent = "Unmark";
-      btn.classList.remove("accent");
-      btn.classList.add("ghost");
-      status.textContent = "Done. Move on whenever you're ready.";
-      status.classList.add("done");
-    } else {
-      btn.textContent = "Mark this lesson as done";
-      btn.classList.add("accent");
-      btn.classList.remove("ghost");
-      status.textContent = "No pressure — read at your own pace.";
-      status.classList.remove("done");
-    }
+    btn.textContent = done ? "Unmark" : "Mark this lesson as done";
+    btn.classList.toggle("accent", !done);
+    btn.classList.toggle("ghost", done);
+    status.textContent = done
+      ? "Done. Move on whenever you're ready."
+      : "No pressure — read at your own pace.";
+    status.classList.toggle("done", done);
   }
 
-  document.querySelectorAll<HTMLElement>("[data-mark-done]").forEach((root) => {
+  for (const root of document.querySelectorAll<HTMLElement>("[data-mark-done]")) {
     const id = root.dataset.lessonId;
-    if (!id) return;
+    if (!id) continue;
     paint(root, id);
     root.querySelector<HTMLButtonElement>("[data-toggle]")?.addEventListener("click", () => {
-      const cur = read();
-      const has = cur.done.includes(id);
-      const next: Progress = has
-        ? { ...cur, done: cur.done.filter((x) => x !== id) }
-        : { ...cur, done: [...cur.done, id], startedAt: cur.startedAt ?? new Date().toISOString() };
-      write(next);
+      (isDone(id) ? markUndone : markDone)(id);
       paint(root, id);
     });
-  });
+  }
 </script>
