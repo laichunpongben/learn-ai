@@ -1,0 +1,120 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface Section {
+  title: string;
+  blurb: string;
+  items: { label: string; url?: string; note?: string }[];
+}
+
+const SECTIONS: Section[] = [
+  {
+    title: "Read the source documentation",
+    blurb: "When the tutorial ends, vendors' own docs are where to live next.",
+    items: [
+      { label: "Anthropic docs", url: "https://docs.anthropic.com" },
+      { label: "OpenAI Cookbook", url: "https://cookbook.openai.com" },
+      { label: "Google AI for Developers", url: "https://ai.google.dev" },
+      { label: "Mistral docs", url: "https://docs.mistral.ai" },
+      { label: "MCP spec & servers", url: "https://modelcontextprotocol.io" },
+    ],
+  },
+  {
+    title: "Communities worth lurking in",
+    blurb: "Where the people who actually build with AI hang out.",
+    items: [
+      { label: "Hacker News /show", url: "https://news.ycombinator.com/show" },
+      { label: "lobste.rs · ai tag", url: "https://lobste.rs/t/ai" },
+      { label: "/r/LocalLLaMA", url: "https://reddit.com/r/LocalLLaMA", note: "open models, infra, fine-tuning" },
+      { label: "Latent Space (podcast + Discord)", url: "https://www.latent.space" },
+      { label: "Hugging Face forums", url: "https://discuss.huggingface.co" },
+    ],
+  },
+  {
+    title: "Ideas to build next",
+    blurb: "Small, scoped projects that exercise different muscles.",
+    items: [
+      { label: "A Slack bot that summarises a channel each morning", note: "MCP + cron + chat API" },
+      { label: "A browser extension that explains the selected text", note: "any chat API + a content script" },
+      { label: "A receipt-to-CSV tool", note: "vision input + structured output" },
+      { label: "A meeting-notes-to-action-items pipeline", note: "transcription + extraction + email" },
+      { label: "A 'rubber duck' coding session bot", note: "anthropic CLI + a local skill" },
+      { label: "Your own MCP server for a tool you already use", note: "the multiplier — once you ship one, you ship them faster" },
+    ],
+  },
+  {
+    title: "Deeper reading when you're ready",
+    blurb: "Worth the time after the basics click.",
+    items: [
+      { label: "Lilian Weng's blog", url: "https://lilianweng.github.io", note: "agents, evaluations, prompt engineering — careful, deep" },
+      { label: "Simon Willison's blog", url: "https://simonwillison.net", note: "weekly LLM dispatches, no hype" },
+      { label: "Anthropic research", url: "https://anthropic.com/research" },
+      { label: "DeepMind blog", url: "https://deepmind.google/discover/blog/" },
+      { label: "Eugene Yan: applied LLMs", url: "https://eugeneyan.com" },
+    ],
+  },
+  {
+    title: "Skill-stretching topics",
+    blurb: "Topics this tutorial deliberately scoped out — pick one that calls to you.",
+    items: [
+      { label: "Fine-tuning open models locally with Unsloth or Axolotl" },
+      { label: "Running a local model with Ollama, LM Studio, or vLLM" },
+      { label: "Building a multi-agent system with AutoGen, crewAI, or LangGraph" },
+      { label: "Vector search internals — HNSW, IVF, quantisation" },
+      { label: "Constrained-decoding tricks for reliable structured output" },
+      { label: "Cost engineering at scale — caching, routing, batching" },
+    ],
+  },
+];
+---
+
+<Layout title="What's next · Learn AI" description="Where to go after you've finished the tutorial.">
+  <main>
+    <p><span class="track-pill">Wrap-up</span></p>
+    <h1>You finished the tour. Now what?</h1>
+    <p class="lede">
+      The fastest way to lose what you just learned is to stop using it. Pick one item per section,
+      bookmark it, and come back when you have ten free minutes.
+    </p>
+
+    {SECTIONS.map((s) => (
+      <section class="wn-section">
+        <h2>{s.title}</h2>
+        <p class="wn-blurb">{s.blurb}</p>
+        <ul class="wn-list">
+          {s.items.map((i) => (
+            <li>
+              {i.url ? <a href={i.url} target="_blank" rel="noopener">{i.label}</a> : <span>{i.label}</span>}
+              {i.note ? <span class="wn-note"> — {i.note}</span> : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <div class="callout">
+      <strong>One last thing.</strong> If something in this tutorial saved you an afternoon,
+      pass it on. The simplest way: share the URL with one person you know would benefit. The
+      next-simplest: copy a lesson you liked into your own notes / wiki and rewrite it in your
+      own words. That's how knowledge actually compounds.
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .wn-section { margin: 2rem 0; }
+  .wn-section h2 { margin-bottom: 0.2rem; }
+  .wn-blurb { color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 0.6rem; }
+  .wn-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .wn-list li {
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.94rem;
+  }
+  .wn-note { color: var(--ink-soft); font-size: 0.88rem; }
+</style>
