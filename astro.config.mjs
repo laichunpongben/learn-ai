@@ -1,6 +1,6 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: 'http://localhost:4321',
-  trailingSlash: 'ignore',
+  site: "http://localhost:4321",
+  trailingSlash: "ignore",
 });
