@@ -1,0 +1,120 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-multimodal")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-multimodal">
+  <main>
+    <LessonShell lesson={lesson} hero="claude">
+      <p>
+        "Type, get text" is the entry-level mental model. The capable assistants — Claude, ChatGPT,
+        Gemini — now read <strong>images</strong>, watch <strong>video</strong>, hear <strong>audio</strong>,
+        respond in <strong>voice</strong>, and can <strong>see your screen</strong>. Most of the value is in
+        knowing which mode fits the job.
+      </p>
+
+      <h2>What you can feed in</h2>
+      <table>
+        <thead>
+          <tr><th>Input</th><th>Good for</th><th>Tools</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Photo / screenshot</td><td>"What does this error mean?" · "Read this receipt." · "Describe the chart."</td><td>Claude, ChatGPT, Gemini — all chat apps</td></tr>
+          <tr><td>PDF / Word / slides</td><td>Summarize, extract, rewrite</td><td>Claude.ai, ChatGPT Plus, Gemini</td></tr>
+          <tr><td>Audio file or live voice</td><td>Transcribe meetings · talk hands-free</td><td>ChatGPT Voice, Gemini Live, Claude voice (mobile)</td></tr>
+          <tr><td>Video clip</td><td>"What happened?" · timestamps · summary</td><td>Gemini (longest video context), Claude (short)</td></tr>
+          <tr><td>Live screen share</td><td>"Help me through this UI"</td><td>ChatGPT advanced voice + screen, Gemini Live</td></tr>
+        </tbody>
+      </table>
+
+      <h2>What you can ask out</h2>
+      <table>
+        <thead>
+          <tr><th>Output</th><th>Tool category</th><th>Examples</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Generated images</td><td>Image generators</td><td>DALL-E (in ChatGPT), Imagen (in Gemini), Midjourney, Flux, Stable Diffusion, Ideogram</td></tr>
+          <tr><td>Generated video</td><td>Video generators</td><td>Sora (OpenAI), Veo (Google), Runway, Pika, Kling, Hailuo</td></tr>
+          <tr><td>Generated speech</td><td>TTS</td><td>ElevenLabs, OpenAI TTS, Google Cloud TTS, Play.ht</td></tr>
+          <tr><td>Music</td><td>Music generators</td><td>Suno, Udio</td></tr>
+          <tr><td>3D models</td><td>3D generators</td><td>Meshy, Tripo, Luma Genie</td></tr>
+        </tbody>
+      </table>
+
+      <h2>The "drag in a screenshot" superpower</h2>
+      <p>
+        This is the single most underused trick. Take a screenshot of <em>anything</em> confusing — a
+        stack trace, a confusing UI, a chart in a report, a handwritten whiteboard photo, a receipt in
+        Korean — and drop it into the chat. Then ask in plain language.
+      </p>
+      <div class="callout">
+        <strong>Real cases that work:</strong> "What's wrong with this CSS?" (with screenshot) ·
+        "Translate this menu" (photo) · "Summarize the trend in this chart" · "What does this error
+        message mean and how do I fix it?" · "Read the labels on these jars and tell me which one is
+        the chili oil."
+      </div>
+
+      <h2>Voice — when it actually helps</h2>
+      <ul>
+        <li><strong>Hands-busy tasks.</strong> Driving, cooking, walking, exercising.</li>
+        <li><strong>Brainstorming.</strong> Talking out loud unblocks thinking the way typing doesn't.</li>
+        <li><strong>Practice.</strong> Language learning, mock interviews, public-speaking rehearsal.</li>
+        <li><strong>Accessibility.</strong> Lower friction than typing for some users.</li>
+      </ul>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        Modern voice modes (ChatGPT Advanced Voice, Gemini Live) are full-duplex — you can interrupt
+        them, they can interrupt you. Latency is low enough that it feels like a conversation, not a
+        transcription round-trip.
+      </p>
+
+      <h2>Picking an image generator</h2>
+      <table>
+        <thead>
+          <tr><th>You want</th><th>Try first</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>A polished marketing image, fast</td><td>Midjourney or Flux (aesthetic defaults)</td></tr>
+          <tr><td>Exactly-rendered text in an image</td><td>Ideogram or Imagen (best text fidelity)</td></tr>
+          <tr><td>A quick illustration inside a chat conversation</td><td>DALL-E in ChatGPT, Imagen in Gemini</td></tr>
+          <tr><td>Local / private / no per-image cost</td><td>Stable Diffusion / Flux locally</td></tr>
+          <tr><td>Photorealistic faces / product shots</td><td>Flux Pro, Midjourney v7</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <strong>Prompt tip for images.</strong> The same four-part shape works: subject · style · setting · constraints.
+        <em>"A weathered fisherman mending a net · in the style of a Winslow Homer painting · golden-hour
+        light on a Maine coastline · square, no text, no logo."</em>
+      </div>
+
+      <h2>What multimodal can't do yet (early 2026)</h2>
+      <ul>
+        <li><strong>Reliable text rendering inside generated images</strong> is improving but still flaky. Use Ideogram or Imagen for text-heavy stuff.</li>
+        <li><strong>Coherent multi-minute video</strong> — single shots of ~10 seconds are great; sustained narratives drift.</li>
+        <li><strong>Spatial / numerical precision in images</strong> — "show exactly 7 apples" sometimes gives 6 or 8.</li>
+        <li><strong>Real-time vision through a phone camera</strong> works (Gemini Live, ChatGPT) but battery + bandwidth costs are real.</li>
+      </ul>
+
+      <Reveal q="Cost — is multimodal much more expensive?">
+        Yes, but less than you'd think. A medium-resolution image costs roughly the same as 1,000–4,000
+        text tokens. A minute of voice is ~1,500 tokens. Video is the priciest — multi-cent per
+        generated second. Check the <a href="/lessons/concept-cost">cost lesson</a> for tier breakdowns.
+      </Reveal>
+      <Reveal q="Privacy concerns specific to images / voice?">
+        Photos of your face, kids, ID documents, whiteboards with company data — all flow through the
+        provider just like text. Use enterprise-tier accounts with no-training agreements for
+        sensitive material; strip metadata first. Voice mode is similar: assume conversations are
+        logged unless you've opted out.
+      </Reveal>
+      <Reveal q="Why are there so many image generators?">
+        Two reasons. (1) Different models hit different style sweet spots — Midjourney is editorial,
+        Flux is photoreal, DALL-E is illustrative, Ideogram nails text. (2) The non-LLM frontier
+        moves fast and lab-to-product cycles are short. Six months from now this table will look different.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
