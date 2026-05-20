@@ -28,20 +28,13 @@ function readMode(): Mode {
 }
 
 function applyMode(m: Mode): void {
-  if (m === "auto") {
-    document.documentElement.removeAttribute("data-theme");
-    try {
-      localStorage.removeItem(THEME_KEY);
-    } catch {
-      /* ignore */
-    }
-  } else {
-    document.documentElement.setAttribute("data-theme", m);
-    try {
-      localStorage.setItem(THEME_KEY, m);
-    } catch {
-      /* ignore */
-    }
+  if (m === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", m);
+  try {
+    if (m === "auto") localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, m);
+  } catch {
+    /* private mode / disabled storage */
   }
 }
 
