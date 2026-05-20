@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Polite crawl rate — this is a small tutorial site.
+Crawl-delay: 2
