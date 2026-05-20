@@ -2,17 +2,27 @@
 import { LESSONS } from "../data/curriculum";
 
 const total = LESSONS.length;
+const totalMinutes = LESSONS.reduce((s, l) => s + l.minutes, 0);
+
+// Pass a compact lookup table (id → minutes) to the inline script so it can
+// compute remaining-minutes client-side without re-reading the curriculum module.
+const minutesById: Record<string, number> = Object.fromEntries(
+  LESSONS.map((l) => [l.id, l.minutes]),
+);
 ---
 
 <div data-progress>
   <div class="progress-bar"><span data-progress-fill style="width: 0%"></span></div>
   <div class="progress-meta">
-    <span><strong data-progress-count>0</strong> of {total} lessons done</span>
+    <span>
+      <strong data-progress-count>0</strong> of {total} lessons ·
+      <strong data-progress-remaining>{totalMinutes}</strong> min remaining
+    </span>
     <button class="ghost" data-reset>Reset progress</button>
   </div>
 </div>
 
-<script is:inline define:vars={{ total }}>
+<script is:inline define:vars={{ total, totalMinutes, minutesById }}>
   const KEY = "learn-ai.progress.v1";
 
   function read() {
@@ -30,11 +40,15 @@ const total = LESSONS.length;
   function paint() {
     const cur = read();
     const n = cur.done.length;
+    const doneMinutes = cur.done.reduce((s, id) => s + (minutesById[id] || 0), 0);
+    const remaining = totalMinutes - doneMinutes;
     document.querySelectorAll("[data-progress]").forEach((root) => {
       const fill = root.querySelector("[data-progress-fill]");
       const count = root.querySelector("[data-progress-count]");
+      const rem = root.querySelector("[data-progress-remaining]");
       if (fill) fill.style.width = `${total ? (n / total) * 100 : 0}%`;
       if (count) count.textContent = String(n);
+      if (rem) rem.textContent = String(remaining);
     });
   }
 

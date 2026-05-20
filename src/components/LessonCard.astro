@@ -7,7 +7,7 @@ interface Props {
 const { lesson } = Astro.props;
 ---
 
-<a class="lesson-card" data-lesson-card data-lesson-id={lesson.id} href={`/lessons/${lesson.slug}`}>
+<a class="lesson-card" data-lesson-card data-lesson-id={lesson.id} data-lesson-track={lesson.track} href={`/lessons/${lesson.slug}`}>
   <div class="row">
     <span>{lesson.minutes} min</span>
     <span class="check" data-check>✓</span>
