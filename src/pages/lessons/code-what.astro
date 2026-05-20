@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "code-what")!;
@@ -9,53 +8,66 @@ const lesson = LESSONS.find((l) => l.id === "code-what")!;
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
+    <LessonShell lesson={lesson} hero="code">
       <p>
-        <strong>Claude Code</strong> is the version of Claude that lives in your computer's terminal —
-        the black-and-white window where you type commands. It's aimed at people who write software,
-        or want to learn.
+        Claude Code lives in your terminal. It reads your files, edits them, runs commands —
+        with your approval each time something touches your machine.
       </p>
 
-      <h2>What makes it different from claude.ai?</h2>
-      <ul>
-        <li><strong>It sees your files.</strong> Open a project folder, run <code class="inline">claude</code>, and it can read, edit, and create files in that folder.</li>
-        <li><strong>It runs commands.</strong> It can install packages, run tests, start your app — with your permission.</li>
-        <li><strong>It uses tools.</strong> Web searches, code search, git, agents — all from the same chat.</li>
-        <li><strong>It's in your workflow.</strong> You stay in your editor and terminal; no copy-pasting between a chat website and your project.</li>
-      </ul>
-
-      <h2>Who is this for?</h2>
-      <p>People who already work on software: developers, data scientists, SREs, students learning to code, hobbyists building side projects. If you've never written code in your life, <strong>start with Claude.ai</strong> — and come back here when you're ready to build something real.</p>
-
-      <div class="callout">
-        <strong>"The terminal" demystified.</strong> It's just an app on your computer (called Terminal on macOS,
-        Windows Terminal on Windows). When you open it, you see a prompt waiting for typed commands.
-        That's where Claude Code lives.
+      <div class="diff-grid">
+        <div>
+          <h3>claude.ai</h3>
+          <ul>
+            <li>Browser chat</li>
+            <li>You copy/paste code</li>
+            <li>No file access</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Claude Code</h3>
+          <ul>
+            <li>Terminal CLI</li>
+            <li>Edits your files directly</li>
+            <li>Runs your tests, your dev server, git</li>
+          </ul>
+        </div>
       </div>
 
-      <h2>A taste</h2>
-      <p>A typical Claude Code session might go like this:</p>
+      <h2>A typical session</h2>
       <pre>$ cd my-project
 $ claude
 
 › the app is crashing on startup, can you find why?
 
-… reading package.json
-… running npm start
-… error: missing environment variable DATABASE_URL
+● reading package.json
+● running npm start
+● error: missing DATABASE_URL
 
-I see — your app needs DATABASE_URL but .env doesn't have one. Want me to:
-  1. Add a placeholder DATABASE_URL to .env
-  2. Look up where it's used and stub it
-  3. Add a startup check so the error is clearer next time?
-      </pre>
+I see — your app needs DATABASE_URL but .env doesn't have one.
+Want me to add a placeholder + a clearer startup error?</pre>
 
-      <Reveal q="Will it run scary commands without asking?">
-        No. By default it asks before it edits files, runs commands, or accesses the internet. You can grant standing permission for things you trust.
-      </Reveal>
-      <Reveal q="Does it learn my codebase over time?">
-        Each session reads what it needs. You can also write a <code class="inline">CLAUDE.md</code> file in your project with rules and context — it gets read automatically.
-      </Reveal>
+      <div class="callout">
+        <strong>Who it's for:</strong> people who write code. If you've never opened a terminal,
+        start with claude.ai — come back when you're ready to build something real.
+      </div>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .diff-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1.2rem 0 1.6rem;
+  }
+  .diff-grid > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  .diff-grid h3 { margin: 0 0 0.4rem; font-size: 0.9rem; }
+  .diff-grid ul { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: var(--ink-soft); }
+  @media (max-width: 600px) { .diff-grid { grid-template-columns: 1fr; } }
+</style>

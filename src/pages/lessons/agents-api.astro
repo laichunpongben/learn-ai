@@ -1,112 +1,110 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "agents-api")!;
 
-const curlExample = `curl https://api.anthropic.com/v1/messages \\
-  --header "x-api-key: $ANTHROPIC_API_KEY" \\
-  --header "anthropic-version: 2023-06-01" \\
-  --header "content-type: application/json" \\
-  --data '{
-    "model": "claude-sonnet-4-6",
-    "max_tokens": 256,
-    "messages": [
-      {"role": "user", "content": "Say hello in one sentence."}
-    ]
-  }'`;
+const curl = `curl https://api.anthropic.com/v1/messages \\
+  -H "x-api-key: $ANTHROPIC_API_KEY" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -H "content-type: application/json" \\
+  -d '{"model":"claude-sonnet-4-6","max_tokens":256,
+       "messages":[{"role":"user","content":"Say hello."}]}'`;
 
-const pythonExample = `pip install anthropic
-
-from anthropic import Anthropic
-client = Anthropic()  # reads ANTHROPIC_API_KEY from env
+const py = `from anthropic import Anthropic
+client = Anthropic()
 
 reply = client.messages.create(
     model="claude-sonnet-4-6",
     max_tokens=256,
-    messages=[{"role": "user", "content": "Say hello in one sentence."}],
+    messages=[{"role": "user", "content": "Say hello."}],
 )
 print(reply.content[0].text)`;
 
-const tsExample = `npm install @anthropic-ai/sdk
-
-import Anthropic from "@anthropic-ai/sdk";
-const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
+const ts = `import Anthropic from "@anthropic-ai/sdk";
+const client = new Anthropic();
 
 const reply = await client.messages.create({
   model: "claude-sonnet-4-6",
   max_tokens: 256,
-  messages: [{ role: "user", content: "Say hello in one sentence." }],
-});
-console.log((reply.content[0] as any).text);`;
+  messages: [{ role: "user", content: "Say hello." }],
+});`;
 ---
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
-      <p>
-        The <strong>Claude API</strong> is what lets <em>any</em> tool talk to Claude — Anthropic's
-        own apps, every open-source agent, and any side project you might build. Once you understand
-        the shape of it, every other tool's "set up Claude" instructions become trivial.
-      </p>
+    <LessonShell lesson={lesson} hero="agents">
+      <p>Every third-party tool uses the same API underneath. Three things to know.</p>
 
-      <h2>The three things you need</h2>
-      <ol class="steps">
-        <li><strong>An API key.</strong> A long string starting with <code class="inline">sk-ant-</code>. You get one from <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> after adding a payment method.</li>
-        <li><strong>A model name.</strong> Like <code class="inline">claude-sonnet-4-6</code> or <code class="inline">claude-opus-4-7</code>. Tells the API which Claude to use.</li>
-        <li><strong>A request.</strong> Send your prompt, get a response. That's it.</li>
-      </ol>
-
-      <h2>One call, in three languages</h2>
-
-      <h3>Bash (curl)</h3>
-      <pre>{curlExample}</pre>
-
-      <h3>Python (with the SDK)</h3>
-      <pre>{pythonExample}</pre>
-
-      <h3>TypeScript (with the SDK)</h3>
-      <pre>{tsExample}</pre>
-
-      <h2>The shape of every "set up Claude in tool X"</h2>
-      <p>Once you've seen one, you've seen them all. Every open-source agent's setup boils down to:</p>
-      <ol>
-        <li>Get an <code class="inline">sk-ant-…</code> key.</li>
-        <li>Tell the tool about it — usually an <code class="inline">ANTHROPIC_API_KEY</code> env var, sometimes a file like <code class="inline">~/.hermes/.env</code> or a CLI prompt.</li>
-        <li>Optionally pick a model.</li>
-      </ol>
-      <p>That's the whole game. Hermes? Same three steps. OpenClaw? Same three steps. Aider? Same three steps.</p>
-
-      <h2>Models worth knowing</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Model</th>
-            <th>When to use</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><code class="inline">claude-haiku-4-5</code></td><td>Fastest + cheapest. Routine tasks, classification, simple lookups.</td></tr>
-          <tr><td><code class="inline">claude-sonnet-4-6</code></td><td>Default. Best balance for code, writing, agents.</td></tr>
-          <tr><td><code class="inline">claude-opus-4-7</code></td><td>Heaviest reasoning. Architecture, research, gnarly debugging.</td></tr>
-        </tbody>
-      </table>
-
-      <div class="tip">
-        <strong>Prompt caching.</strong> When a tool sends the same context (system prompt, project files, history) repeatedly,
-        Anthropic can <em>cache</em> the input — drastically cheaper and faster. Good tools (Claude Code, Hermes, aider) do this automatically.
+      <div class="three">
+        <div>
+          <span class="n">1</span>
+          <h3>Get a key</h3>
+          <p><code class="inline">sk-ant-…</code> from <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></p>
+        </div>
+        <div>
+          <span class="n">2</span>
+          <h3>Pick a model</h3>
+          <p><code class="inline">claude-sonnet-4-6</code> is the default</p>
+        </div>
+        <div>
+          <span class="n">3</span>
+          <h3>Send a message</h3>
+          <p>One HTTP call. Get a reply.</p>
+        </div>
       </div>
 
-      <Reveal q="Do I need a paid Anthropic account to use these tools?">
-        Yes. Free Claude.ai uses Anthropic's apps; running open-source agents requires an API key, which requires a payment method.
-        Start with a small spend cap.
-      </Reveal>
-      <Reveal q="Can I keep my key safe?">
-        Never commit it to git. Put it in an env file (<code class="inline">.env</code>) that's git-ignored, or your OS keychain.
-        Rotate immediately if it's ever exposed.
-      </Reveal>
+      <h2>The same call, three ways</h2>
+      <h3>curl</h3>
+      <pre>{curl}</pre>
+      <h3>Python</h3>
+      <pre>{py}</pre>
+      <h3>TypeScript</h3>
+      <pre>{ts}</pre>
+
+      <h2>Models</h2>
+      <table>
+        <tbody>
+          <tr><td><code class="inline">claude-haiku-4-5</code></td><td>Fastest, cheapest. Routine + classification.</td></tr>
+          <tr><td><code class="inline">claude-sonnet-4-6</code></td><td>Default. Best balance.</td></tr>
+          <tr><td><code class="inline">claude-opus-4-7</code></td><td>Heaviest reasoning. Architecture, research.</td></tr>
+        </tbody>
+      </table>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .three > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.9rem;
+    position: relative;
+  }
+  .three .n {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .three h3 { margin: 0 0 0.25rem; font-size: 0.88rem; }
+  .three p { margin: 0; color: var(--ink-soft); font-size: 0.85rem; }
+  @media (max-width: 720px) { .three { grid-template-columns: 1fr; } }
+</style>

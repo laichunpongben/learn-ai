@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
+import DesignSim from "../../components/DesignSim.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "design-iterate")!;
@@ -10,53 +10,23 @@ const lesson = LESSONS.find((l) => l.id === "design-iterate")!;
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
     <LessonShell lesson={lesson}>
-      <p>
-        The first draft is almost never the final design — and that's the point. Design is fastest
-        when you stop trying to <em>describe</em> the right answer and start <em>reacting</em> to drafts.
-      </p>
+      <p>React, don't redirect. Change one thing at a time. Branch when unsure.</p>
 
-      <h2>The iteration cycle</h2>
-      <ol class="steps">
-        <li><strong>React, don't redirect.</strong> Tell it what you don't like about <em>this</em> version: "the hero feels too busy", "the buttons are too round".</li>
-        <li><strong>One change at a time.</strong> If you ask for five things in one message, you'll get something half-done in five directions. Tighten in single passes.</li>
-        <li><strong>Use specifics when you have them.</strong> "Make it tighter" is fine; "reduce vertical spacing by 30%" is better when you know.</li>
-        <li><strong>Branch when you're unsure.</strong> Ask for three variants of the same component and pick the strongest.</li>
-      </ol>
+      <DesignSim />
 
-      <h2>Useful follow-up prompts</h2>
-      <div class="card">
-        <ul style="margin: 0;">
-          <li><em>"Make it 30% smaller."</em></li>
-          <li><em>"Try the same layout but inverted — dark background, light text."</em></li>
-          <li><em>"Replace the photo with an illustration in the same style as the icons."</em></li>
-          <li><em>"Show me three completely different headlines for this hero."</em></li>
-          <li><em>"Add a subtle micro-interaction on the primary button — a slight scale on hover."</em></li>
-          <li><em>"Make this responsive on phones — single column, larger tap targets."</em></li>
-        </ul>
-      </div>
-
-      <h2>Common gotchas</h2>
+      <h2>Follow-up prompts that work</h2>
       <ul>
-        <li><strong>Generic-looking output?</strong> You probably under-specified the style. Add tone words ("hand-drawn, warm") or a reference ("like the Mailchimp blog").</li>
-        <li><strong>Looks great, doesn't fit your brand?</strong> Drop your colours and fonts in early, not at the end.</li>
-        <li><strong>Too literal?</strong> If you said "blue button" and got a flat IE-era blue, ask for "a deep, modern blue — think editorial".</li>
+        <li><em>"Make it 30% smaller."</em></li>
+        <li><em>"Same layout, inverted — dark background, light text."</em></li>
+        <li><em>"Replace the photo with an illustration in the icon style."</em></li>
+        <li><em>"Three completely different headlines for this hero."</em></li>
+        <li><em>"Responsive — single column on phones, larger tap targets."</em></li>
       </ul>
 
       <div class="callout">
-        <strong>Design + Code together.</strong> A common workflow: prototype the look in Claude Design,
-        export the code, then hand it to Claude Code (or Cowork) to wire it into your real app.
+        <strong>Design + Code together.</strong> Prototype here, export the code,
+        hand it to Claude Code (or Cowork) to wire into your real app.
       </div>
-
-      <Reveal q="Can I keep iterating on the same design forever?">
-        Practically, yes — but at some point copying the code out and treating it as a real project
-        gives you more control. Design is best as a fast-forward; for ongoing tweaks, version control wins.
-      </Reveal>
-      <Reveal q="What if I have a design system already?">
-        Upload its tokens (colours, spacing, type scale) or a sample component. Claude will match the style.
-      </Reveal>
-
-      <div class="divider"></div>
-      <p style="text-align: center; color: var(--ink-soft);"><strong>That's the tour.</strong> You now have the rough shape of all four products. The rest is practice — open one and try.</p>
     </LessonShell>
   </main>
 </Layout>

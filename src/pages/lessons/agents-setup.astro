@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
@@ -9,90 +8,41 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
-      <p>
-        Time to set one up for real. We'll install <strong>Hermes Agent</strong> by Nous Research —
-        a background daemon that gives Claude persistent memory across sessions, schedules tasks,
-        and can respond on Telegram or Discord. The pattern is the same for most other agents in this category.
-      </p>
+    <LessonShell lesson={lesson} hero="agents">
+      <p>Worked example: <strong>Hermes Agent</strong>. Two paths — pick one.</p>
 
-      <div class="callout">
-        <strong>Two install paths.</strong> Pick whichever fits.<br/>
-        <strong>A. As a Claude Code plugin</strong> — easiest if you already have Claude Code working (lesson <a href="/lessons/code-install">2.2</a>).<br/>
-        <strong>B. Standalone</strong> — one curl command, runs on its own.
-      </div>
+      <h2>Path A · Claude Code plugin</h2>
+      <p style="color: var(--ink-soft); font-size: 0.9rem;">Easiest if Claude Code is already installed.</p>
+      <pre>/plugin marketplace add sypsyp97/claude-hermes
+/plugin install claude-hermes@claude-hermes
+/claude-hermes:start</pre>
+      <p style="color: var(--ink-soft); font-size: 0.9rem;">Wizard asks for: model, heartbeat, Telegram/Discord bots, security pin.</p>
 
-      <h2>Path A · Claude Code plugin (recommended)</h2>
-      <ol class="steps">
-        <li>Open Claude Code in any project folder: <code class="inline">claude</code></li>
-        <li>Add the Hermes plugin marketplace:
-          <pre>/plugin marketplace add sypsyp97/claude-hermes</pre>
-        </li>
-        <li>Install:
-          <pre>/plugin install claude-hermes@claude-hermes</pre>
-        </li>
-        <li>Start the daemon and walk through the setup wizard:
-          <pre>/claude-hermes:start</pre>
-          <p>The wizard asks about: model, heartbeat interval, Telegram/Discord bots (optional), security pin. Hermes uses Claude Code's existing credentials, so no separate API key needed for this path.</p>
-        </li>
-        <li>That's it. Hermes is now running in the background. Try sending it a task from within Claude Code, or message your Telegram/Discord bot if you set one up.</li>
-      </ol>
+      <h2>Path B · Standalone (curl)</h2>
+      <pre>curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+echo "ANTHROPIC_API_KEY=sk-ant-…" &gt;&gt; ~/.hermes/.env
+hermes model</pre>
 
-      <h2>Path B · Standalone install</h2>
-      <p>On Linux, macOS, or WSL2:</p>
-      <pre>curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</pre>
-      <p>The installer offers to install <strong>Bun</strong> (the only runtime dependency) if it's missing.</p>
-
-      <p>Then set up your API key:</p>
-      <pre>echo "ANTHROPIC_API_KEY=sk-ant-…" &gt;&gt; ~/.hermes/.env</pre>
-
-      <p>Pick a model:</p>
-      <pre>hermes model      # interactive picker
-# or
-hermes chat --provider anthropic --model claude-sonnet-4-6</pre>
-
-      <h2>Verifying it works</h2>
-      <ol class="steps">
-        <li>Send Hermes a one-line task: <em>"Summarize what's in ~/Documents and propose three folders to organize it."</em></li>
-        <li>Watch it pick up the task. It will read files (asking for approval where needed) and write a plan.</li>
-        <li>Close your terminal. Come back later. Hermes is still running. <strong>The memory persisted.</strong></li>
-      </ol>
-
-      <h2>What's different from Claude Code</h2>
+      <h2>What you get</h2>
       <ul>
-        <li><strong>Persistent.</strong> Claude Code is per-session. Hermes lives in the background and remembers.</li>
-        <li><strong>Scheduled.</strong> "Every Monday at 9, scan my inbox and draft three follow-up emails."</li>
-        <li><strong>Multi-channel.</strong> Speak to it via your terminal, Telegram, Discord, or voice transcription.</li>
-        <li><strong>Skill-learning.</strong> Hermes turns recurring tasks into <em>reusable skills</em> automatically.</li>
+        <li><strong>Persistent.</strong> Lives in the background; remembers across sessions.</li>
+        <li><strong>Scheduled.</strong> "Every Monday at 9, scan my inbox."</li>
+        <li><strong>Multi-channel.</strong> Terminal, Telegram, Discord, voice.</li>
       </ul>
 
-      <h2>What about OpenClaw?</h2>
-      <p>Same shape, different defaults. If you want a runtime that coordinates multiple coding CLIs as one (Claude Code + Codex + Cursor Agent under one orchestrator), OpenClaw is the route. Setup boils down to:</p>
-      <pre>npm install -g openclaw      # or the install script from the docs
+      <h2>OpenClaw (same shape)</h2>
+      <pre>npm install -g openclaw
 openclaw init
 export ANTHROPIC_API_KEY=sk-ant-…
 openclaw run</pre>
-      <p>See <a href="https://docs.openclaw.ai" target="_blank" rel="noopener">docs.openclaw.ai</a> for the current install command — the project moves fast.</p>
+      <p style="color: var(--ink-soft); font-size: 0.9rem;">
+        See <a href="https://docs.openclaw.ai" target="_blank" rel="noopener">docs.openclaw.ai</a> for the current install.
+      </p>
 
-      <h2>Safety hygiene for any agent</h2>
-      <ul>
-        <li><strong>Run with a budget.</strong> Set a spend cap on your Anthropic account.</li>
-        <li><strong>Sandbox the workspace.</strong> Give the agent its own folder, not your home directory, on the first run.</li>
-        <li><strong>Read the diffs.</strong> Especially during the first week — make sure the agent's idea of "improve this" matches yours.</li>
-        <li><strong>Rotate the key</strong> if you ever paste it somewhere it shouldn't be.</li>
-      </ul>
-
-      <div class="tip">
-        <strong>Next.</strong> The <a href="/lessons/ship-it">capstone lesson</a> walks through three real tools you can build today —
-        you can do them in Claude.ai (no install) or extend them into a Hermes/OpenClaw setup once you're comfortable.
+      <div class="callout">
+        <strong>Safety.</strong> Set a spend cap on your Anthropic account. Sandbox the workspace on first run.
+        Read the diffs. Rotate the key if exposed.
       </div>
-
-      <Reveal q="What if I get stuck during install?">
-        Paste the error into Claude Code or claude.ai. The model is good at diagnosing setup issues, especially common Node/npm/Python path problems.
-      </Reveal>
-      <Reveal q="Can I use these with a local model instead of Claude?">
-        Most can. Hermes, OpenClaw, aider, and OpenHands all support Ollama (local) and OpenRouter (proxy). You give up some capability but gain privacy.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>

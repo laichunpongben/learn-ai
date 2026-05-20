@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
@@ -9,46 +8,48 @@ const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
-      <p>
-        A <strong>project</strong> is a folder for related chats. Same theme, same reference files,
-        same custom instructions. Open a new chat <em>inside</em> the project and it inherits all of that.
-      </p>
+    <LessonShell lesson={lesson} hero="chat">
+      <p>A <strong>project</strong> is a folder for related chats. Same theme, same files, same instructions.</p>
+
+      <div class="proj-anatomy">
+        <div class="row"><strong>Custom instructions</strong><span>System prompt for every chat inside</span></div>
+        <div class="row"><strong>Knowledge files</strong><span>Documents uploaded once, referenced always</span></div>
+        <div class="row"><strong>Chats</strong><span>Each conversation saved and named</span></div>
+      </div>
 
       <h2>When to make one</h2>
       <ul>
-        <li><strong>Work projects.</strong> "Q4 launch" — drop in the brief, the brand guidelines, the spec. Every chat in there already knows the context.</li>
-        <li><strong>Hobbies.</strong> "Sourdough", "Italy trip", "Mom's eulogy". Anything you'll come back to.</li>
-        <li><strong>Studies.</strong> "Linear algebra" with your lecture notes attached.</li>
+        <li><strong>Work projects.</strong> "Q4 launch" — brief + brand + spec attached.</li>
+        <li><strong>Hobbies.</strong> "Sourdough", "Italy trip", "Mom's eulogy".</li>
+        <li><strong>Studies.</strong> "Linear algebra" with lecture notes.</li>
       </ul>
-
-      <h2>What lives in a project</h2>
-      <div class="card">
-        <p style="margin: 0;"><strong>Custom instructions</strong> — a sentence or two that gets prepended to every chat. ("Reply in plain English. Avoid jargon. Be concise.")</p>
-        <p><strong>Knowledge files</strong> — documents you upload once. Claude refers to them in every chat in this project.</p>
-        <p style="margin-bottom: 0;"><strong>Chats</strong> — each conversation is saved and titled. You can return any time.</p>
-      </div>
 
       <div class="callout">
-        <strong>Mental model.</strong> A chat without a project = a one-off conversation with a smart stranger.
-        A chat inside a project = a conversation with someone who already read your briefing pack.
+        <strong>Mental model.</strong> Chat without a project = a conversation with a smart stranger.
+        Chat inside a project = a conversation with someone who already read your briefing pack.
       </div>
-
-      <h2>A worked example</h2>
-      <p>Say you're planning a holiday in Japan. Without a project, every chat needs you to re-explain the dates,
-      who's coming, and your budget. With a "Japan 2026" project:</p>
-      <ul>
-        <li>You upload your flight itinerary once.</li>
-        <li>You add an instruction: "We're a family of four; aim for relaxed pacing, no more than two activities per day."</li>
-        <li>Every new chat ("Tokyo day plan", "Train passes", "Packing list") already knows all of that.</li>
-      </ul>
-
-      <Reveal q="Do projects cost extra?">
-        Projects are part of the standard Claude.ai experience. The exact features (file limits, custom instructions) vary by plan — check your account.
-      </Reveal>
-      <Reveal q="Can I share a project with someone else?">
-        Sharing is plan-dependent. On team plans, projects can be shared with coworkers; on personal plans, projects are yours.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .proj-anatomy {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin: 1rem 0 1.5rem;
+    overflow: hidden;
+  }
+  .proj-anatomy .row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 0.92rem;
+  }
+  .proj-anatomy .row:last-child { border-bottom: none; }
+  .proj-anatomy .row span { color: var(--ink-soft); }
+  @media (max-width: 600px) {
+    .proj-anatomy .row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

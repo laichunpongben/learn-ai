@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import ChatSim from "../../components/ChatSim.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "chat-first")!;
@@ -11,61 +10,23 @@ const lesson = LESSONS.find((l) => l.id === "chat-first")!;
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
     <LessonShell lesson={lesson}>
-      <p>
-        Below is an imitation of the real <code class="inline">claude.ai</code> interface.
-        Same sidebar of chats, same centered conversation, same suggestion chips, same
-        artifact panel on the right when relevant. Drive it like you'd drive the real thing.
-      </p>
+      <p>Drive the imitation. Try a suggestion. Open a new chat from the sidebar.</p>
 
-      <ChatSim
-        prompts={[
-          "Hi",
-          "Write a thank-you note",
-          "Plan a 3-day Tokyo trip",
-          "Build me a simple webpage",
-        ]}
-      />
-
-      <h2>Things to try</h2>
-      <ol class="steps">
-        <li><strong>Send "Hi"</strong> — short replies stay in the message thread.</li>
-        <li><strong>Ask for a Tokyo itinerary</strong> — Claude opens an artifact panel on the right. Same in the real app: anything long or self-contained moves out of the scrollback.</li>
-        <li><strong>Click "Build me a simple webpage"</strong> — notice the artifact title (a filename) and how you'd take that with you.</li>
-        <li><strong>Hit "+ New chat"</strong> in the sidebar. Conversations are stored, but each is its own context.</li>
-      </ol>
+      <ChatSim prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip", "Build me a simple webpage"]} />
 
       <h2>What the real app adds</h2>
       <ul>
-        <li>An account, so chats persist across devices.</li>
-        <li><strong>File upload</strong> on the composer — drop in PDFs, images, spreadsheets.</li>
-        <li><strong>Model picker</strong> — Sonnet for everyday, Opus for hard problems, Haiku for speed.</li>
-        <li><strong>Projects</strong> (next lesson) — folders that share files and instructions.</li>
+        <li>An account; chats persist across devices.</li>
+        <li><strong>File upload</strong> — PDFs, images, spreadsheets.</li>
+        <li><strong>Model picker</strong> — Sonnet / Opus / Haiku.</li>
+        <li><strong>Projects</strong> (next lesson).</li>
       </ul>
 
       <div class="callout">
-        <strong>"Why not just use Claude Code for everything?"</strong> If you're a developer in a project folder,
-        often you should. Claude Code can do everything in this lesson plus edit your files and run your tests.
-        Reach for claude.ai when: (a) you're not at your dev machine, (b) the task has nothing to do with a
-        codebase, (c) you want to drop in a PDF or screenshot and chat about it, (d) someone non-technical needs
-        to use it, or (e) you want a persistent "custom assistant" via Projects (next lesson). For everything
-        else where a terminal is fine, Claude Code wins.
+        <strong>Why not Claude Code for everything?</strong> If you're in a project folder, often you should.
+        Reach for claude.ai when: not at a dev machine; task isn't about code; you want to drop in a file;
+        a non-developer needs to use it.
       </div>
-
-      <h2>Three habits that pay off</h2>
-      <ul>
-        <li><strong>Say what you want, then say why.</strong> "Rewrite this in a warmer tone — it's for my manager."</li>
-        <li><strong>Give an example.</strong> "Like this paragraph, but two sentences shorter."</li>
-        <li><strong>Course-correct, don't restart.</strong> "Drop the bullet points. Make it sound less corporate."</li>
-      </ul>
-
-      <Reveal q="Why does the reply 'stream' word-by-word?">
-        Models generate one token at a time. You see the answer as it forms — which means you can
-        stop early if it's going the wrong direction (the real app has a Stop button).
-      </Reveal>
-      <Reveal q="Can I edit my message after I send it?">
-        Yes — the real app lets you edit a past message, which branches the conversation from that point.
-        Useful when a small wording change would have led to a much better answer.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>

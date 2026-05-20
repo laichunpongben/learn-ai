@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import FakeTerminal from "../../components/FakeTerminal.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "code-slash")!;
@@ -11,57 +10,49 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
     <LessonShell lesson={lesson}>
-      <p>
-        Below is a faithful imitation of Claude Code. It streams output the same way,
-        uses the same slash menu (arrow keys + Enter), and shows the same
-        "Claude wants to do this — Allow / Deny" approval prompts before touching your machine.
-        Drive it like you would the real CLI.
-      </p>
+      <p>Drive the terminal imitation. Press <kbd>/</kbd>, type, hit Enter. Watch streaming + approval prompts.</p>
 
       <FakeTerminal cwd="~/my-project" />
 
-      <h2>Things to try</h2>
-      <ol class="steps">
-        <li>Press <kbd>/</kbd> and use <kbd>↑</kbd>/<kbd>↓</kbd> + <kbd>Enter</kbd> to pick a command. Try <code class="inline">/agents</code>.</li>
-        <li>Type "<em>fix the bug</em>" — Claude reads files, runs your tests, finds the cause.</li>
-        <li>Type "<em>add a dark mode toggle</em>" — you'll get an Allow/Deny prompt before any file is written.</li>
-        <li>Type "<em>list files</em>" — note the tool call is visible (the "● Listing your project files" line).</li>
-      </ol>
-
-      <h2>Slash commands worth knowing on day one</h2>
+      <h2>Try these</h2>
       <ul>
-        <li><code class="inline">/help</code> — what I can do.</li>
-        <li><code class="inline">/clear</code> — start a fresh chat (keeps your project context).</li>
-        <li><code class="inline">/plan</code> — plan mode: Claude outlines steps before touching files.</li>
-        <li><code class="inline">/agents</code> — list specialized assistants.</li>
-        <li><code class="inline">/model</code> — switch Sonnet/Opus/Haiku.</li>
+        <li><code class="inline">/agents</code> — list specialized assistants</li>
+        <li><em>"fix the bug"</em> — Claude reads files, runs tests, finds the cause</li>
+        <li><em>"add a dark mode toggle"</em> — note the Allow/Deny prompt before any write</li>
       </ul>
 
-      <h2>Agents: specialized helpers</h2>
-      <p>An <strong>agent</strong> is a focused version of Claude — same model, but with a job description and only the tools it needs. Examples:</p>
-      <ul>
-        <li><strong>code-reviewer</strong> — reads a diff and reports bugs, smells, missing tests.</li>
-        <li><strong>tdd-guide</strong> — enforces "write the test first" when you're adding a feature.</li>
-        <li><strong>build-error-resolver</strong> — narrows in on a failing build and fixes only what's needed.</li>
-      </ul>
-      <p>You don't usually call them directly — Claude reaches for them when the work matches.</p>
-
-      <h2>Skills</h2>
-      <p>A <strong>skill</strong> is a reusable recipe (Markdown + maybe a script) for "how we do X here". A skill called <em>hotel-research</em> tells Claude exactly how to research hotels for you: which sites to check, what to summarize, what to skip. Skills live in <code class="inline">~/.claude/skills/</code>; you can write your own.</p>
-
-      <div class="callout">
-        <strong>Slash command vs agent vs skill — quick map.</strong>
-        <ul style="margin: 0.5rem 0 0 0;">
-          <li><strong>Slash command:</strong> "do this <em>action</em> now" (clear chat, change model).</li>
-          <li><strong>Agent:</strong> "switch to this <em>persona</em> for the next bit of work".</li>
-          <li><strong>Skill:</strong> "use this <em>recipe</em> whenever the situation matches".</li>
-        </ul>
+      <div class="trio">
+        <div>
+          <h4>Slash command</h4>
+          <p>Do this <em>action</em> now.</p>
+        </div>
+        <div>
+          <h4>Agent</h4>
+          <p>Switch to this <em>persona</em>.</p>
+        </div>
+        <div>
+          <h4>Skill</h4>
+          <p>Use this <em>recipe</em>.</p>
+        </div>
       </div>
-
-      <Reveal q="What's the deal with Allow / Deny?">
-        Claude Code never silently modifies your machine. Anything that reads, writes, or runs a command
-        asks first. You can grant standing permission for trusted operations.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .trio {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1.2rem 0;
+  }
+  .trio > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.8rem 0.9rem;
+  }
+  .trio h4 { margin: 0 0 0.25rem; font-size: 0.88rem; }
+  .trio p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+  @media (max-width: 600px) { .trio { grid-template-columns: 1fr; } }
+</style>

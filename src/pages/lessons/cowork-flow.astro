@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import CoworkSim from "../../components/CoworkSim.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
@@ -11,44 +10,51 @@ const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
     <LessonShell lesson={lesson}>
-      <p>
-        Below is the Cowork loop in miniature: a task list on the left, the current
-        task on the right. Press <strong>▶ Run all</strong> to watch four tasks
-        execute in parallel, then click into each one to review the diff and merge.
-      </p>
+      <p>Hit <strong>▶ Run all</strong>. Tasks run in parallel. Click each to see the diff. Approve or discard.</p>
 
       <CoworkSim />
 
-      <h2>The four steps, in order</h2>
-      <ol class="steps">
-        <li><strong>Submit.</strong> Each task names a repo and a goal. Keep the scope small — afternoon-sized.</li>
-        <li><strong>Run.</strong> Cowork checks the code into its own sandbox. Tasks don't see each other.</li>
-        <li><strong>Review the diff.</strong> Each finished task shows file changes plus test results.</li>
-        <li><strong>Decide.</strong> Merge, request changes (comment back), or discard.</li>
-      </ol>
-
-      <h2>Writing a good task prompt</h2>
-      <div class="card">
-        <p style="margin-top: 0;"><strong>Three ingredients:</strong></p>
-        <ul>
-          <li><strong>The outcome.</strong> What does "done" look like?</li>
-          <li><strong>Constraints.</strong> "Don't touch the API". "Match the existing style of the settings page."</li>
-          <li><strong>How to verify.</strong> "Tests should still pass." "I should be able to click the toggle and see the colours switch."</li>
-        </ul>
+      <div class="flow">
+        <div><strong>1. Submit</strong><span>Repo + goal. Afternoon-sized.</span></div>
+        <div><strong>2. Run</strong><span>Own sandbox per task.</span></div>
+        <div><strong>3. Review</strong><span>File diff + test results.</span></div>
+        <div><strong>4. Decide</strong><span>Merge / comment / discard.</span></div>
       </div>
 
-      <h2>What Cowork is great at — and not</h2>
+      <h2>A good task prompt names three things</h2>
       <ul>
-        <li><strong>Great at:</strong> small features, bug fixes, refactors with a clear before/after, dependency upgrades, adding tests, documentation passes.</li>
-        <li><strong>Less great at:</strong> "design this product", architectural debates, anything where you'd want to argue back and forth. Use Claude.ai or Claude Code for those.</li>
+        <li><strong>Outcome.</strong> What does "done" look like?</li>
+        <li><strong>Constraints.</strong> "Don't touch the API." "Match the settings page style."</li>
+        <li><strong>Verify.</strong> "Tests pass." "Clicking the toggle switches colours."</li>
       </ul>
-
-      <Reveal q="What if it goes the wrong way?">
-        Click <em>Request changes</em> — Cowork iterates with your feedback. Or discard and start over with a clearer prompt.
-      </Reveal>
-      <Reveal q="Can multiple tasks touch the same file?">
-        Yes — each runs on its own branch. If two PRs end up overlapping, you'll resolve the conflict at merge time, just like with humans.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1.4rem 0;
+  }
+  .flow > div {
+    padding: 0.8rem 0.9rem;
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .flow > div:last-child { border-right: none; }
+  .flow strong { font-size: 0.88rem; }
+  .flow span { font-size: 0.8rem; color: var(--ink-soft); }
+  @media (max-width: 720px) {
+    .flow { grid-template-columns: 1fr 1fr; }
+    .flow > div:nth-child(2) { border-right: none; }
+    .flow > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  }
+</style>

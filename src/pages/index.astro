@@ -2,28 +2,28 @@
 import Layout from "../layouts/Layout.astro";
 import ProgressBar from "../components/ProgressBar.astro";
 import LessonCard from "../components/LessonCard.astro";
+import ProductRow from "../components/ProductRow.astro";
 import { TRACKS, lessonsInTrack } from "../data/curriculum";
 ---
 
-<Layout title="Learn Claude — a friendly tour">
+<Layout title="Learn Claude">
   <main>
-    <p><span class="track-pill">Self-paced · ~55 min total</span></p>
     <h1>A hands-on tour of Claude</h1>
     <p class="lede">
-      Sixteen short lessons across Claude's four products plus the open-source agent ecosystem on top.
-      Each lesson is a faithful, playable imitation of a real UI — drive it here, then drive the real
-      thing with the same muscle memory. End with a capstone where you actually ship a tool.
+      Drive imitations of every Claude product. End with a tool you built.
     </p>
 
-    <div class="card" style="margin-top: 1.2rem;">
+    <ProductRow />
+
+    <div class="card" style="padding: 0.9rem 1rem;">
       <ProgressBar />
-      <div id="continue" style="margin-top: 0.8rem;"></div>
+      <div id="continue" style="margin-top: 0.7rem;"></div>
     </div>
 
     {
       TRACKS.map((t) => (
         <section class="track-section" id={`track-${t.id}`}>
-          <div class="track-header" style={`border-color: ${t.accent}55;`}>
+          <div class="track-header">
             <h2>{t.title}</h2>
             <span class="tagline">{t.tagline}</span>
           </div>
@@ -35,14 +35,6 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
         </section>
       ))
     }
-
-    <div class="divider"></div>
-    <h2>How this works</h2>
-    <ul>
-      <li><strong>Replayable.</strong> Tap "Reset progress" above to start completely fresh — useful for a new joiner on the same device.</li>
-      <li><strong>Resumable.</strong> If you come back later, the tutorial remembers what you've done and offers to continue.</li>
-      <li><strong>Private.</strong> Progress is stored only in your browser. Nothing leaves your machine.</li>
-    </ul>
   </main>
 </Layout>
 
@@ -66,11 +58,8 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     const cur = read();
     document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
       const id = el.dataset.lessonId!;
-      if (cur.done.includes(id)) {
-        el.classList.add("done");
-      } else {
-        el.classList.remove("done");
-      }
+      if (cur.done.includes(id)) el.classList.add("done");
+      else el.classList.remove("done");
     });
   }
 
@@ -82,19 +71,17 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
       c.innerHTML = '<a class="button" href="/lessons/welcome">Start the tour →</a>';
       return;
     }
-    // Find first not-done lesson; fall back to lastVisited.
     const firstUndone = LESSONS_IDS.find((id) => !cur.done.includes(id));
     const target = firstUndone ?? cur.lastVisited;
     if (!target) {
-      c.innerHTML = '<span class="tiny-link">You\'ve completed everything. Nice. Reset above to replay.</span>';
+      c.innerHTML = '<span class="tiny-link">All done. Reset above to replay.</span>';
       return;
     }
     const slug = LESSON_SLUGS[target] ?? "welcome";
-    const label = firstUndone ? "Continue where you left off" : "Revisit your last lesson";
-    c.innerHTML = `<a class="button" href="/lessons/${slug}">${label} →</a>`;
+    const label = firstUndone ? "Continue →" : "Revisit last lesson →";
+    c.innerHTML = `<a class="button" href="/lessons/${slug}">${label}</a>`;
   }
 
-  // Inlined IDs/slugs so we don't ship the whole curriculum module to the client.
   const LESSONS_IDS: string[] = [];
   const LESSON_SLUGS: Record<string, string> = {};
   document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
@@ -104,10 +91,7 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     LESSON_SLUGS[id] = slug;
   });
 
-  window.addEventListener("ct:progress", () => {
-    paintCards();
-    paintContinue();
-  });
+  window.addEventListener("ct:progress", () => { paintCards(); paintContinue(); });
   paintCards();
   paintContinue();
 </script>

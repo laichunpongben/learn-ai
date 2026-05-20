@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import ChatSim from "../../components/ChatSim.astro";
-import Reveal from "../../components/Reveal.astro";
+import ProductRow from "../../components/ProductRow.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "welcome")!;
@@ -10,57 +10,23 @@ const lesson = LESSONS.find((l) => l.id === "welcome")!;
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
+    <LessonShell lesson={lesson} hero="claude">
       <p>
-        Claude is an <strong>AI assistant</strong>. Picture a very well-read, very patient colleague
-        who's always available and never gets annoyed at follow-up questions. You type what you want;
-        it types back. That's the whole product.
-      </p>
-      <p>What changes from one product to the next is the <strong>shape</strong> of "talking to Claude":</p>
-      <ul>
-        <li><strong>Claude.ai</strong> — a chat website. Anywhere with a browser; drag in any file; no install.</li>
-        <li><strong>Claude Code</strong> — a terminal CLI. Reads and edits your project files. The most powerful surface if you're a developer in a project folder.</li>
-        <li><strong>Claude Cowork</strong> — a web dashboard. Hand off small tasks; review the diffs.</li>
-        <li><strong>Claude Design</strong> — a canvas. Describe a screen; see it rendered.</li>
-        <li><strong>Open-source agents</strong> (Hermes, OpenClaw, aider, ...) — third-party tools that wrap Claude for background work, multi-agent setups, or specialized workflows.</li>
-      </ul>
-      <p>
-        These overlap a lot. If you're a developer in a project, you'll reach for Claude Code most of the time —
-        it subsumes what Claude.ai can do for you, and adds reading/writing files and running commands. The
-        capabilities lesson next has an honest "when does each one win?" table.
+        Claude is an AI assistant. You type what you want; it types back.
+        That's the whole product. What changes from one Claude product to the next is the
+        <strong>shape</strong> of "talking to Claude".
       </p>
 
-      <h2>How this tour works</h2>
-      <p>Each lesson is built around a <strong>working imitation of the real product</strong>. You'll drive
-      a fake claude.ai, a fake Claude Code terminal, a fake Cowork dashboard, and a fake Design canvas.
-      The fakes are simple but faithful enough that the real things will feel familiar when you open them.</p>
+      <ProductRow />
 
-      <p>Try the chat imitation now. Click a suggestion below to see it stream a reply (and, for some prompts, open an artifact panel).</p>
-
-      <ChatSim
-        prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip"]}
-      />
+      <h2>Try it</h2>
+      <p>This is an imitation of <code class="inline">claude.ai</code> — drive it like the real thing.</p>
+      <ChatSim prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip"]} />
 
       <div class="callout">
-        <strong>One thing to know up front.</strong> AI assistants can sound confident and still be wrong.
-        Treat Claude as a smart first draft, not a final answer — especially for facts, numbers, code, and anything safety-critical.
+        <strong>One thing to know.</strong> AI assistants can sound confident and still be wrong.
+        Treat Claude as a first draft, not a final answer.
       </div>
-
-      <h2>What you'll be able to do by the end</h2>
-      <ul>
-        <li>Open the right Anthropic product for whichever task is in front of you.</li>
-        <li>Drive each product confidently — the lessons mirror real UIs, so the muscle memory transfers.</li>
-        <li>Build a real tool by the end of the tour (the capstone walks through three options).</li>
-        <li>Understand the open-source agent ecosystem (Hermes, OpenClaw, aider) and set one up if you want to.</li>
-      </ul>
-
-      <Reveal q="Do I need to know how to code?">
-        No. Claude.ai, Cowork, and Design are aimed at anyone who can type. Claude Code and the open-source agents are for people who already write code (or want to learn).
-      </Reveal>
-      <Reveal q="Will I need accounts?">
-        For the tour, no — everything here is a self-contained imitation in your browser. When you go to use the real products,
-        you'll sign in at <code class="inline">claude.ai</code>. Open-source agents need an API key (covered in the agents track).
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>

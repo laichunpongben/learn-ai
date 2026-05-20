@@ -1,0 +1,66 @@
+---
+import ProductIcon from "./ProductIcon.astro";
+
+const items = [
+  { kind: "chat" as const, title: "Claude.ai", sub: "Chat" },
+  { kind: "code" as const, title: "Claude Code", sub: "Terminal" },
+  { kind: "cowork" as const, title: "Cowork", sub: "Parallel" },
+  { kind: "design" as const, title: "Design", sub: "Visual" },
+  { kind: "agents" as const, title: "Open agents", sub: "Hermes / OpenClaw" },
+];
+---
+
+<div class="product-row">
+  {items.map((it) => (
+    <div class="prod">
+      <ProductIcon kind={it.kind} size={48} />
+      <div class="meta">
+        <div class="title">{it.title}</div>
+        <div class="sub">{it.sub}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .product-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+    margin: 1.2rem 0 2rem;
+  }
+  .prod {
+    padding: 1rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    border-right: 1px solid var(--line);
+    text-align: center;
+  }
+  .prod:last-child { border-right: none; }
+  .meta { display: flex; flex-direction: column; gap: 0.1rem; }
+  .title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .sub {
+    font-size: 0.68rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  @media (max-width: 720px) {
+    .product-row { grid-template-columns: 1fr 1fr; }
+    .prod:nth-child(2) { border-right: none; }
+    .prod { border-bottom: 1px solid var(--line); }
+    .prod:nth-last-child(-n+2) { border-bottom: none; }
+  }
+</style>

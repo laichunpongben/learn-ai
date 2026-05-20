@@ -1,131 +1,91 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
+import ProductIcon from "../../components/ProductIcon.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "capabilities")!;
+
+const tiers = [
+  {
+    kind: "chat" as const,
+    title: "Ship today, in chat",
+    items: ["Writing & email", "Analysis of PDFs / CSVs", "Plans & itineraries", "One-page mini-apps", "Diagrams"],
+  },
+  {
+    kind: "code" as const,
+    title: "Build this week",
+    items: ["A personal CLI", "Small websites", "Chrome extensions", "Slack / Discord bots", "Internal dashboards"],
+  },
+  {
+    kind: "agents" as const,
+    title: "Ship in production",
+    items: ["Customer-facing apps", "Agent workflows", "Document pipelines", "Embedded copilots"],
+  },
+];
 ---
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
-      <p>
-        "AI assistant" undersells it. With the four Claude products you can produce
-        <strong>documents, scripts, web pages, prototypes, deployed apps, and end-to-end automations</strong> —
-        without leaving a chat box for most of them.
-      </p>
-      <p>This lesson is the map. Pick the row that fits what you want to make.</p>
+    <LessonShell lesson={lesson} hero="claude">
+      <p>Three ambition levels. Pick the row that matches what you want.</p>
 
-      <h2>Things you can ship today, in a single chat</h2>
-      <div class="card">
-        <p style="margin-top: 0;"><strong>Where:</strong> claude.ai</p>
-        <ul style="margin-bottom: 0;">
-          <li><strong>Writing.</strong> Briefs, emails, ad copy, blog posts, speeches, eulogies, contracts (drafts).</li>
-          <li><strong>Analysis.</strong> Paste a spreadsheet or PDF and ask for trends, summaries, anomalies.</li>
-          <li><strong>Planning.</strong> Trip itineraries, project plans, meeting agendas, budgets.</li>
-          <li><strong>Learning aids.</strong> Flashcards, study guides, lecture summaries, practice problems.</li>
-          <li><strong>One-page apps.</strong> A unit converter, a tip calculator, a personality quiz — runs inside an artifact.</li>
-          <li><strong>Diagrams.</strong> Flowcharts, sequence diagrams, mind maps — exported as images or Mermaid.</li>
-        </ul>
+      <div class="cap-grid">
+        {tiers.map((t) => (
+          <div class="cap-card">
+            <ProductIcon kind={t.kind} size={40} />
+            <h3>{t.title}</h3>
+            <ul>{t.items.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        ))}
       </div>
 
-      <h2>Things you can build this week</h2>
-      <div class="card">
-        <p style="margin-top: 0;"><strong>Where:</strong> Claude Code (terminal) or Claude Design (visual)</p>
-        <ul style="margin-bottom: 0;">
-          <li><strong>A personal CLI.</strong> "Summarize my open browser tabs", "rename these photos by date".</li>
-          <li><strong>A small website.</strong> Portfolio, landing page, event RSVP, small game, family blog.</li>
-          <li><strong>A Chrome extension.</strong> Replace boring buttons, add a "summarize this page" command.</li>
-          <li><strong>A bot.</strong> Slack, Discord, Telegram — answers questions, posts daily summaries.</li>
-          <li><strong>Internal tools.</strong> A dashboard pulling data from a Google Sheet, a form that emails the team.</li>
-          <li><strong>Data pipelines.</strong> "Read this CSV, clean these columns, save as Parquet, plot the result."</li>
-        </ul>
-      </div>
-
-      <h2>Things teams ship in production</h2>
-      <div class="card">
-        <p style="margin-top: 0;"><strong>Where:</strong> Claude API, often coordinated through Claude Code or Cowork</p>
-        <ul style="margin-bottom: 0;">
-          <li><strong>Customer-facing apps</strong> with Claude as the brain — support, tutoring, writing tools, code review.</li>
-          <li><strong>Agent workflows</strong> — Claude reads, decides, calls APIs, writes back results. Think "research bot that emails a digest each morning".</li>
-          <li><strong>Document pipelines</strong> — invoices, contracts, medical records: parsed, classified, summarized at scale.</li>
-          <li><strong>Embedded copilots</strong> inside existing products — a "help me write this" button next to any text field.</li>
-        </ul>
-      </div>
-
-      <h2>The capability cheat-sheet</h2>
-      <p>What can Claude read and produce? Almost any text-shaped thing, plus some non-text:</p>
+      <h2>Which product, when?</h2>
       <table>
         <thead>
-          <tr>
-            <th>Input</th>
-            <th>Output</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Plain text, prose, instructions</td><td>Plain text, prose, structured replies</td></tr>
-          <tr><td>Source code in any language</td><td>Source code, patches, explanations, tests</td></tr>
-          <tr><td>PDFs, Word docs, slides</td><td>Summaries, rewrites, extractions</td></tr>
-          <tr><td>Images (photos, screenshots, charts)</td><td>Descriptions, transcriptions, classifications</td></tr>
-          <tr><td>CSVs, JSON, tables</td><td>Cleaned data, analysis, charts</td></tr>
-          <tr><td>Whole codebases (Claude Code)</td><td>Edits, refactors, new features, working apps</td></tr>
-          <tr><td>A sentence describing UI</td><td>Working HTML/React (Claude Design)</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Honest take: which product should I open?</h2>
-      <p>
-        These products overlap a lot. <strong>Claude Code is the most powerful</strong> — it can do almost
-        everything Claude.ai can, plus everything Claude.ai can't (read your files, run your tests, edit
-        a real project). For a developer in a project folder, it's the default. Claude.ai's real edge is
-        narrower than the marketing suggests:
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Situation</th>
-            <th>Open</th>
-          </tr>
+          <tr><th>Situation</th><th>Open</th></tr>
         </thead>
         <tbody>
           <tr><td>In a project folder, touching code</td><td><strong>Claude Code</strong></td></tr>
-          <tr><td>Long-running chores against a repo (and you don't want to babysit)</td><td><strong>Claude Cowork</strong></td></tr>
-          <tr><td>Needs to look like something visual</td><td><strong>Claude Design</strong></td></tr>
-          <tr><td>On phone / tablet / someone else's laptop</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>Need to drop in a PDF / image / spreadsheet that isn't in any repo</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>A non-developer (spouse, manager, parent) needs to use it</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>Want a persistent "custom assistant" with knowledge files (projects feature)</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>Want to share a chat link with someone</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>No paid plan yet</td><td><strong>Claude.ai</strong> (free tier)</td></tr>
-          <tr><td>Embedding Claude into your own product</td><td><strong>Claude API</strong></td></tr>
-          <tr><td>Want a background daemon with persistent memory</td><td><strong>Hermes / OpenClaw</strong></td></tr>
+          <tr><td>Long chores against a repo</td><td><strong>Cowork</strong></td></tr>
+          <tr><td>Needs to look visual</td><td><strong>Design</strong></td></tr>
+          <tr><td>Phone / tablet / someone else's laptop</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>Drop in a PDF or screenshot</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>A non-developer needs to use it</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>Persistent assistant with knowledge files</td><td><strong>Claude.ai</strong> (Projects)</td></tr>
+          <tr><td>Background daemon with memory</td><td><strong>Hermes / OpenClaw</strong></td></tr>
+          <tr><td>Embedding in your own product</td><td><strong>Claude API</strong></td></tr>
         </tbody>
       </table>
-      <p>
-        Phrased differently: if you have a terminal open in the right folder, you'll usually reach for Claude Code.
-        The other products exist for the cases where you <em>don't</em> — or where the work isn't about code at all.
+
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        If you have a terminal open in the right folder, Claude Code wins most of the time. The other products
+        cover the cases where you don't — or where the work isn't about code.
       </p>
-
-      <div class="callout">
-        <strong>Permission to start small.</strong> Most useful tools are tiny — a 30-line script, a one-page site,
-        a Claude.ai project with a good system prompt. You don't need a grand vision. You need one thing
-        you'd find slightly annoying to do by hand.
-      </div>
-
-      <h2>Where to find prompts you can just copy</h2>
-      <p>The <a href="/cookbook">Cookbook</a> page has copy-paste starter prompts organized by goal —
-      writing, coding, web, automation, design. When you finish the tour, that's your launchpad.</p>
-
-      <Reveal q="Do I need a paid plan?">
-        Most of what's in "today" works on a free Claude.ai account. Heavy use, very long files, and Claude Code
-        usage tend to lead people to a paid plan. Start free; upgrade when you hit a limit you care about.
-      </Reveal>
-      <Reveal q="What can Claude not do?">
-        Real-time anything (live trading, current sports scores) unless you give it tools to fetch. It also
-        can't take physical actions or sign legal documents. And it should not be the only check on
-        anything safety-critical — medical, legal, financial decisions need a human in the loop.
-      </Reveal>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .cap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1rem 0 1.6rem;
+  }
+  .cap-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .cap-card h3 { margin: 0.2rem 0 0.15rem; font-size: 0.95rem; }
+  .cap-card ul { margin: 0; padding-left: 1rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .cap-card li { margin: 0.1rem 0; }
+  @media (max-width: 720px) {
+    .cap-grid { grid-template-columns: 1fr; }
+  }
+</style>

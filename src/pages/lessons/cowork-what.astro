@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import Reveal from "../../components/Reveal.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
@@ -9,51 +8,62 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 
 <Layout title={`${lesson.title} · Learn Claude`}>
   <main>
-    <LessonShell lesson={lesson}>
-      <p>
-        <strong>Claude Cowork</strong> is for running many tasks at once, in the background.
-        Instead of opening a terminal and watching one conversation, you submit work from a webpage
-        and come back later to review the results.
-      </p>
+    <LessonShell lesson={lesson} hero="cowork">
+      <p>Cowork runs many tasks at once, in the background. You submit, step away, come back to diffs.</p>
 
-      <h2>The mental shift</h2>
-      <ul>
-        <li><strong>Claude Code = pair programming.</strong> You and Claude work on the same thing, together, in real time.</li>
-        <li><strong>Claude Cowork = delegating.</strong> "Fix this bug. Add this small feature. Update these dependencies." Each goes off and works on its own; you check in when convenient.</li>
-      </ul>
-
-      <h2>Why this is useful</h2>
-      <ul>
-        <li><strong>Small chores add up.</strong> Eight 15-minute fixes done in parallel = two hours saved.</li>
-        <li><strong>No context-switching cost for you.</strong> You stay focused on the hard problem.</li>
-        <li><strong>Each task is isolated.</strong> One task's experiments can't break another's.</li>
-      </ul>
-
-      <h2>A worked example</h2>
-      <div class="card">
-        <p style="margin-top: 0;"><strong>Monday morning.</strong> You open Cowork on the web and submit three tasks against your project:</p>
-        <ol>
-          <li>"Bump all dependencies to their latest minor versions and run tests."</li>
-          <li>"Add a loading spinner to the upload form."</li>
-          <li>"The footer is missing a copyright year — fix it."</li>
-        </ol>
-        <p>Each task spins up its own copy of your project (a sandboxed branch). Claude works on each in parallel.</p>
-        <p style="margin-bottom: 0;"><strong>After your coffee:</strong> three pull requests are waiting. You skim each, merge the good ones, comment on the one that misunderstood, and move on.</p>
+      <div class="vs">
+        <div>
+          <h3>Claude Code</h3>
+          <p>Pair programming. You and Claude on the same thing, together, in real time.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div>
+          <h3>Cowork</h3>
+          <p>Delegation. Many tasks in parallel sandboxes. You review when convenient.</p>
+        </div>
       </div>
 
-      <div class="callout">
-        <strong>Think "interns, not contractors".</strong> Cowork is best at well-scoped tasks with clear success criteria.
-        For ambiguous, design-heavy work, sit down with it in Claude Code instead.
-      </div>
+      <h2>Best for</h2>
+      <ul>
+        <li>Small features, bug fixes, dependency bumps</li>
+        <li>Refactors with a clear before/after</li>
+        <li>Documentation passes, test additions</li>
+      </ul>
 
-      <Reveal q="Where does Cowork run?">
-        On Anthropic's infrastructure — your code is checked out into a temporary sandbox, the work happens there,
-        and you get a diff/PR back. Your local machine isn't involved.
-      </Reveal>
-      <Reveal q="Does it need GitHub?">
-        It works most naturally with a git host (GitHub or similar) because tasks come back as pull requests.
-        Connect your repo once, then submit tasks at will.
-      </Reveal>
+      <h2>Not for</h2>
+      <ul>
+        <li>"Design this product" — ambiguous, design-heavy work</li>
+        <li>Architectural debates that need conversation</li>
+      </ul>
     </LessonShell>
   </main>
 </Layout>
+
+<style>
+  .vs {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0.5rem;
+    align-items: stretch;
+    margin: 1.2rem 0 1.6rem;
+  }
+  .vs > div:not(.arrow) {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  .vs h3 { margin: 0 0 0.3rem; font-size: 0.95rem; }
+  .vs p { margin: 0; color: var(--ink-soft); font-size: 0.88rem; }
+  .vs .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 1.4rem;
+  }
+  @media (max-width: 600px) {
+    .vs { grid-template-columns: 1fr; }
+    .vs .arrow { transform: rotate(90deg); margin: -0.3rem auto; }
+  }
+</style>
