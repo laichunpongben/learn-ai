@@ -41,9 +41,6 @@ const reply = await client.messages.create({
   messages: [{ role: "user", content: "Say hello in one sentence." }],
 });
 console.log((reply.content[0] as any).text);`;
-
-const codeBlockStyle =
-  "background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.82rem; overflow: auto; line-height: 1.5;";
 ---
 
 <Layout title={`${lesson.title} · Learn Claude`}>
@@ -65,13 +62,13 @@ const codeBlockStyle =
       <h2>One call, in three languages</h2>
 
       <h3>Bash (curl)</h3>
-      <pre style={codeBlockStyle}>{curlExample}</pre>
+      <pre>{curlExample}</pre>
 
       <h3>Python (with the SDK)</h3>
-      <pre style={codeBlockStyle}>{pythonExample}</pre>
+      <pre>{pythonExample}</pre>
 
       <h3>TypeScript (with the SDK)</h3>
-      <pre style={codeBlockStyle}>{tsExample}</pre>
+      <pre>{tsExample}</pre>
 
       <h2>The shape of every "set up Claude in tool X"</h2>
       <p>Once you've seen one, you've seen them all. Every open-source agent's setup boils down to:</p>
@@ -83,17 +80,17 @@ const codeBlockStyle =
       <p>That's the whole game. Hermes? Same three steps. OpenClaw? Same three steps. Aider? Same three steps.</p>
 
       <h2>Models worth knowing</h2>
-      <table style="width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.92rem;">
+      <table>
         <thead>
-          <tr style="background: var(--surface-2);">
-            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">Model</th>
-            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">When to use</th>
+          <tr>
+            <th>Model</th>
+            <th>When to use</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);"><code class="inline">claude-haiku-4-5</code></td><td style="padding: 0.5rem; border: 1px solid var(--line);">Fastest + cheapest. Routine tasks, classification, simple lookups.</td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);"><code class="inline">claude-sonnet-4-6</code></td><td style="padding: 0.5rem; border: 1px solid var(--line);">Default. Best balance for code, writing, agents.</td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);"><code class="inline">claude-opus-4-7</code></td><td style="padding: 0.5rem; border: 1px solid var(--line);">Heaviest reasoning. Architecture, research, gnarly debugging.</td></tr>
+          <tr><td><code class="inline">claude-haiku-4-5</code></td><td>Fastest + cheapest. Routine tasks, classification, simple lookups.</td></tr>
+          <tr><td><code class="inline">claude-sonnet-4-6</code></td><td>Default. Best balance for code, writing, agents.</td></tr>
+          <tr><td><code class="inline">claude-opus-4-7</code></td><td>Heaviest reasoning. Architecture, research, gnarly debugging.</td></tr>
         </tbody>
       </table>
 

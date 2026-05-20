@@ -38,91 +38,105 @@ const { cwd = "~/my-project" } = Astro.props;
 
 <style>
   .term-app {
-    background: #1c1916;
-    color: #e8dec8;
+    background: #0d0d0d;
+    color: #e5e5e5;
     border-radius: var(--radius);
-    margin: 1.4rem 0;
-    box-shadow: var(--shadow);
+    margin: 1.6rem 0;
     font-family: var(--mono);
-    font-size: 0.86rem;
+    font-size: 0.82rem;
     overflow: hidden;
     position: relative;
+    border: 1px solid #1f1f1f;
   }
   .term-head {
-    background: #2a2521;
-    padding: 0.5rem 0.8rem;
+    background: #1a1a1a;
+    padding: 0.45rem 0.8rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    border-bottom: 1px solid #322b25;
+    border-bottom: 1px solid #1f1f1f;
   }
   .term-head .dot {
-    width: 11px; height: 11px; border-radius: 50%;
+    width: 10px; height: 10px; border-radius: 50%;
   }
-  .term-head .dot.red { background: #ff5f56; }
-  .term-head .dot.yellow { background: #ffbd2e; }
-  .term-head .dot.green { background: #27c93f; }
+  .term-head .dot.red { background: #ff5f57; }
+  .term-head .dot.yellow { background: #febc2e; }
+  .term-head .dot.green { background: #28c840; }
   .term-head .tt {
     margin-left: 0.7rem;
-    color: #b6ad9b;
-    font-size: 0.78rem;
+    color: #888;
+    font-size: 0.74rem;
+    font-family: var(--sans);
+    font-weight: 500;
   }
   .term-body {
-    padding: 0.9rem 1rem 0.4rem;
-    min-height: 200px;
-    max-height: 360px;
+    padding: 0.95rem 1.05rem 0.5rem;
+    min-height: 220px;
+    max-height: 380px;
     overflow: auto;
     white-space: pre-wrap;
+    line-height: 1.55;
   }
   .line { margin: 0.05rem 0; }
-  .line.you { color: #f4d8c8; }
-  .line.you::before { content: "› "; color: #f0a05a; }
-  .line.cmd { color: #f0c594; }
-  .line.cmd::before { content: "› "; color: #f0a05a; }
-  .line.out { color: #c9bfa9; }
-  .line.out.muted { color: #847a68; }
-  .line.tool { color: #9ec4a7; }
+  .line.you { color: #e5e5e5; }
+  .line.you::before { content: "› "; color: #cc5500; }
+  .line.cmd { color: #d4b876; }
+  .line.cmd::before { content: "› "; color: #cc5500; }
+  .line.out { color: #a3a3a3; }
+  .line.out.muted { color: #5a5a5a; }
+  .line.tool { color: #7fb87a; }
   .line.tool::before { content: "● "; }
-  .line.error { color: #e88a76; }
-  .line.assistant { color: #e8dec8; }
+  .line.error { color: #e07b6a; }
+  .line.assistant { color: #e5e5e5; }
   .approve {
-    margin: 0.4rem 0;
-    background: #25201c;
-    border: 1px solid #3c352e;
-    border-radius: 8px;
-    padding: 0.5rem 0.7rem;
+    margin: 0.5rem 0;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 0.55rem 0.75rem;
   }
-  .approve .head { color: #f0a05a; font-weight: 600; margin-bottom: 0.3rem; }
-  .approve .body { color: #c9bfa9; }
+  .approve .head {
+    color: #cc5500;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .approve .body { color: #d4d4d4; }
   .approve .actions {
-    margin-top: 0.4rem;
+    margin-top: 0.5rem;
     display: flex;
     gap: 0.4rem;
   }
   .approve button {
-    background: #322b25;
-    color: #e8dec8;
-    border: 1px solid #4a4036;
-    border-radius: 6px;
-    padding: 0.15rem 0.6rem;
+    background: transparent;
+    color: #e5e5e5;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 0.2rem 0.7rem;
     font: inherit;
+    font-family: var(--sans);
+    font-size: 0.78rem;
     cursor: pointer;
+    font-weight: 500;
   }
-  .approve button.allow { background: #2f4a35; border-color: #426b4d; color: #cfe5d4; }
-  .approve button.deny { background: #3a2522; border-color: #5a3631; color: #ecc7bf; }
+  .approve button.allow:hover { background: #1f4129; border-color: #2d6b3f; color: #aae0b2; }
+  .approve button.deny:hover { background: #3f1f1f; border-color: #6b2d2d; color: #e0aaaa; }
   .prompt-row {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.5rem 1rem 0.7rem;
-    border-top: 1px solid #322b25;
-    background: #1a1714;
+    padding: 0.55rem 1.05rem 0.75rem;
+    border-top: 1px solid #1f1f1f;
+    background: #0a0a0a;
   }
   .prompt-row .cwd {
-    color: #9ec4a7;
+    color: #7fb87a;
     font-size: 0.78rem;
   }
-  .prompt-row .caret { color: #f0a05a; }
+  .prompt-row .caret { color: #cc5500; }
   .prompt-row input {
     background: transparent;
     border: none;
@@ -130,33 +144,34 @@ const { cwd = "~/my-project" } = Astro.props;
     color: inherit;
     font: inherit;
     flex: 1;
-    caret-color: var(--accent);
+    caret-color: #cc5500;
   }
+  .prompt-row input::placeholder { color: #5a5a5a; }
   .menu {
     display: none;
     position: absolute;
     bottom: 50px;
     left: 1rem;
     right: 1rem;
-    background: #25201c;
-    border: 1px solid #3c352e;
-    border-radius: 8px;
-    padding: 0.35rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 0.3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
   .menu.open { display: block; }
   .menu-row {
     display: grid;
     grid-template-columns: 110px 1fr;
     gap: 0.6rem;
-    padding: 0.3rem 0.5rem;
+    padding: 0.35rem 0.55rem;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
-  .menu-row code { color: #f0c594; }
-  .menu-row span { color: #9a907e; }
-  .menu-row.sel { background: #322b25; }
+  .menu-row code { color: #d4b876; font-family: var(--mono); background: transparent; border: none; padding: 0; }
+  .menu-row span { color: #a3a3a3; font-family: var(--sans); font-size: 0.78rem; }
+  .menu-row.sel { background: #262626; }
 </style>
 
 <script>

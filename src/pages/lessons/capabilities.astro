@@ -56,21 +56,21 @@ const lesson = LESSONS.find((l) => l.id === "capabilities")!;
 
       <h2>The capability cheat-sheet</h2>
       <p>What can Claude read and produce? Almost any text-shaped thing, plus some non-text:</p>
-      <table style="width: 100%; border-collapse: collapse; margin: 0.6rem 0;">
+      <table>
         <thead>
-          <tr style="background: var(--surface-2);">
-            <th style="text-align: left; padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Input</th>
-            <th style="text-align: left; padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Output</th>
+          <tr>
+            <th>Input</th>
+            <th>Output</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Plain text, prose, instructions</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Plain text, prose, structured replies</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Source code in any language</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Source code, patches, explanations, tests</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">PDFs, Word docs, slides</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Summaries, rewrites, extractions</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Images (photos, screenshots, charts)</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Descriptions, transcriptions, classifications</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">CSVs, JSON, tables</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Cleaned data, analysis, charts</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Whole codebases (Claude Code)</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Edits, refactors, new features, working apps</td></tr>
-          <tr><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">A sentence describing UI</td><td style="padding: 0.5rem 0.7rem; border: 1px solid var(--line);">Working HTML/React (Claude Design)</td></tr>
+          <tr><td>Plain text, prose, instructions</td><td>Plain text, prose, structured replies</td></tr>
+          <tr><td>Source code in any language</td><td>Source code, patches, explanations, tests</td></tr>
+          <tr><td>PDFs, Word docs, slides</td><td>Summaries, rewrites, extractions</td></tr>
+          <tr><td>Images (photos, screenshots, charts)</td><td>Descriptions, transcriptions, classifications</td></tr>
+          <tr><td>CSVs, JSON, tables</td><td>Cleaned data, analysis, charts</td></tr>
+          <tr><td>Whole codebases (Claude Code)</td><td>Edits, refactors, new features, working apps</td></tr>
+          <tr><td>A sentence describing UI</td><td>Working HTML/React (Claude Design)</td></tr>
         </tbody>
       </table>
 
@@ -81,25 +81,25 @@ const lesson = LESSONS.find((l) => l.id === "capabilities")!;
         a real project). For a developer in a project folder, it's the default. Claude.ai's real edge is
         narrower than the marketing suggests:
       </p>
-      <table style="width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.92rem;">
+      <table>
         <thead>
-          <tr style="background: var(--surface-2);">
-            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">Situation</th>
-            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">Open</th>
+          <tr>
+            <th>Situation</th>
+            <th>Open</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">In a project folder, touching code</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Code</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Long-running chores against a repo (and you don't want to babysit)</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Cowork</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Needs to look like something visual</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Design</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">On phone / tablet / someone else's laptop</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Need to drop in a PDF / image / spreadsheet that isn't in any repo</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">A non-developer (spouse, manager, parent) needs to use it</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want a persistent "custom assistant" with knowledge files (projects feature)</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want to share a chat link with someone</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">No paid plan yet</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong> (free tier)</td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Embedding Claude into your own product</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude API</strong></td></tr>
-          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want a background daemon with persistent memory</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Hermes / OpenClaw</strong></td></tr>
+          <tr><td>In a project folder, touching code</td><td><strong>Claude Code</strong></td></tr>
+          <tr><td>Long-running chores against a repo (and you don't want to babysit)</td><td><strong>Claude Cowork</strong></td></tr>
+          <tr><td>Needs to look like something visual</td><td><strong>Claude Design</strong></td></tr>
+          <tr><td>On phone / tablet / someone else's laptop</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>Need to drop in a PDF / image / spreadsheet that isn't in any repo</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>A non-developer (spouse, manager, parent) needs to use it</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>Want a persistent "custom assistant" with knowledge files (projects feature)</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>Want to share a chat link with someone</td><td><strong>Claude.ai</strong></td></tr>
+          <tr><td>No paid plan yet</td><td><strong>Claude.ai</strong> (free tier)</td></tr>
+          <tr><td>Embedding Claude into your own product</td><td><strong>Claude API</strong></td></tr>
+          <tr><td>Want a background daemon with persistent memory</td><td><strong>Hermes / OpenClaw</strong></td></tr>
         </tbody>
       </table>
       <p>

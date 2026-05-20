@@ -22,7 +22,7 @@ const lesson = LESSONS.find((l) => l.id === "ship-it")!;
         <li>Go to <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> and click <strong>Projects → New project</strong>.</li>
         <li>Name it "My writing partner". For description: "Helps me turn rough notes into clean prose."</li>
         <li>In <strong>Custom instructions</strong>, paste:
-          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">You are my writing partner. When I paste rough notes, you produce three things:
+          <pre>You are my writing partner. When I paste rough notes, you produce three things:
 1. A clean version in my voice — direct, no jargon, no corporate puffery.
 2. A one-sentence summary I can use as a subject line or headline.
 3. Two alternative versions (shorter, more formal) so I can pick.
@@ -38,7 +38,7 @@ Always ask one clarifying question if context is missing.</pre>
       <ol class="steps">
         <li>Go to <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>. Start a new chat (you can use the Design product later for fancier UI, but chat-artifacts work great for v1).</li>
         <li>Paste a prompt like:
-          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">Build a single-page website for me. Self-contained HTML (style and JS inline, no external files).
+          <pre>Build a single-page website for me. Self-contained HTML (style and JS inline, no external files).
 
 Purpose: a one-page "what I'm working on" portfolio.
 Sections: short intro, three projects with title + one-line description, a contact link.
@@ -57,7 +57,7 @@ Constraint: works offline, no external assets.</pre>
         <li>Finish the <a href="/lessons/code-install">install lesson</a> if you haven't yet.</li>
         <li>In your terminal: <code class="inline">mkdir photo-renamer && cd photo-renamer</code></li>
         <li>Run <code class="inline">claude</code>. At the prompt, paste:
-          <pre style="background: var(--surface-2); padding: 0.75rem 0.9rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap;">Write a Python script `rename.py` that:
+          <pre>Write a Python script `rename.py` that:
 - Takes one argument: a folder path.
 - Finds all .jpg/.jpeg/.png files in that folder.
 - Reads each file's EXIF date (fallback to file mtime).

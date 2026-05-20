@@ -26,13 +26,13 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
       <ol class="steps">
         <li>Open Claude Code in any project folder: <code class="inline">claude</code></li>
         <li>Add the Hermes plugin marketplace:
-          <pre style="background: var(--surface-2); padding: 0.6rem 0.85rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; margin: 0.4rem 0;">/plugin marketplace add sypsyp97/claude-hermes</pre>
+          <pre>/plugin marketplace add sypsyp97/claude-hermes</pre>
         </li>
         <li>Install:
-          <pre style="background: var(--surface-2); padding: 0.6rem 0.85rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; margin: 0.4rem 0;">/plugin install claude-hermes@claude-hermes</pre>
+          <pre>/plugin install claude-hermes@claude-hermes</pre>
         </li>
         <li>Start the daemon and walk through the setup wizard:
-          <pre style="background: var(--surface-2); padding: 0.6rem 0.85rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem; margin: 0.4rem 0;">/claude-hermes:start</pre>
+          <pre>/claude-hermes:start</pre>
           <p>The wizard asks about: model, heartbeat interval, Telegram/Discord bots (optional), security pin. Hermes uses Claude Code's existing credentials, so no separate API key needed for this path.</p>
         </li>
         <li>That's it. Hermes is now running in the background. Try sending it a task from within Claude Code, or message your Telegram/Discord bot if you set one up.</li>
@@ -40,14 +40,14 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
 
       <h2>Path B · Standalone install</h2>
       <p>On Linux, macOS, or WSL2:</p>
-      <pre style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem; line-height: 1.5;">curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</pre>
+      <pre>curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</pre>
       <p>The installer offers to install <strong>Bun</strong> (the only runtime dependency) if it's missing.</p>
 
       <p>Then set up your API key:</p>
-      <pre style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">echo "ANTHROPIC_API_KEY=sk-ant-…" &gt;&gt; ~/.hermes/.env</pre>
+      <pre>echo "ANTHROPIC_API_KEY=sk-ant-…" &gt;&gt; ~/.hermes/.env</pre>
 
       <p>Pick a model:</p>
-      <pre style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">hermes model      # interactive picker
+      <pre>hermes model      # interactive picker
 # or
 hermes chat --provider anthropic --model claude-sonnet-4-6</pre>
 
@@ -68,7 +68,7 @@ hermes chat --provider anthropic --model claude-sonnet-4-6</pre>
 
       <h2>What about OpenClaw?</h2>
       <p>Same shape, different defaults. If you want a runtime that coordinates multiple coding CLIs as one (Claude Code + Codex + Cursor Agent under one orchestrator), OpenClaw is the route. Setup boils down to:</p>
-      <pre style="background: var(--surface-2); padding: 0.6rem 0.85rem; border-radius: 8px; font-family: var(--mono); font-size: 0.85rem;">npm install -g openclaw      # or the install script from the docs
+      <pre>npm install -g openclaw      # or the install script from the docs
 openclaw init
 export ANTHROPIC_API_KEY=sk-ant-…
 openclaw run</pre>

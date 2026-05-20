@@ -17,7 +17,7 @@ const lesson = LESSONS.find((l) => l.id === "code-install")!;
 
       <h2>1. Install</h2>
       <p>The simplest way is via npm (which comes with Node.js). In your terminal:</p>
-      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">npm install -g @anthropic-ai/claude-code</pre>
+      <pre>npm install -g @anthropic-ai/claude-code</pre>
       <p>The <code class="inline">-g</code> means "install globally so I can run <code class="inline">claude</code> from anywhere".</p>
 
       <Reveal q="I don't have Node.js installed.">
@@ -29,12 +29,12 @@ const lesson = LESSONS.find((l) => l.id === "code-install")!;
 
       <h2>2. Sign in</h2>
       <p>Open a terminal and type:</p>
-      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">claude</pre>
+      <pre>claude</pre>
       <p>A browser window opens for you to log in to your Anthropic account. That's the once-per-machine step.</p>
 
       <h2>3. Your first prompt</h2>
       <p><code class="inline">cd</code> into a folder you want to work in, then run <code class="inline">claude</code> again. You'll see a prompt:</p>
-      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">› _</pre>
+      <pre>› _</pre>
       <p>Type something. A few first prompts to try:</p>
       <ul>
         <li><em>"What does this project do? Read README and main entry files."</em></li>
