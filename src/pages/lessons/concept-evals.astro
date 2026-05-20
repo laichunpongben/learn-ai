@@ -1,0 +1,130 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-evals")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-evals">
+  <main>
+    <LessonShell lesson={lesson} hero="claude">
+      <p>
+        "The model usually gets it right" is fine for a chat with yourself. It's not fine when the
+        model is writing emails to customers, classifying medical notes, or routing payments.
+        <strong>Evals</strong> — short for evaluations — are how you find out, with numbers,
+        whether the model does what you actually need.
+      </p>
+
+      <h2>What an eval actually is</h2>
+      <p>An eval is three things:</p>
+      <ol class="steps">
+        <li>A <strong>dataset</strong> of inputs your real users send (or close to it).</li>
+        <li>A <strong>grader</strong> that decides whether each output is good — code, a rubric, or another model.</li>
+        <li>A <strong>score</strong> — pass rate, F1, average grade, whatever your stakeholders care about.</li>
+      </ol>
+      <p>
+        Run the model on the dataset. Run the grader on the outputs. Look at the score.
+        Change the prompt / model / pipeline. Run again. Did the score go up or down?
+      </p>
+
+      <h2>The four grader types, in increasing cost</h2>
+      <table>
+        <thead>
+          <tr><th>Grader</th><th>When to use</th><th>Cost</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Exact match</strong></td>
+            <td>"Did it return JSON with the right keys?" "Is the answer in this set of allowed values?"</td>
+            <td>~0</td>
+          </tr>
+          <tr>
+            <td><strong>Pattern / regex</strong></td>
+            <td>"Does the email contain a subject line?" "Is there a phone number in the output?"</td>
+            <td>~0</td>
+          </tr>
+          <tr>
+            <td><strong>LLM-as-judge</strong></td>
+            <td>"Rate this reply 1–5 for warmth and accuracy."</td>
+            <td>~1 model call per item</td>
+          </tr>
+          <tr>
+            <td><strong>Human review</strong></td>
+            <td>Subjective, high-stakes, or first-time-seen task</td>
+            <td>The most expensive but the truest</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        Use the cheapest grader that works. Most teams start with exact-match (was the JSON valid?)
+        before reaching for LLM-as-judge. Always sample a few items for human review — graders themselves can be wrong.
+      </p>
+
+      <h2>How to assemble a good dataset</h2>
+      <ul>
+        <li><strong>Start with 20 examples.</strong> Real ones, from logs if possible. 20 is enough to spot 80% of regressions; more is better but later.</li>
+        <li><strong>Include edge cases.</strong> Empty inputs. Adversarial inputs. Multilingual. Sarcasm. The longest one a user actually sent.</li>
+        <li><strong>Include positives <em>and</em> negatives.</strong> "Should refuse" cases matter as much as "should comply" cases.</li>
+        <li><strong>Hand-label expected outputs.</strong> 30 minutes of careful labelling beats 10,000 auto-generated examples.</li>
+        <li><strong>Version it.</strong> Treat the eval set like code. Diff it. Review changes. Don't silently edit the ground truth when the model fails.</li>
+      </ul>
+
+      <h2>The flywheel</h2>
+      <div class="card">
+        <ol style="margin: 0; padding-left: 1.1rem;">
+          <li><strong>User complaint or logged failure</strong> → add as eval case.</li>
+          <li>Change the prompt / model / tool to fix it.</li>
+          <li>Re-run the eval set. Score must go up <em>without</em> regressing other cases.</li>
+          <li>Ship. Watch new logs. Add new failures. Repeat.</li>
+        </ol>
+      </div>
+
+      <h2>Tools to know (2026)</h2>
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>What it is</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><a href="https://github.com/openai/evals" target="_blank" rel="noopener">OpenAI Evals</a></td><td>The original framework. Lots of patterns for offline batch evals.</td></tr>
+          <tr><td><a href="https://docs.anthropic.com" target="_blank" rel="noopener">Anthropic Workbench</a></td><td>Compare prompts head-to-head against test cases, in-console.</td></tr>
+          <tr><td><a href="https://www.promptlayer.com" target="_blank" rel="noopener">PromptLayer</a> · <a href="https://langfuse.com" target="_blank" rel="noopener">Langfuse</a> · <a href="https://www.langwatch.ai" target="_blank" rel="noopener">LangWatch</a></td><td>SaaS observability + eval platforms.</td></tr>
+          <tr><td><a href="https://github.com/promptfoo/promptfoo" target="_blank" rel="noopener">promptfoo</a></td><td>Open-source CLI for prompt regression testing. Easy to drop into CI.</td></tr>
+          <tr><td><a href="https://github.com/Arize-ai/phoenix" target="_blank" rel="noopener">Phoenix</a> · <a href="https://www.braintrust.dev" target="_blank" rel="noopener">Braintrust</a></td><td>Trace + eval, end-to-end for agent pipelines.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>The eval mindset, in one paragraph</h2>
+      <div class="callout">
+        Treat the prompt and the model as <em>variables</em> in an experiment. Treat the eval set as
+        the <em>fixed measuring instrument</em>. Change one variable, measure the score, decide.
+        If you can't draw a chart of score-over-time, you're not really iterating — you're vibe-coding
+        on the model.
+      </div>
+
+      <h2>Common mistakes</h2>
+      <ul>
+        <li><strong>Testing on the examples you wrote into the prompt.</strong> They will pass. Test on examples you've never shown the model.</li>
+        <li><strong>One pass/fail score.</strong> Slice by input type — short / long / edge-case — or you'll miss a regression on one slice while another improves.</li>
+        <li><strong>LLM judge that's the same model as the producer.</strong> Self-grading is biased; use a different model (and ideally a smaller one) for judging.</li>
+        <li><strong>Drifting ground truth.</strong> When the model fails a case, don't "fix" the eval by relaxing the expected output. Fix the prompt.</li>
+      </ul>
+
+      <Reveal q="Do I need evals if my use case is just my personal projects?">
+        Not really — your own judgment is the grader. The moment another human relies on your AI's
+        output, or you can't review every output by hand, you need evals.
+      </Reveal>
+      <Reveal q="How is this different from regular software testing?">
+        Two real differences. (1) The same input can give different outputs (non-determinism), so your
+        grader must tolerate variance — graders score quality, not exact equality. (2) Failures are
+        usually about <em>quality</em> rather than crashes, so you need humans (or LLMs) judging open-ended outputs.
+      </Reveal>
+      <Reveal q="What about benchmarks like MMLU or HumanEval?">
+        Public benchmarks measure model capability in general. <strong>Your eval set</strong>
+        measures <em>your</em> system's quality on <em>your</em> task. A model that crushes MMLU can
+        still fail your eval if your task is unusual. Build your own.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

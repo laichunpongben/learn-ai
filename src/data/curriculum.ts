@@ -151,6 +151,15 @@ export const LESSONS: Lesson[] = [
     track: "concepts",
   },
   {
+    id: "concept-evals",
+    slug: "concept-evals",
+    title: "Evals — knowing your AI actually works",
+    blurb:
+      "How to test AI output beyond 'looks fine to me'. The boring practice that separates hobby from production.",
+    minutes: 5,
+    track: "concepts",
+  },
+  {
     id: "chat-first",
     slug: "chat-first",
     title: "Drive a chat assistant",
