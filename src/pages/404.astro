@@ -23,10 +23,10 @@ const trackCount = TRACKS.length;
       You can search ({trackCount} tracks · {totalLessons} lessons), or pick one of these:
     </p>
 
-    <div class="four04-grid">
+    <div class="suggestions-grid">
       {
         suggestions.map((s) => (
-          <a class="four04-card" href={s.href}>
+          <a class="suggestions-card" href={s.href}>
             <h3>{s.title}</h3>
             <p>{s.blurb}</p>
             <span class="go">Open →</span>
@@ -43,16 +43,13 @@ const trackCount = TRACKS.length;
 </Layout>
 
 <style>
-  .four04-grid {
+  .suggestions-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 0.6rem;
     margin: 1.4rem 0 0;
   }
-  @media (max-width: 600px) {
-    .four04-grid { grid-template-columns: 1fr; }
-  }
-  .four04-card {
+  .suggestions-card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -63,11 +60,11 @@ const trackCount = TRACKS.length;
     flex-direction: column;
     gap: 0.3rem;
   }
-  .four04-card:hover {
+  .suggestions-card:hover {
     border-color: var(--ink);
     text-decoration: none;
   }
-  .four04-card h3 { margin: 0; font-size: 1rem; font-weight: 600; }
-  .four04-card p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; flex: 1; }
-  .four04-card .go { margin-top: 0.4rem; font-size: 0.84rem; color: var(--accent); font-weight: 500; }
+  .suggestions-card h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+  .suggestions-card p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; flex: 1; }
+  .suggestions-card .go { margin-top: 0.4rem; font-size: 0.84rem; color: var(--accent); font-weight: 500; }
 </style>
