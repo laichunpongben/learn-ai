@@ -149,23 +149,13 @@ const { currentId } = Astro.props;
 </style>
 
 <script>
-  const KEY = "learn-ai.progress.v1";
-  function read() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return { done: [] };
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed.done)) return { done: [] };
-      return parsed;
-    } catch { return { done: [] }; }
-  }
+  import { getDone } from "../scripts/progress";
+
   function paint() {
-    const cur = read();
-    document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]").forEach((a) => {
-      const id = a.dataset.lessonId;
-      if (id && cur.done.includes(id)) a.classList.add("done");
-      else a.classList.remove("done");
-    });
+    const done = new Set(getDone());
+    for (const a of document.querySelectorAll<HTMLAnchorElement>("[data-lesson-link]")) {
+      a.classList.toggle("done", !!a.dataset.lessonId && done.has(a.dataset.lessonId));
+    }
   }
   window.addEventListener("ct:progress", paint);
   paint();

@@ -31,6 +31,11 @@ function write(next: Progress): void {
   window.dispatchEvent(new CustomEvent("ct:progress", { detail: next }));
 }
 
+/** Snapshot of the whole progress object. Use when a caller needs more than `done`. */
+export function getProgress(): Progress {
+  return read();
+}
+
 export function getDone(): string[] {
   return read().done;
 }

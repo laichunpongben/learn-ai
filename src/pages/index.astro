@@ -44,44 +44,31 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
 </Layout>
 
 <script>
-  const KEY = "learn-ai.progress.v1";
-  type Progress = { done: string[]; lastVisited?: string };
-
-  function read(): Progress {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return { done: [] };
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed.done)) return { done: [] };
-      return parsed;
-    } catch {
-      return { done: [] };
-    }
-  }
+  import { getProgress } from "../scripts/progress";
 
   function paintCards() {
-    const doneSet = new Set(read().done);
+    const doneSet = new Set(getProgress().done);
     const doneByTrack: Record<string, number> = {};
     const totalByTrack: Record<string, number> = {};
-    document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
+    for (const el of document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]")) {
       const id = el.dataset.lessonId!;
       const track = el.dataset.lessonTrack ?? "";
       totalByTrack[track] = (totalByTrack[track] ?? 0) + 1;
       const done = doneSet.has(id);
       el.classList.toggle("done", done);
       if (done) doneByTrack[track] = (doneByTrack[track] ?? 0) + 1;
-    });
-    document.querySelectorAll<HTMLElement>("[data-track-count]").forEach((el) => {
+    }
+    for (const el of document.querySelectorAll<HTMLElement>("[data-track-count]")) {
       const track = el.dataset.trackCount!;
       const d = doneByTrack[track] ?? 0;
       const t = totalByTrack[track] ?? 0;
       el.textContent = `${d} / ${t}`;
       el.classList.toggle("track-count-done", t > 0 && d === t);
-    });
+    }
   }
 
   function paintContinue() {
-    const cur = read();
+    const cur = getProgress();
     const c = document.getElementById("continue");
     if (!c) return;
     if (cur.done.length === 0 && !cur.lastVisited) {
