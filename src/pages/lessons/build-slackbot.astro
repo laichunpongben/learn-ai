@@ -1,0 +1,149 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import BuildStepper from "../../components/BuildStepper.astro";
+import Step from "../../components/Step.astro";
+import OpenIn from "../../components/OpenIn.astro";
+import PromptCopy from "../../components/PromptCopy.astro";
+import Expect from "../../components/Expect.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "build-slackbot")!;
+
+const codePrompt = `Write a Node.js script bot.js that:
+
+- Reads SLACK_BOT_TOKEN and ANTHROPIC_API_KEY from env (.env via dotenv).
+- Fetches the last 24h of messages from a channel ID passed as arg.
+  - Use https://slack.com/api/conversations.history with limit=200, oldest=<24h ago>
+  - Auth via Authorization: Bearer \${SLACK_BOT_TOKEN}
+- Calls Claude with the messages joined by newlines, system prompt:
+    "You are a TL;DR bot. Read this Slack channel transcript and produce a 3-bullet summary suitable
+     for posting back to the channel. Each bullet starts with an emoji. Keep it under 80 words."
+- Posts the summary to the same channel via chat.postMessage.
+
+Single file. dotenv + node:18 fetch. No frameworks. Print every Slack API response so I can see failures.
+
+Then add a package.json with a "start" script. Run with: node bot.js C123ABC456 (a channel id).`;
+
+const dryRun = `Add a --dry-run flag. When set, print the summary to stdout instead of posting it. Useful for testing before pointing it at a real channel.`;
+
+const cronSetup = `Show me three ways to schedule this for daily 9am runs:
+1. macOS launchd (plist)
+2. Linux cron (crontab line)
+3. A GitHub Actions workflow that runs on schedule and pipes the SLACK_BOT_TOKEN from a secret
+
+For each, show the exact file or command I'd run.`;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="build-slackbot">
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        You'll build a real Slack bot that posts a daily channel summary. Different shape than the
+        existing builds: this one uses two API tokens (Slack + an LLM), reads real channel data, and
+        gets scheduled.
+      </p>
+
+      <BuildStepper id="build-slackbot" total={9}>
+        <Step n={1} title="Create a Slack app + bot user">
+          <p>Once-per-bot setup. Skip if you've done this before.</p>
+          <OpenIn items={[
+            { label: "Slack API: Your apps", url: "https://api.slack.com/apps", hint: "create new" },
+          ]} />
+          <ol>
+            <li><strong>Create New App</strong> → <em>From scratch</em>. Name it (e.g. "Daily Digest").</li>
+            <li>Pick the workspace you want it in. Apps can be created in a personal workspace first; install in others later.</li>
+            <li>Under <strong>OAuth &amp; Permissions</strong>, add these Bot Token Scopes:
+              <ul>
+                <li><code class="inline">channels:history</code> — read public channel messages</li>
+                <li><code class="inline">chat:write</code> — post messages</li>
+              </ul>
+            </li>
+            <li>Click <strong>Install to Workspace</strong>. Approve.</li>
+          </ol>
+          <Expect>
+            <p>You see a <em>Bot User OAuth Token</em> starting with <code class="inline">xoxb-</code>. Copy it.</p>
+          </Expect>
+        </Step>
+
+        <Step n={2} title="Add the bot to a channel">
+          <p>The bot can only read channels it's a member of. In your test channel, type <code class="inline">/invite @Daily Digest</code> (or whatever you named it).</p>
+          <Expect>
+            <p>Slack confirms: "added Daily Digest to #channel".</p>
+          </Expect>
+        </Step>
+
+        <Step n={3} title="Get the channel ID">
+          <p>In Slack, right-click the channel name → <em>View channel details</em>. The ID at the bottom looks like <code class="inline">C0123ABC456</code>.</p>
+        </Step>
+
+        <Step n={4} title="Make a project folder + .env file">
+          <PromptCopy
+            label="Shell"
+            prompt={`mkdir ~/slack-digest && cd ~/slack-digest
+cat > .env <<'EOF'
+SLACK_BOT_TOKEN=xoxb-...your-token...
+ANTHROPIC_API_KEY=sk-ant-...
+EOF
+echo ".env" > .gitignore`}
+          />
+          <Expect>
+            <p>Folder exists. <code class="inline">.env</code> is gitignored (never commit it).</p>
+          </Expect>
+        </Step>
+
+        <Step n={5} title="Open your coding CLI and paste the build prompt">
+          <p>Run <code class="inline">claude</code> / <code class="inline">codex</code> / <code class="inline">aider</code> in the folder. Paste:</p>
+          <PromptCopy label="Build prompt" prompt={codePrompt} />
+        </Step>
+
+        <Step n={6} title="Approve the writes and the install">
+          <p>The CLI will:</p>
+          <ul>
+            <li>Write <code class="inline">bot.js</code> (~80 lines)</li>
+            <li>Write <code class="inline">package.json</code> with the <code class="inline">@anthropic-ai/sdk</code> + <code class="inline">dotenv</code> deps</li>
+            <li>Run <code class="inline">npm install</code> — allow it</li>
+          </ul>
+          <Expect>
+            <p>Done in ~30 seconds. <code class="inline">node bot.js C0123ABC456</code> runs without crashing.</p>
+          </Expect>
+        </Step>
+
+        <Step n={7} title="Test it">
+          <p>Run on your test channel:</p>
+          <PromptCopy label="Shell" prompt={`node bot.js C0123ABC456`} />
+          <Expect>
+            <p>The bot posts a 3-bullet summary to the channel within a few seconds. If you see an error, paste it back to the CLI — it'll diagnose. Common gotchas: <code class="inline">not_in_channel</code> (re-invite the bot), <code class="inline">missing_scope</code> (check OAuth scopes).</p>
+          </Expect>
+        </Step>
+
+        <Step n={8} title="Add --dry-run">
+          <p>Iterate in the CLI:</p>
+          <PromptCopy label="Iteration 1" prompt={dryRun} />
+          <Expect>
+            <p><code class="inline">node bot.js C0123ABC456 --dry-run</code> prints to stdout, doesn't post.</p>
+          </Expect>
+        </Step>
+
+        <Step n={9} title="Schedule it (pick one path)">
+          <p>Ask the CLI for the three scheduling options:</p>
+          <PromptCopy label="Iteration 2" prompt={cronSetup} />
+          <p style="color: var(--ink-soft); font-size: 0.92rem;">
+            Recommended: GitHub Actions if you want zero machines to manage; cron if you have a server
+            already; launchd if you only need it while your Mac is on.
+          </p>
+          <Expect>
+            <p>The bot posts a daily summary at 9am without you doing anything.</p>
+          </Expect>
+        </Step>
+      </BuildStepper>
+
+      <div class="callout">
+        <strong>What you just learned.</strong> Real bots are 80% glue code (API tokens, env vars,
+        scheduling) and 20% AI. The hard part is the surface area — Slack's API, Anthropic's API,
+        wherever you deploy. The LLM call itself is a one-liner. Apply this template to any
+        SaaS-with-API (Linear, Notion, Discord, Telegram, Email) — same shape every time.
+      </div>
+    </LessonShell>
+  </main>
+</Layout>

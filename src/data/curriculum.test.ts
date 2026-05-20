@@ -131,9 +131,10 @@ describe("expected curriculum shape (regression guard)", () => {
     expect(lessonIndex("concept-evals")).toBeGreaterThanOrEqual(0);
   });
 
-  it("includes the three guided builds", () => {
+  it("includes the four guided builds", () => {
     expect(lessonIndex("build-writing")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("build-webpage")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("build-script")).toBeGreaterThanOrEqual(0);
+    expect(lessonIndex("build-slackbot")).toBeGreaterThanOrEqual(0);
   });
 });
