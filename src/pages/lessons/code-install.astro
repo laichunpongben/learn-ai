@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "code-install")!;
 ---
 
-<Layout title={`${lesson.title} · Learn AI`} currentId="code-install">
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="code-install">
   <main>
     <LessonShell lesson={lesson} hero="code">
       <p>Every coding CLI follows the same three steps. Examples below.</p>

@@ -117,6 +117,14 @@ export const LESSONS: Lesson[] = [
     track: "concepts",
   },
   {
+    id: "concept-safety",
+    slug: "concept-safety",
+    title: "Hallucinations, leaks, and what AI can't do",
+    blurb: "The five failure modes every AI user should know — and how to defend against them.",
+    minutes: 5,
+    track: "concepts",
+  },
+  {
     id: "chat-first",
     slug: "chat-first",
     title: "Drive a chat assistant",

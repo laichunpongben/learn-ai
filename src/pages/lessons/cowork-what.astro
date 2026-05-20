@@ -6,7 +6,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 ---
 
-<Layout title={`${lesson.title} · Learn AI`} currentId="cowork-what">
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="cowork-what">
   <main>
     <LessonShell lesson={lesson} hero="cowork">
       <p>

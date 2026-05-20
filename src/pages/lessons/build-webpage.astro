@@ -36,7 +36,7 @@ const iterations = [
 const deployPrompt = `I have a working one-page HTML file. Walk me through deploying it for free in 3 minutes. I want a public URL I can share. Options I've heard of: Cloudflare Pages, Netlify, GitHub Pages, Vercel. Recommend one and give me literal step-by-step instructions for that one.`;
 ---
 
-<Layout title={`${lesson.title} · Learn AI`} currentId="build-webpage">
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="build-webpage">
   <main>
     <LessonShell lesson={lesson}>
       <p>

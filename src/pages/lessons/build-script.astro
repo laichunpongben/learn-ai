@@ -36,7 +36,7 @@ const dryRunPrompt = `Add a --dry-run flag. When set, do everything you'd do up 
 const thumbsPrompt = `Add a --thumbs flag. When set, after a successful rename, generate a 200x200 thumbnail of each renamed image into a thumbs/ subfolder of the input folder, preserving the new filename (so 2026-05-21__001.jpg becomes thumbs/2026-05-21__001.jpg). Skip thumbnails for non-image files. Use Pillow.`;
 ---
 
-<Layout title={`${lesson.title} · Learn AI`} currentId="build-script">
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="build-script">
   <main>
     <LessonShell lesson={lesson}>
       <p>

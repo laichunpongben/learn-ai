@@ -1,0 +1,366 @@
+---
+import { LESSONS, TRACKS } from "../data/curriculum";
+
+type Entry = { kind: "lesson" | "page"; title: string; blurb: string; href: string; track?: string };
+
+const trackMap = new Map(TRACKS.map((t) => [t.id, t.title]));
+
+const entries: Entry[] = [
+  ...LESSONS.map<Entry>((l) => ({
+    kind: "lesson",
+    title: l.title,
+    blurb: l.blurb,
+    href: `/lessons/${l.slug}`,
+    track: trackMap.get(l.track),
+  })),
+  { kind: "page", title: "Curriculum", blurb: "All lessons grouped by track.", href: "/" },
+  { kind: "page", title: "Cookbook", blurb: "Copy-paste starter prompts.", href: "/cookbook" },
+];
+
+const indexJSON: string = JSON.stringify(entries);
+---
+
+<button
+  type="button"
+  class="search-trigger"
+  data-search-open
+  aria-label="Open search"
+>
+  <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span class="search-label">Search</span>
+  <kbd class="search-kbd">⌘K</kbd>
+</button>
+
+<div class="search-overlay" data-search-overlay hidden role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-backdrop" data-search-close></div>
+  <div class="search-panel">
+    <div class="search-input-row">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="search-icon">
+        <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search lessons and pages…"
+        data-search-input
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="search-results" data-search-results></ul>
+  <script id="search-index" type="application/json" set:html={indexJSON} />
+    <div class="search-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span><kbd>Enter</kbd> open</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .search-trigger {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink-soft);
+    padding: 0.32rem 0.55rem 0.32rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    min-width: 140px;
+  }
+  .search-trigger:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--surface-2);
+  }
+  .search-label { flex: 1; text-align: left; }
+  .search-kbd {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.05rem 0.3rem;
+  }
+  @media (max-width: 720px) {
+    .search-label, .search-kbd { display: none; }
+    .search-trigger { min-width: auto; padding: 0.32rem 0.45rem; }
+  }
+
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8vh 1rem 1rem;
+  }
+  .search-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    animation: fade-in 0.12s ease;
+  }
+  .search-panel {
+    position: relative;
+    width: min(640px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: pop-in 0.18s cubic-bezier(.34,1.36,.64,1);
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .search-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .search-icon { color: var(--ink-faint); flex-shrink: 0; }
+  .search-input-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+  }
+  .search-input-row input::placeholder { color: var(--ink-faint); }
+  .search-input-row kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+  .search-results {
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .search-results li {
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .search-results li.sel { background: var(--surface-2); }
+  .search-results .row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+  }
+  .search-results .title {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 0.94rem;
+  }
+  .search-results .pill {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    border: 1px solid var(--line);
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+  }
+  .search-results .blurb {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .search-results .empty {
+    padding: 1.2rem;
+    color: var(--ink-faint);
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .search-foot {
+    display: flex;
+    gap: 1rem;
+    padding: 0.55rem 1rem;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+  }
+  .search-foot kbd {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 0;
+    border-radius: 3px;
+    margin: 0 0.15rem 0 0;
+    padding: 0 0.3rem;
+  }
+</style>
+
+<script>
+  type Entry = { kind: "lesson" | "page"; title: string; blurb: string; href: string; track?: string };
+  const INDEX: Entry[] = JSON.parse(
+    document.getElementById("search-index")?.textContent ?? "[]",
+  ) as Entry[];
+
+  function score(q: string, e: Entry): number {
+    const ql = q.toLowerCase();
+    const hay = (e.title + " " + e.blurb + " " + (e.track ?? "")).toLowerCase();
+    if (!ql) return 0;
+    if (e.title.toLowerCase() === ql) return 1000;
+    if (e.title.toLowerCase().startsWith(ql)) return 800;
+    if (e.title.toLowerCase().includes(ql)) return 600;
+    // Match all tokens?
+    const tokens = ql.split(/\s+/).filter(Boolean);
+    if (tokens.every((t) => hay.includes(t))) return 400;
+    return 0;
+  }
+
+  function search(q: string): Entry[] {
+    if (!q.trim()) return INDEX.slice(0, 8);
+    return INDEX
+      .map((e) => ({ e, s: score(q, e) }))
+      .filter((x) => x.s > 0)
+      .sort((a, b) => b.s - a.s)
+      .map((x) => x.e)
+      .slice(0, 10);
+  }
+
+  function highlight(text: string, q: string): string {
+    if (!q.trim()) return text;
+    const safe = text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+    const tokens = q.toLowerCase().split(/\s+/).filter(Boolean);
+    let out = safe;
+    for (const t of tokens) {
+      const re = new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
+      out = out.replace(re, "<mark>$1</mark>");
+    }
+    return out;
+  }
+
+  const overlay = document.querySelector<HTMLElement>("[data-search-overlay]")!;
+  const input = document.querySelector<HTMLInputElement>("[data-search-input]")!;
+  const list = document.querySelector<HTMLUListElement>("[data-search-results]")!;
+  let cur: Entry[] = [];
+  let sel = 0;
+
+  function render() {
+    cur = search(input.value);
+    list.innerHTML = "";
+    if (cur.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = "No matches. Try a different word.";
+      list.appendChild(li);
+      return;
+    }
+    cur.forEach((e, i) => {
+      const li = document.createElement("li");
+      li.dataset.idx = String(i);
+      if (i === sel) li.classList.add("sel");
+      const q = input.value;
+      li.innerHTML = `
+        <div class="row">
+          <span class="title">${highlight(e.title, q)}</span>
+          <span class="pill">${e.kind === "lesson" ? e.track ?? "Lesson" : "Page"}</span>
+        </div>
+        <div class="blurb">${highlight(e.blurb, q)}</div>
+      `;
+      li.addEventListener("click", () => navigate(e));
+      li.addEventListener("mouseenter", () => {
+        sel = i;
+        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+      });
+      list.appendChild(li);
+    });
+  }
+
+  function navigate(e: Entry) {
+    close();
+    window.location.href = e.href;
+  }
+
+  function open() {
+    overlay.hidden = false;
+    document.documentElement.style.overflow = "hidden";
+    setTimeout(() => {
+      input.value = "";
+      sel = 0;
+      input.focus();
+      render();
+    }, 0);
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.documentElement.style.overflow = "";
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-search-open]").forEach((b) =>
+    b.addEventListener("click", open),
+  );
+  document.querySelectorAll<HTMLElement>("[data-search-close]").forEach((b) =>
+    b.addEventListener("click", close),
+  );
+
+  // Keyboard: Cmd+K / Ctrl+K to open; "/" to open when not typing in another input
+  window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (overlay.hidden) open();
+      else close();
+      return;
+    }
+    if (overlay.hidden && e.key === "/" && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+      e.preventDefault();
+      open();
+      return;
+    }
+    if (!overlay.hidden) {
+      if (e.key === "Escape") { e.preventDefault(); close(); }
+      else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        sel = Math.min(cur.length - 1, sel + 1);
+        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+        list.querySelector(`li.sel`)?.scrollIntoView({ block: "nearest" });
+      }
+      else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        sel = Math.max(0, sel - 1);
+        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+        list.querySelector(`li.sel`)?.scrollIntoView({ block: "nearest" });
+      }
+      else if (e.key === "Enter") {
+        e.preventDefault();
+        if (cur[sel]) navigate(cur[sel]);
+      }
+    }
+  });
+
+  input.addEventListener("input", () => {
+    sel = 0;
+    render();
+  });
+</script>
