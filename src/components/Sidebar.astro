@@ -39,6 +39,12 @@ const { currentId } = Astro.props;
             <span class="label">Cookbook</span>
           </a>
         </li>
+        <li>
+          <a href="/glossary" class={`side-link ${currentId === "glossary" ? "active" : ""}`}>
+            <span class="dot"></span>
+            <span class="label">Glossary</span>
+          </a>
+        </li>
       </ul>
     </div>
   </nav>

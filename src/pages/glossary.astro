@@ -1,0 +1,301 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+interface Term {
+  word: string;
+  def: string;
+  see?: string;
+}
+interface Section {
+  group: string;
+  terms: Term[];
+}
+
+const SECTIONS: Section[] = [
+  {
+    group: "Models & generation",
+    terms: [
+      {
+        word: "LLM",
+        def: "Large language model. A neural network trained on a huge corpus of text that predicts the next token given the previous ones. Claude, ChatGPT, Gemini, and Llama are all LLMs.",
+      },
+      {
+        word: "Token",
+        def: "The unit a model thinks in — roughly a word or part of one. English text is ~0.75 words per token. Models bill per million input + output tokens.",
+        see: "/lessons/concept-cost",
+      },
+      {
+        word: "Context window",
+        def: "How much input the model can hold at once, measured in tokens. 2026 frontier models handle 200K–2M tokens; useful for whole codebases or long PDFs.",
+      },
+      {
+        word: "Frontier model",
+        def: "The most capable model available — usually expensive, usually slow, usually the right tool for hard problems. Opus / GPT-large / Gemini Ultra at any given moment.",
+      },
+      {
+        word: "Temperature",
+        def: "A dial from 0 to ~2 that controls randomness. 0 = deterministic; higher = more creative / chaotic. 0.7 is a reasonable default for most chat tasks.",
+      },
+      {
+        word: "Streaming",
+        def: "The model emits tokens one at a time as it generates. That's why chat replies appear word-by-word rather than all at once.",
+      },
+    ],
+  },
+  {
+    group: "Prompts & context",
+    terms: [
+      {
+        word: "Prompt",
+        def: "Everything you send to the model — your message plus any system prompt, history, attached files, and tool definitions.",
+        see: "/lessons/concept-prompt",
+      },
+      {
+        word: "System prompt",
+        def: "Instructions that frame the whole conversation. Custom GPTs / Projects / Gems all save a system prompt for reuse.",
+        see: "/lessons/chat-projects",
+      },
+      {
+        word: "Few-shot",
+        def: "Including 2–3 worked examples inside the prompt so the model matches your pattern instead of guessing the format.",
+      },
+      {
+        word: "Chain-of-thought",
+        def: "Asking the model to 'reason out loud' before giving a final answer. Modern models do this by default; useful to make explicit for hard math / code review.",
+      },
+      {
+        word: "Prompt caching",
+        def: "When a tool sends the same prompt prefix (system + project files) repeatedly, the provider caches it and charges much less on subsequent calls. Saves real money.",
+        see: "/lessons/concept-cost",
+      },
+      {
+        word: "Hallucination",
+        def: "When the model confidently produces something that sounds plausible but is false. Wrong dates, invented APIs, made-up citations. Always verify facts.",
+        see: "/lessons/concept-safety",
+      },
+    ],
+  },
+  {
+    group: "Agents & tools",
+    terms: [
+      {
+        word: "Agent",
+        def: "A loop where the model decides what to do next, picks a tool, observes the result, and decides again. Cursor / Claude Code / aider are agents over your codebase.",
+      },
+      {
+        word: "Tool use",
+        def: "When the model calls a function you defined — search the web, run code, query a database. The provider returns 'I want to call X with these args'; your code executes; you feed the result back.",
+      },
+      {
+        word: "MCP",
+        def: "Model Context Protocol — the open standard for connecting AI agents to external tools and data (filesystem, GitHub, Slack, Postgres, etc.) without a custom plugin per app.",
+        see: "/lessons/concept-mcp",
+      },
+      {
+        word: "ReAct",
+        def: "Reason + Act loop pattern. The model alternates between thinking out loud and taking an action. Foundation pattern for most agents.",
+      },
+      {
+        word: "Autonomous agent",
+        def: "An agent that runs without human approval in the loop — submits the PR, posts the message, books the flight. Useful when the task is well-scoped; risky otherwise.",
+        see: "/lessons/concept-safety",
+      },
+      {
+        word: "Prompt injection",
+        def: "An attack where untrusted content the model reads (a webpage, a PDF, an email) contains instructions the model follows. The defence: scope tool access, require approval for destructive actions.",
+        see: "/lessons/concept-safety",
+      },
+    ],
+  },
+  {
+    group: "Data & retrieval",
+    terms: [
+      {
+        word: "Embedding",
+        def: "A high-dimensional vector that represents the meaning of a piece of text. Similar meanings = vectors close together. Used to find relevant snippets to feed back into a prompt.",
+      },
+      {
+        word: "Vector database",
+        def: "A database optimised for nearest-neighbour search over embeddings. Pinecone, Weaviate, Qdrant, pgvector, LanceDB.",
+      },
+      {
+        word: "RAG",
+        def: "Retrieval-Augmented Generation. Before answering, fetch relevant documents (often via embeddings) and stuff them into the prompt. The standard way to give a model access to your own data.",
+      },
+      {
+        word: "Chunking",
+        def: "Splitting documents into small overlapping pieces before embedding. Chunk too small and you lose context; too large and retrieval gets noisy. 500–1500 tokens is typical.",
+      },
+      {
+        word: "Knowledge file",
+        def: "A document attached to a Project / GPT / Gem that the model always sees in that conversation. The product-level wrapper around basic RAG.",
+        see: "/lessons/chat-projects",
+      },
+    ],
+  },
+  {
+    group: "Multimodal",
+    terms: [
+      {
+        word: "Multimodal",
+        def: "Models that take more than text — images, audio, video, screen captures — as input and/or output.",
+        see: "/lessons/concept-multimodal",
+      },
+      {
+        word: "Diffusion model",
+        def: "The architecture behind most image and video generators. Starts with noise and gradually denoises into a coherent image. Stable Diffusion, Flux, Midjourney, Sora.",
+      },
+      {
+        word: "Vision-language model",
+        def: "An LLM that also takes images as input. GPT, Claude, Gemini are all VLMs by default in their current versions.",
+      },
+      {
+        word: "TTS / STT",
+        def: "Text-to-speech / speech-to-text. ElevenLabs and OpenAI TTS are popular TTS; Whisper (also OpenAI) is the open STT baseline.",
+      },
+    ],
+  },
+  {
+    group: "Training & tuning",
+    terms: [
+      {
+        word: "Pre-training",
+        def: "The expensive first step where the base model is trained on a huge text corpus to learn language. Costs millions; done by labs, not users.",
+      },
+      {
+        word: "Fine-tuning",
+        def: "Taking a pre-trained model and further training it on your specific examples. Useful for narrow consistent tasks; for most users, a good system prompt is enough.",
+      },
+      {
+        word: "RLHF",
+        def: "Reinforcement Learning from Human Feedback. The technique that makes raw language models behave as helpful assistants. Why the model says 'I can't help with that' for some requests.",
+      },
+      {
+        word: "Distillation",
+        def: "Training a smaller, cheaper model to mimic a larger one. How Haiku / GPT-mini / Gemini Flash get good while staying fast.",
+      },
+    ],
+  },
+  {
+    group: "Plumbing",
+    terms: [
+      {
+        word: "API key",
+        def: "A secret string (often starting with sk-) that authenticates your requests to a provider's API. Never commit one to git.",
+        see: "/lessons/agents-api",
+      },
+      {
+        word: "Endpoint",
+        def: "The URL you POST to: /v1/messages (Anthropic), /v1/chat/completions (OpenAI), /v1/models/.../generateContent (Google).",
+      },
+      {
+        word: "Rate limit",
+        def: "The cap on how many requests / tokens you can send per minute. Hit it and the API returns 429. Higher tiers have higher limits.",
+      },
+      {
+        word: "Spend cap",
+        def: "A monthly budget you set in the provider dashboard. Hit it and further API calls fail until next month. Always set one.",
+        see: "/lessons/concept-cost",
+      },
+    ],
+  },
+];
+---
+
+<Layout title="Glossary · Learn AI" description="The AI terms every tutorial uses without explaining." currentId="glossary">
+  <main>
+    <p><span class="track-pill">Reference</span></p>
+    <h1>Glossary</h1>
+    <p class="lede">
+      The terms every AI tutorial drops without warning. Skim once; come back when a word jumps out.
+    </p>
+
+    <nav class="g-toc" aria-label="Sections">
+      {SECTIONS.map((s) => (
+        <a href={`#${s.group.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "")}`}>{s.group}</a>
+      ))}
+    </nav>
+
+    {SECTIONS.map((s) => {
+      const id = s.group.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      return (
+        <section class="g-section" id={id}>
+          <h2>{s.group}</h2>
+          <dl class="g-list">
+            {s.terms.map((t) => (
+              <div class="g-row">
+                <dt>{t.word}</dt>
+                <dd>
+                  {t.def}
+                  {t.see ? <a class="g-see" href={t.see}>read more →</a> : null}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      );
+    })}
+  </main>
+</Layout>
+
+<style>
+  .g-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    margin: 1rem 0 1.6rem;
+    font-size: 0.85rem;
+  }
+  .g-toc a {
+    color: var(--ink-soft);
+    border: none;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+  .g-toc a:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+    border: none;
+  }
+  .g-section { margin: 1.8rem 0; scroll-margin-top: 80px; }
+  .g-section h2 { margin-bottom: 0.4rem; }
+  .g-list {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .g-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1.1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .g-row dt {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .g-row dd {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  .g-see {
+    display: inline-block;
+    margin-left: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--accent);
+    border: none;
+  }
+  .g-see:hover { border: none; }
+  @media (max-width: 720px) {
+    .g-row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>
