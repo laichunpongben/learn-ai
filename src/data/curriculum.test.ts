@@ -119,7 +119,7 @@ describe("expected curriculum shape (regression guard)", () => {
     expect(TRACKS.find((t) => t.id === "concepts")).toBeDefined();
   });
 
-  it("includes the eight concept lessons", () => {
+  it("includes the nine concept lessons", () => {
     expect(lessonIndex("concept-prompt")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("concept-cli")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("concept-git")).toBeGreaterThanOrEqual(0);
@@ -128,6 +128,7 @@ describe("expected curriculum shape (regression guard)", () => {
     expect(lessonIndex("concept-cost")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("concept-multimodal")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("concept-rag")).toBeGreaterThanOrEqual(0);
+    expect(lessonIndex("concept-evals")).toBeGreaterThanOrEqual(0);
   });
 
   it("includes the three guided builds", () => {
