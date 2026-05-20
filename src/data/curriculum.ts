@@ -85,6 +85,14 @@ export const LESSONS: Lesson[] = [
     track: "start",
   },
   {
+    id: "concept-prompt",
+    slug: "concept-prompt",
+    title: "Writing prompts that work",
+    blurb: "The shape of a good prompt. Iterate; don't restart. The one skill that compounds.",
+    minutes: 5,
+    track: "concepts",
+  },
+  {
     id: "concept-cli",
     slug: "concept-cli",
     title: "The CLI / terminal",

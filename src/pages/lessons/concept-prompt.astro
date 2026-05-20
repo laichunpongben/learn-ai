@@ -1,0 +1,149 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import ChatSim from "../../components/ChatSim.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-prompt")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="concept-prompt">
+  <main>
+    <LessonShell lesson={lesson} hero="claude">
+      <p>
+        Every AI tool eats prompts. The same model gives very different results depending on how you
+        write the request. This is the one skill that transfers between products and compounds over time.
+      </p>
+
+      <h2>The four-part shape</h2>
+      <table>
+        <thead>
+          <tr><th>Part</th><th>What goes in it</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Goal</strong></td><td>What "done" looks like, in one sentence.</td></tr>
+          <tr><td><strong>Constraints</strong></td><td>What it must / must not do. Length, tone, files to not touch.</td></tr>
+          <tr><td><strong>Verify</strong></td><td>How you'll know it's right. "Tests pass." "Renders on mobile."</td></tr>
+          <tr><td><strong>Clarify</strong></td><td>"Ask one question if anything is missing." Forces the model to fill its own gaps.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Side by side</h2>
+      <div class="vs2">
+        <div class="bad">
+          <h3>Weak</h3>
+          <p style="margin: 0;"><em>"Write me an email about the launch."</em></p>
+          <ul>
+            <li>Goal vague (launch of what?)</li>
+            <li>No audience, tone, length</li>
+            <li>No way to know if it's good</li>
+          </ul>
+        </div>
+        <div class="good">
+          <h3>Strong</h3>
+          <p style="margin: 0;">
+            <em>"Draft a 4-sentence internal email announcing the Q4 launch (a self-serve onboarding flow). Audience: engineering team. Tone: warm, direct, no marketing language. End with one concrete ask: read the spec by Friday. Ask one question if anything is missing."</em>
+          </p>
+        </div>
+      </div>
+
+      <h2>Iterate; don't restart</h2>
+      <p>
+        First draft will be close-but-wrong. Don't rewrite the prompt — <em>react</em> to the output.
+        These three phrases will rescue 80% of bad outputs:
+      </p>
+      <ul>
+        <li><strong>"More direct. Drop the corporate language."</strong></li>
+        <li><strong>"Same content, half as long."</strong></li>
+        <li><strong>"What's a different angle you could try?"</strong></li>
+      </ul>
+
+      <h2>Tactics that move the needle</h2>
+      <div class="tactics">
+        <article>
+          <h4>Few-shot</h4>
+          <p>Paste 2–3 examples of "good" before your request. Models match the pattern.</p>
+        </article>
+        <article>
+          <h4>Role priming</h4>
+          <p>"You are a senior editor with 20 years at <em>The Economist</em>." Still works in 2026.</p>
+        </article>
+        <article>
+          <h4>Show the format</h4>
+          <p>Don't describe the format — give a one-line template. "Reply as: <code class="inline">Decision: ___ · Why: ___</code>"</p>
+        </article>
+        <article>
+          <h4>Force "I don't know"</h4>
+          <p>"If you don't have enough information, say so. Don't guess." Cuts hallucinations.</p>
+        </article>
+      </div>
+
+      <h2>Try it</h2>
+      <p>Send the weak version. Then send the strong version. Notice the difference.</p>
+      <ChatSim
+        prompts={[
+          "Write me an email about the launch.",
+          "Draft a 4-sentence email announcing the Q4 launch. Audience: engineering. Tone: warm, direct, no marketing language. End with: read the spec by Friday. Ask one question if anything is missing.",
+        ]}
+      />
+
+      <div class="callout">
+        <strong>The compounding skill.</strong> This pattern works the same in claude.ai, ChatGPT, Cursor,
+        Cowork, and any open-source agent. Get good at it once; it pays off forever.
+      </div>
+
+      <Reveal q="Do I need 'please' and 'thank you'?">
+        Doesn't hurt; doesn't really help. Models don't have feelings to flatter.
+        But politeness sometimes nudges them toward a friendlier register — useful if you're drafting
+        something that should sound human.
+      </Reveal>
+      <Reveal q="What about chain-of-thought ('think step by step')?">
+        Less needed in modern models — they reason by default. Still worth it for hard math, code review,
+        or any task where you want to see the working before the answer. Phrase: "Reason out loud first, then give the final answer."
+      </Reveal>
+      <Reveal q="How long is too long for a prompt?">
+        For chat: a few paragraphs is fine. For agents: longer is OK if it includes real reference material.
+        The model's "attention" weakens at extreme lengths — if you're past 5,000 words and still elaborating,
+        split into two prompts or attach a file instead.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
+
+<style>
+  .vs2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .vs2 article, .vs2 > div {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  .vs2 .bad { border-left: 2px solid var(--bad); }
+  .vs2 .good { border-left: 2px solid var(--good); }
+  .vs2 h3 { margin: 0 0 0.4rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
+  .vs2 ul { margin: 0.5rem 0 0; padding-left: 1.1rem; color: var(--ink-soft); font-size: 0.86rem; }
+  .vs2 li { margin: 0.1rem 0; }
+  @media (max-width: 600px) { .vs2 { grid-template-columns: 1fr; } }
+
+  .tactics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .tactics article {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.85rem 0.95rem;
+  }
+  .tactics h4 { margin: 0 0 0.25rem; font-size: 0.92rem; }
+  .tactics p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+  @media (max-width: 600px) { .tactics { grid-template-columns: 1fr; } }
+</style>

@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Sidebar from "../components/Sidebar.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title: string;
@@ -19,22 +20,79 @@ const { title, description = "A hands-on tour of modern AI assistants and agents
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("learn-ai.theme.v1");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (_e) {}
+      })();
+    </script>
   </head>
   <body>
     <header class="site">
       <div class="inner">
+        <button
+          type="button"
+          class="hamburger"
+          data-sidebar-toggle
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
         <a href="/" class="brand">Learn AI</a>
         <span class="spacer"></span>
         <a class="tiny-link" href="/">Curriculum</a>
         <a class="tiny-link" href="/cookbook">Cookbook</a>
+        <ThemeToggle />
       </div>
     </header>
     <div class="shell">
       <Sidebar currentId={currentId} />
       <slot />
     </div>
+    <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
     <footer>
       <p>Self-paced. Progress lives only in your browser. <a href="/">Curriculum</a> · <a href="/cookbook">Cookbook</a></p>
     </footer>
+
+    <script>
+      const html = document.documentElement;
+      const backdrop = document.querySelector<HTMLElement>("[data-sidebar-backdrop]");
+
+      function open() {
+        html.classList.add("sidebar-open");
+        document
+          .querySelector<HTMLButtonElement>("[data-sidebar-toggle]")
+          ?.setAttribute("aria-expanded", "true");
+        if (backdrop) backdrop.hidden = false;
+      }
+      function close() {
+        html.classList.remove("sidebar-open");
+        document
+          .querySelector<HTMLButtonElement>("[data-sidebar-toggle]")
+          ?.setAttribute("aria-expanded", "false");
+        if (backdrop) backdrop.hidden = true;
+      }
+
+      document.querySelectorAll<HTMLButtonElement>("[data-sidebar-toggle]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (html.classList.contains("sidebar-open")) close();
+          else open();
+        });
+      });
+      backdrop?.addEventListener("click", close);
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && html.classList.contains("sidebar-open")) close();
+      });
+      document.querySelectorAll<HTMLAnchorElement>(".sidebar a").forEach((a) => {
+        a.addEventListener("click", () => {
+          if (window.matchMedia("(max-width: 960px)").matches) close();
+        });
+      });
+    </script>
   </body>
 </html>

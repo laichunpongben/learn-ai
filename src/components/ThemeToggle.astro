@@ -1,0 +1,72 @@
+---
+/**
+ * Sun/moon toggle. Stores user choice in localStorage; respects system preference
+ * until a manual choice is made. Inline script in <head> applies theme before paint.
+ */
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode">
+  <svg class="i-sun" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+    <circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <line x1="10" y1="2" x2="10" y2="4"/>
+      <line x1="10" y1="16" x2="10" y2="18"/>
+      <line x1="2" y1="10" x2="4" y2="10"/>
+      <line x1="16" y1="10" x2="18" y2="10"/>
+      <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/>
+      <line x1="14.4" y1="14.4" x2="15.8" y2="15.8"/>
+      <line x1="4.2" y1="15.8" x2="5.6" y2="14.4"/>
+      <line x1="14.4" y1="5.6" x2="15.8" y2="4.2"/>
+    </g>
+  </svg>
+  <svg class="i-moon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+    <path d="M14 12 A 6 6 0 1 1 8 6 A 5 5 0 0 0 14 12 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.3rem 0.45rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+  .theme-toggle:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .theme-toggle .i-moon { display: none; }
+  [data-theme="dark"] .theme-toggle .i-sun { display: none; }
+  [data-theme="dark"] .theme-toggle .i-moon { display: inline-block; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .theme-toggle .i-sun { display: none; }
+    html:not([data-theme]) .theme-toggle .i-moon { display: inline-block; }
+  }
+</style>
+
+<script>
+  function getEffectiveTheme(): "light" | "dark" {
+    const stored = localStorage.getItem("learn-ai.theme.v1");
+    if (stored === "light" || stored === "dark") return stored;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function apply(theme: "light" | "dark", persist: boolean): void {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (persist) localStorage.setItem("learn-ai.theme.v1", theme);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = getEffectiveTheme() === "dark" ? "light" : "dark";
+      apply(next, true);
+    });
+  });
+</script>
