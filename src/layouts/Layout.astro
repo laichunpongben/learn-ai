@@ -11,7 +11,6 @@ interface Props {
 }
 
 const { title, description = "A hands-on tour of modern AI assistants and agents.", currentId } = Astro.props;
-// Use the bare page title (everything before " · ") as the og:title.
 const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
 ---
 
@@ -30,76 +29,16 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     <meta name="twitter:description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <!-- No-flash theme apply. Only sets [data-theme] from localStorage before paint;
+         all interaction logic lives in src/scripts/ui.ts, imported below. -->
     <script is:inline>
-      // Runs before any <body> markup parses. Sets initial theme (no flash) and
-      // exposes globally-callable functions so HTML onclick handlers always work,
-      // regardless of any module-script load timing.
       (function () {
-        var KEY = "learn-ai.theme.v1";
-
-        function readTheme() {
-          try {
-            var s = localStorage.getItem(KEY);
-            if (s === "light" || s === "dark") return s;
-          } catch (_e) {}
-          try {
-            if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
-          } catch (_e) {}
-          return "light";
-        }
-
-        function writeTheme(t) {
-          document.documentElement.setAttribute("data-theme", t);
-          try { localStorage.setItem(KEY, t); } catch (_e) {}
-        }
-
-        // 1. Apply stored / preferred theme NOW, before paint.
-        var stored = null;
-        try { stored = localStorage.getItem(KEY); } catch (_e) {}
-        if (stored === "light" || stored === "dark") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-
-        // 2. Expose a globally-callable toggle. Buttons reference this via onclick.
-        window.__toggleTheme = function () {
-          var cur = readTheme();
-          writeTheme(cur === "dark" ? "light" : "dark");
-        };
-
-        // 3. Expose search open/close globally (overlay is added in body).
-        window.__openSearch = function () {
-          var o = document.querySelector("[data-search-overlay]");
-          if (!o) return;
-          o.removeAttribute("hidden");
-          document.documentElement.style.overflow = "hidden";
-          var i = document.querySelector("[data-search-input]");
-          if (i) { i.value = ""; setTimeout(function () { i.focus(); }, 0); }
-          // Trigger initial render if the palette script attached one
-          if (typeof window.__searchRender === "function") window.__searchRender();
-        };
-        window.__closeSearch = function () {
-          var o = document.querySelector("[data-search-overlay]");
-          if (!o) return;
-          o.setAttribute("hidden", "");
-          document.documentElement.style.overflow = "";
-        };
-
-        // 4. ⌘K / Ctrl+K open/close from any focus state.
-        document.addEventListener("keydown", function (e) {
-          if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
-            e.preventDefault();
-            var o = document.querySelector("[data-search-overlay]");
-            if (!o) return;
-            if (o.hasAttribute("hidden")) window.__openSearch();
-            else window.__closeSearch();
-          } else if (e.key === "Escape") {
-            var o2 = document.querySelector("[data-search-overlay]");
-            if (o2 && !o2.hasAttribute("hidden")) window.__closeSearch();
+        try {
+          var s = localStorage.getItem("learn-ai.theme.v1");
+          if (s === "light" || s === "dark") {
+            document.documentElement.setAttribute("data-theme", s);
           }
-        });
-
-        // Buttons rely on their inline `onclick` attributes to call window.__* —
-        // simple, bulletproof, no double-firing.
+        } catch (_e) {}
       })();
     </script>
   </head>
@@ -109,7 +48,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
         <button
           type="button"
           class="hamburger"
-          data-sidebar-toggle
+          data-ui-action="toggle-sidebar"
           aria-label="Open navigation"
           aria-expanded="false"
         >
@@ -127,45 +66,12 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
       <Sidebar currentId={currentId} />
       <slot />
     </div>
-    <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+    <div class="sidebar-backdrop" data-ui-action="close-sidebar"></div>
     <footer>
       <p>Self-paced. Progress lives only in your browser. <a href="/">Curriculum</a> · <a href="/cookbook">Cookbook</a></p>
     </footer>
-
     <script>
-      const html = document.documentElement;
-      const backdrop = document.querySelector<HTMLElement>("[data-sidebar-backdrop]");
-
-      function open() {
-        html.classList.add("sidebar-open");
-        document
-          .querySelector<HTMLButtonElement>("[data-sidebar-toggle]")
-          ?.setAttribute("aria-expanded", "true");
-        if (backdrop) backdrop.hidden = false;
-      }
-      function close() {
-        html.classList.remove("sidebar-open");
-        document
-          .querySelector<HTMLButtonElement>("[data-sidebar-toggle]")
-          ?.setAttribute("aria-expanded", "false");
-        if (backdrop) backdrop.hidden = true;
-      }
-
-      document.querySelectorAll<HTMLButtonElement>("[data-sidebar-toggle]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          if (html.classList.contains("sidebar-open")) close();
-          else open();
-        });
-      });
-      backdrop?.addEventListener("click", close);
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && html.classList.contains("sidebar-open")) close();
-      });
-      document.querySelectorAll<HTMLAnchorElement>(".sidebar a").forEach((a) => {
-        a.addEventListener("click", () => {
-          if (window.matchMedia("(max-width: 960px)").matches) close();
-        });
-      });
+      import "../scripts/ui";
     </script>
   </body>
 </html>
