@@ -133,6 +133,15 @@ export const LESSONS: Lesson[] = [
     track: "concepts",
   },
   {
+    id: "concept-multimodal",
+    slug: "concept-multimodal",
+    title: "Multimodal — images, voice, screen",
+    blurb:
+      "Modern assistants take more than text. What to feed them, what to ask for, and which tool for which medium.",
+    minutes: 5,
+    track: "concepts",
+  },
+  {
     id: "chat-first",
     slug: "chat-first",
     title: "Drive a chat assistant",
