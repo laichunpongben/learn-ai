@@ -6,13 +6,15 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="agents-setup">
+<Layout title={`${lesson.title} · Learn AI`} currentId="agents-setup">
   <main>
     <LessonShell lesson={lesson} hero="agents">
-      <p>Worked example: <strong>Hermes Agent</strong>. Two paths — pick one.</p>
+      <p>
+        Most autonomous agents install the same way: one command, an env var with your API key, optional config.
+        Worked example: <strong>Hermes Agent</strong>. The pattern transfers to aider, OpenHands, Goose, OpenClaw.
+      </p>
 
-      <h2>Path A · Claude Code plugin</h2>
-      <p style="color: var(--ink-soft); font-size: 0.9rem;">Easiest if Claude Code is already installed.</p>
+      <h2>Path A · As a Claude Code plugin (easiest)</h2>
       <pre>/plugin marketplace add sypsyp97/claude-hermes
 /plugin install claude-hermes@claude-hermes
 /claude-hermes:start</pre>
@@ -28,20 +30,33 @@ hermes model</pre>
         <li><strong>Persistent.</strong> Lives in the background; remembers across sessions.</li>
         <li><strong>Scheduled.</strong> "Every Monday at 9, scan my inbox."</li>
         <li><strong>Multi-channel.</strong> Terminal, Telegram, Discord, voice.</li>
+        <li><strong>Provider-agnostic.</strong> Switch between Anthropic, OpenAI, Ollama in one command.</li>
       </ul>
 
-      <h2>OpenClaw (same shape)</h2>
-      <pre>npm install -g openclaw
+      <h2>The same shape, other agents</h2>
+      <pre># aider
+pip install aider-chat
+export ANTHROPIC_API_KEY=sk-ant-…
+cd my-project &amp;&amp; aider --model sonnet
+
+# OpenHands (Docker)
+docker run -p 3000:3000 -e LLM_API_KEY=sk-… \\
+  ghcr.io/all-hands-ai/openhands:latest
+
+# OpenClaw
+npm install -g openclaw
 openclaw init
 export ANTHROPIC_API_KEY=sk-ant-…
-openclaw run</pre>
-      <p style="color: var(--ink-soft); font-size: 0.9rem;">
-        See <a href="https://docs.openclaw.ai" target="_blank" rel="noopener">docs.openclaw.ai</a> for the current install.
-      </p>
+openclaw run
+
+# Goose
+brew install pressly/tap/goose
+goose configure
+goose session</pre>
 
       <div class="callout">
-        <strong>Safety.</strong> Set a spend cap on your Anthropic account. Sandbox the workspace on first run.
-        Read the diffs. Rotate the key if exposed.
+        <strong>Safety hygiene.</strong> Set a spend cap on your provider account. Sandbox the agent's workspace
+        (not your home folder) on first run. Read the diffs. Rotate the key if exposed.
       </div>
     </LessonShell>
   </main>

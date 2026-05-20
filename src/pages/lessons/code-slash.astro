@@ -7,17 +7,20 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "code-slash")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="code-slash">
+<Layout title={`${lesson.title} · Learn AI`} currentId="code-slash">
   <main>
     <LessonShell lesson={lesson}>
-      <p>Drive the terminal imitation. Press <kbd>/</kbd>, type, hit Enter. Watch streaming + approval prompts.</p>
+      <p>
+        Every modern coding CLI has the same three extensibility primitives, with slight name variations.
+        Drive the imitation: press <kbd>/</kbd>, type, hit Enter. Watch streaming + approval prompts.
+      </p>
 
       <FakeTerminal cwd="~/my-project" />
 
       <h2>Try these</h2>
       <ul>
         <li><code class="inline">/agents</code> — list specialized assistants</li>
-        <li><em>"fix the bug"</em> — Claude reads files, runs tests, finds the cause</li>
+        <li><em>"fix the bug"</em> — the assistant reads files, runs tests, finds the cause</li>
         <li><em>"add a dark mode toggle"</em> — note the Allow/Deny prompt before any write</li>
       </ul>
 
@@ -25,16 +28,28 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
         <div>
           <h4>Slash command</h4>
           <p>Do this <em>action</em> now.</p>
+          <small>Claude Code: <code class="inline">/plan</code> · Cursor: <code class="inline">@</code> · aider: <code class="inline">/add</code></small>
         </div>
         <div>
-          <h4>Agent</h4>
+          <h4>Agent / mode</h4>
           <p>Switch to this <em>persona</em>.</p>
+          <small>Claude Code: agents · Cursor: modes · Codex: agents</small>
         </div>
         <div>
-          <h4>Skill</h4>
+          <h4>Skill / rule</h4>
           <p>Use this <em>recipe</em>.</p>
+          <small>Claude Code: skills · Cursor: rules · aider: <code class="inline">.aider.conf</code></small>
         </div>
       </div>
+
+      <h2>Tool approval</h2>
+      <p>Every CLI asks before touching your machine. The pattern is the same; the UI varies:</p>
+      <ul>
+        <li><strong>Claude Code:</strong> "Claude wants to do this — Allow / Deny"</li>
+        <li><strong>Cursor:</strong> Agent mode shows a diff before applying</li>
+        <li><strong>Codex CLI:</strong> "approval modes" — Suggest / Auto-Edit / Full-Auto</li>
+        <li><strong>aider:</strong> shows diff + asks "Apply edit? (Y/n)"</li>
+      </ul>
     </LessonShell>
   </main>
 </Layout>
@@ -53,6 +68,7 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
     padding: 0.8rem 0.9rem;
   }
   .trio h4 { margin: 0 0 0.25rem; font-size: 0.88rem; }
-  .trio p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+  .trio p { margin: 0 0 0.3rem; color: var(--ink-soft); font-size: 0.86rem; }
+  .trio small { display: block; color: var(--ink-faint); font-size: 0.78rem; }
   @media (max-width: 600px) { .trio { grid-template-columns: 1fr; } }
 </style>

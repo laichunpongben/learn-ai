@@ -8,24 +8,29 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "welcome")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="welcome">
+<Layout title={`${lesson.title} · Learn AI`} currentId="welcome">
   <main>
     <LessonShell lesson={lesson} hero="claude">
       <p>
-        Claude is an AI assistant. You type what you want; it types back.
-        That's the whole product. What changes from one Claude product to the next is the
-        <strong>shape</strong> of "talking to Claude".
+        An <strong>AI assistant</strong> is software that takes a request in plain language and gives you
+        something back — text, code, an answer, a working webpage. You type what you want; it types back.
+        That's the entire user interface.
+      </p>
+      <p>
+        Today there are <em>many</em> assistants — ChatGPT, Claude, Gemini, Cursor, Devin, v0, and dozens more.
+        Underneath, they're powered by large language models (LLMs) from companies like OpenAI, Anthropic, Google,
+        Meta, Mistral, DeepSeek. The product you open just decides the <strong>shape</strong> of the interaction.
       </p>
 
       <ProductRow />
 
       <h2>Try it</h2>
-      <p>This is an imitation of <code class="inline">claude.ai</code> — drive it like the real thing.</p>
+      <p>This is an imitation of a chat-style assistant. Drive it like any of the real ones.</p>
       <ChatSim prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip"]} />
 
       <div class="callout">
-        <strong>One thing to know.</strong> AI assistants can sound confident and still be wrong.
-        Treat Claude as a first draft, not a final answer.
+        <strong>One thing to know.</strong> Every assistant can sound confident and still be wrong.
+        Treat the output as a first draft, not a final answer — especially for facts, numbers, and code.
       </div>
     </LessonShell>
   </main>

@@ -5,15 +5,17 @@ import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "agents-api")!;
 
-const curl = `curl https://api.anthropic.com/v1/messages \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
-  -H "content-type: application/json" \\
-  -d '{"model":"claude-sonnet-4-6","max_tokens":256,
-       "messages":[{"role":"user","content":"Say hello."}]}'`;
+const openaiPy = `from openai import OpenAI
+client = OpenAI()  # reads OPENAI_API_KEY
 
-const py = `from anthropic import Anthropic
-client = Anthropic()
+reply = client.chat.completions.create(
+    model="gpt-5",
+    messages=[{"role": "user", "content": "Say hello."}],
+)
+print(reply.choices[0].message.content)`;
+
+const anthropicPy = `from anthropic import Anthropic
+client = Anthropic()  # reads ANTHROPIC_API_KEY
 
 reply = client.messages.create(
     model="claude-sonnet-4-6",
@@ -22,55 +24,84 @@ reply = client.messages.create(
 )
 print(reply.content[0].text)`;
 
-const ts = `import Anthropic from "@anthropic-ai/sdk";
-const client = new Anthropic();
+const googlePy = `from google import genai
+client = genai.Client()  # reads GEMINI_API_KEY
 
-const reply = await client.messages.create({
-  model: "claude-sonnet-4-6",
-  max_tokens: 256,
-  messages: [{ role: "user", content: "Say hello." }],
-});`;
+reply = client.models.generate_content(
+    model="gemini-3-pro",
+    contents="Say hello.",
+)
+print(reply.text)`;
+
+const openrouterPy = `from openai import OpenAI  # OpenAI-compatible
+client = OpenAI(base_url="https://openrouter.ai/api/v1",
+                api_key="sk-or-…")
+
+reply = client.chat.completions.create(
+    model="anthropic/claude-sonnet-4-6",   # any model from any provider
+    messages=[{"role": "user", "content": "Say hello."}],
+)`;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="agents-api">
+<Layout title={`${lesson.title} · Learn AI`} currentId="agents-api">
   <main>
     <LessonShell lesson={lesson} hero="agents">
-      <p>Every third-party tool uses the same API underneath. Three things to know.</p>
+      <p>Every coding assistant, every agent, every custom tool you'd build talks to an <strong>LLM API</strong>. Three big vendors, plus aggregators. Same shape.</p>
 
       <div class="three">
         <div>
           <span class="n">1</span>
           <h3>Get a key</h3>
-          <p><code class="inline">sk-ant-…</code> from <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></p>
+          <p>One env var per provider. <code class="inline">OPENAI_API_KEY</code> · <code class="inline">ANTHROPIC_API_KEY</code> · <code class="inline">GEMINI_API_KEY</code></p>
         </div>
         <div>
           <span class="n">2</span>
           <h3>Pick a model</h3>
-          <p><code class="inline">claude-sonnet-4-6</code> is the default</p>
+          <p>Each vendor has fast / smart / cheap tiers. Pick by your task.</p>
         </div>
         <div>
           <span class="n">3</span>
           <h3>Send a message</h3>
-          <p>One HTTP call. Get a reply.</p>
+          <p>One HTTP call → reply. That's the whole API.</p>
         </div>
       </div>
 
-      <h2>The same call, three ways</h2>
-      <h3>curl</h3>
-      <pre>{curl}</pre>
-      <h3>Python</h3>
-      <pre>{py}</pre>
-      <h3>TypeScript</h3>
-      <pre>{ts}</pre>
+      <h2>The same call, three vendors</h2>
+      <h3>OpenAI</h3>
+      <pre>{openaiPy}</pre>
 
-      <h2>Models</h2>
+      <h3>Anthropic</h3>
+      <pre>{anthropicPy}</pre>
+
+      <h3>Google Gemini</h3>
+      <pre>{googlePy}</pre>
+
+      <h2>Or: one key, any model (OpenRouter)</h2>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        OpenRouter proxies hundreds of models from every vendor behind a single OpenAI-compatible API.
+        Useful when you want to A/B-test models, or when you don't want vendor lock-in.
+      </p>
+      <pre>{openrouterPy}</pre>
+
+      <h2>Where to get keys</h2>
       <table>
+        <thead>
+          <tr><th>Vendor</th><th>Console</th><th>Env var</th></tr>
+        </thead>
         <tbody>
-          <tr><td><code class="inline">claude-haiku-4-5</code></td><td>Fastest, cheapest. Routine + classification.</td></tr>
-          <tr><td><code class="inline">claude-sonnet-4-6</code></td><td>Default. Best balance.</td></tr>
-          <tr><td><code class="inline">claude-opus-4-7</code></td><td>Heaviest reasoning. Architecture, research.</td></tr>
+          <tr><td>OpenAI</td><td><a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a></td><td><code class="inline">OPENAI_API_KEY</code></td></tr>
+          <tr><td>Anthropic</td><td><a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></td><td><code class="inline">ANTHROPIC_API_KEY</code></td></tr>
+          <tr><td>Google Gemini</td><td><a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a></td><td><code class="inline">GEMINI_API_KEY</code></td></tr>
+          <tr><td>Mistral</td><td><a href="https://console.mistral.ai" target="_blank" rel="noopener">console.mistral.ai</a></td><td><code class="inline">MISTRAL_API_KEY</code></td></tr>
+          <tr><td>DeepSeek</td><td><a href="https://platform.deepseek.com" target="_blank" rel="noopener">platform.deepseek.com</a></td><td><code class="inline">DEEPSEEK_API_KEY</code></td></tr>
+          <tr><td>OpenRouter (aggregator)</td><td><a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a></td><td><code class="inline">OPENROUTER_API_KEY</code></td></tr>
         </tbody>
       </table>
+
+      <div class="tip">
+        <strong>Prompt caching.</strong> When a tool sends the same context (system prompt, project files, history)
+        repeatedly, most vendors can <em>cache</em> the input — drastically cheaper and faster. Good tools enable it automatically.
+      </div>
     </LessonShell>
   </main>
 </Layout>

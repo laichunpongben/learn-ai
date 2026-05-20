@@ -14,21 +14,21 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     recipes: [
       {
         title: "Turn rough notes into a polished email",
-        product: "claude.ai",
+        product: "Any chat app",
         outcome: "An email draft + a subject line + two alternatives",
         prompt:
           "Here are my rough notes for an email. Produce three things:\n1) A clean version in a warm but direct tone — no corporate puffery.\n2) A one-sentence subject line.\n3) Two alternatives — shorter and more formal — so I can pick.\nAsk one clarifying question if anything is unclear.\n\nNotes:\n[paste here]",
       },
       {
         title: "Summarize a long document in three lengths",
-        product: "claude.ai",
+        product: "Any chat app",
         outcome: "TL;DR + paragraph + bulleted breakdown",
         prompt:
           "Summarize the attached document at three lengths so I can pick:\n- one-sentence TL;DR\n- one-paragraph summary\n- bulleted breakdown of the most important 5–8 points\nKeep numbers and proper nouns exact.",
       },
       {
         title: "Turn a transcript into action items",
-        product: "claude.ai",
+        product: "Any chat app",
         outcome: "Owners, due dates, blockers",
         prompt:
           "Read the attached meeting transcript and extract: (a) decisions made, (b) action items with owner + due date if mentioned, (c) any blockers. Format as three short markdown sections.",
@@ -40,21 +40,21 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     recipes: [
       {
         title: "A one-page portfolio",
-        product: "claude.ai (artifact) or Claude Design",
+        product: "Chat artifact or UI generator",
         outcome: "Self-contained HTML page",
         prompt:
           "Build a single-page website. Self-contained HTML (style and JS inline, no external files).\nPurpose: a one-page \"what I'm working on\" portfolio.\nSections: short intro, three projects with title + one-line description, a contact link.\nStyle: warm, minimal, generous whitespace, serif headings. Works offline, no external assets.",
       },
       {
         title: "A pricing page (three tiers)",
-        product: "Claude Design",
+        product: "Any UI generator (v0, Lovable, Bolt, Claude Design)",
         outcome: "Production-ready React/HTML",
         prompt:
           "A pricing page with three tiers: Starter (free), Pro ($12/mo), Team ($29/seat).\nVisual style: modern, warm, generous whitespace. Pro tier highlighted as recommended.\nEach card: name, price, 3 features, CTA button. Mobile-responsive, single column on small screens.",
       },
       {
         title: "A landing page hero you can ship today",
-        product: "Claude Design",
+        product: "Any UI generator (v0, Lovable, Bolt, Claude Design)",
         outcome: "Hero section + a CTA",
         prompt:
           "Build a hero section for a product called [name] that does [one-sentence description].\nAudience: [who].\nTone: [pick: playful / serious / premium / retro].\nInclude: headline (max 8 words), supporting subhead, primary CTA button, secondary link. Above the fold on a laptop.",
@@ -66,21 +66,21 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     recipes: [
       {
         title: "Add a feature to an existing project",
-        product: "Claude Code",
+        product: "Any coding CLI (Cursor, Claude Code, Codex, aider)",
         outcome: "Working code in your repo",
         prompt:
           "I want to add a [feature] to my project. Before writing any code:\n1) Read the relevant files and tell me which ones you'd change.\n2) Propose a one-paragraph plan.\n3) List any risks or open questions.\nThen wait for my OK before editing.",
       },
       {
         title: "Fix a failing build / test",
-        product: "Claude Code",
+        product: "Any coding CLI (Cursor, Claude Code, Codex, aider)",
         outcome: "Green build, diagnosis explained",
         prompt:
           "The build is failing with the error below. Read the relevant files, find the root cause, and propose a fix. If there are multiple possible causes, list them and recommend which to try first.\n\nError:\n[paste here]",
       },
       {
         title: "Write a small CLI to automate a chore",
-        product: "Claude Code",
+        product: "Any coding CLI (Cursor, Claude Code, Codex, aider)",
         outcome: "A working script",
         prompt:
           "Write a Python script `[name].py` that:\n- Takes [inputs] as arguments.\n- Does [the thing].\n- Prints what it's about to do and asks for confirmation before any destructive change.\nThen run it against a tiny sample I can `mkdir`/`touch` into existence as a sanity check.",
@@ -92,14 +92,14 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     recipes: [
       {
         title: "Tiny refactor across the codebase",
-        product: "Claude Cowork",
+        product: "Any cloud agent (Devin, Cowork, Copilot Workspace)",
         outcome: "A PR you can merge",
         prompt:
           "Repo: [repo].\nGoal: rename `oldName` to `newName` everywhere it appears, including imports, exports, tests, and docs. Don't touch comments that reference the old behavior.\nVerify by running the existing test suite. Open a PR when green.",
       },
       {
         title: "Dependency bump pass",
-        product: "Claude Cowork",
+        product: "Any cloud agent (Devin, Cowork, Copilot Workspace)",
         outcome: "PR with deps updated + tests green",
         prompt:
           "Repo: [repo].\nBump all dependencies to their latest minor version. Run the test suite. If any tests break, stop and open a draft PR explaining what broke. If they pass, open a normal PR.",
@@ -128,13 +128,13 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
 ];
 ---
 
-<Layout title="Cookbook · Learn Claude" description="Copy-paste starter prompts for Claude products." currentId="cookbook">
+<Layout title="Cookbook · Learn AI" description="Copy-paste starter prompts that work across AI products." currentId="cookbook">
   <main>
     <p><span class="track-pill">Reference · paste & adapt</span></p>
     <h1>Cookbook</h1>
     <p class="lede">
-      Starter prompts grouped by goal. Pick the closest one, paste it into the named product, fill the
-      brackets with your specifics, send. Each is meant as a launchpad, not a final form.
+      Starter prompts grouped by goal. Work in any major chat / coding / cloud-agent tool.
+      Pick the closest, paste into your tool of choice, fill the brackets, send.
     </p>
 
     {

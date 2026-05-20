@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "design-iterate")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="design-iterate">
+<Layout title={`${lesson.title} · Learn AI`} currentId="design-iterate">
   <main>
     <LessonShell lesson={lesson}>
       <p>React, don't redirect. Change one thing at a time. Branch when unsure.</p>
@@ -24,8 +24,8 @@ const lesson = LESSONS.find((l) => l.id === "design-iterate")!;
       </ul>
 
       <div class="callout">
-        <strong>Design + Code together.</strong> Prototype here, export the code,
-        hand it to Claude Code (or Cowork) to wire into your real app.
+        <strong>Design + Code together.</strong> Prototype the look in a UI generator (v0, Lovable, Bolt, Claude Design),
+        export the code, then hand it to a coding CLI (Cursor, Claude Code, Codex) to wire into your real app.
       </div>
     </LessonShell>
   </main>

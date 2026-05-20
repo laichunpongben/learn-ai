@@ -7,19 +7,23 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-artifacts">
+<Layout title={`${lesson.title} · Learn AI`} currentId="chat-artifacts">
   <main>
     <LessonShell lesson={lesson}>
-      <p>Anything self-contained — a doc, code, a webpage — pops out into a side panel. Try a suggestion below and watch the right side open.</p>
+      <p>
+        When the assistant produces something self-contained — a document, code, a webpage — it pops out
+        into a side panel. <strong>Claude</strong> calls them <em>artifacts</em>; <strong>ChatGPT</strong>
+        calls it <em>Canvas</em>; <strong>Gemini</strong> calls it <em>Canvas</em> too. Same idea, different label.
+      </p>
 
       <ChatSim prompts={["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build me a simple webpage"]} />
 
-      <h2>What counts as an artifact</h2>
+      <h2>What counts</h2>
       <ul>
-        <li>Long write-ups, briefs, plans.</li>
-        <li>Single files of code.</li>
-        <li>Mini-apps that preview live.</li>
-        <li>Diagrams (Mermaid flowcharts, sequence).</li>
+        <li>Long write-ups, briefs, plans</li>
+        <li>Single files of code</li>
+        <li>Mini-apps that preview live (HTML/React)</li>
+        <li>Diagrams (Mermaid flowcharts, sequence)</li>
       </ul>
 
       <p style="color: var(--ink-soft); font-size: 0.92rem;">

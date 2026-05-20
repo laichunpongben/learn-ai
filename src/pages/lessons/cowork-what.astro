@@ -6,19 +6,35 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="cowork-what">
+<Layout title={`${lesson.title} · Learn AI`} currentId="cowork-what">
   <main>
     <LessonShell lesson={lesson} hero="cowork">
-      <p>Cowork runs many tasks at once, in the background. You submit, step away, come back to diffs.</p>
+      <p>
+        <strong>Cloud agents</strong> run tasks in their own sandboxes, in parallel, in the background.
+        You submit, step away, come back to diffs / pull requests.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Product</th><th>From</th><th>What it's good at</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Devin</td><td>Cognition</td><td>Autonomous engineer over a whole repo</td></tr>
+          <tr><td>Claude Cowork</td><td>Anthropic</td><td>Many small tasks across one or more repos</td></tr>
+          <tr><td>Copilot Workspace</td><td>GitHub</td><td>Issue → PR with task plan</td></tr>
+          <tr><td>Codex Cloud</td><td>OpenAI</td><td>Background coding with PR review</td></tr>
+          <tr><td>OpenHands (cloud)</td><td>All Hands AI</td><td>Open-source alternative, self-hostable</td></tr>
+        </tbody>
+      </table>
 
       <div class="vs">
         <div>
-          <h3>Claude Code</h3>
-          <p>Pair programming. You and Claude on the same thing, together, in real time.</p>
+          <h3>Coding CLI</h3>
+          <p>Pair programming. You and the agent on the same thing, together, in real time.</p>
         </div>
         <div class="arrow">→</div>
         <div>
-          <h3>Cowork</h3>
+          <h3>Cloud agent</h3>
           <p>Delegation. Many tasks in parallel sandboxes. You review when convenient.</p>
         </div>
       </div>
@@ -32,7 +48,7 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 
       <h2>Not for</h2>
       <ul>
-        <li>"Design this product" — ambiguous, design-heavy work</li>
+        <li>"Design this product" — ambiguous, open-ended work</li>
         <li>Architectural debates that need conversation</li>
       </ul>
     </LessonShell>
@@ -45,7 +61,7 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
     grid-template-columns: 1fr 40px 1fr;
     gap: 0.5rem;
     align-items: stretch;
-    margin: 1.2rem 0 1.6rem;
+    margin: 1.4rem 0 1.6rem;
   }
   .vs > div:not(.arrow) {
     background: var(--surface);

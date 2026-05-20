@@ -6,27 +6,42 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "code-what")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="code-what">
+<Layout title={`${lesson.title} · Learn AI`} currentId="code-what">
   <main>
     <LessonShell lesson={lesson} hero="code">
       <p>
-        Claude Code lives in your terminal. It reads your files, edits them, runs commands —
-        with your approval each time something touches your machine.
+        A <strong>coding assistant</strong> lives where your code does — your terminal, your editor —
+        and can read, edit, and run files with your approval. Examples:
       </p>
+
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>Surface</th><th>From</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cursor</td><td>Editor (VS Code fork)</td><td>Anysphere</td></tr>
+          <tr><td>Claude Code</td><td>Terminal CLI</td><td>Anthropic</td></tr>
+          <tr><td>Codex CLI</td><td>Terminal CLI</td><td>OpenAI</td></tr>
+          <tr><td>Windsurf</td><td>Editor (VS Code fork)</td><td>Codeium</td></tr>
+          <tr><td>GitHub Copilot</td><td>Editor extension</td><td>GitHub</td></tr>
+          <tr><td>Continue / Cline</td><td>VS Code extension</td><td>Open source</td></tr>
+          <tr><td>aider</td><td>Terminal CLI</td><td>Open source</td></tr>
+        </tbody>
+      </table>
 
       <div class="diff-grid">
         <div>
-          <h3>claude.ai</h3>
+          <h3>Chat app</h3>
           <ul>
-            <li>Browser chat</li>
+            <li>Browser</li>
             <li>You copy/paste code</li>
             <li>No file access</li>
           </ul>
         </div>
         <div>
-          <h3>Claude Code</h3>
+          <h3>Coding assistant</h3>
           <ul>
-            <li>Terminal CLI</li>
+            <li>Terminal or editor</li>
             <li>Edits your files directly</li>
             <li>Runs your tests, your dev server, git</li>
           </ul>
@@ -35,7 +50,7 @@ const lesson = LESSONS.find((l) => l.id === "code-what")!;
 
       <h2>A typical session</h2>
       <pre>$ cd my-project
-$ claude
+$ claude   # or: cursor . / codex / aider
 
 › the app is crashing on startup, can you find why?
 
@@ -48,7 +63,7 @@ Want me to add a placeholder + a clearer startup error?</pre>
 
       <div class="callout">
         <strong>Who it's for:</strong> people who write code. If you've never opened a terminal,
-        start with claude.ai — come back when you're ready to build something real.
+        start with a chat app — come back when you're ready to build something real.
       </div>
     </LessonShell>
   </main>

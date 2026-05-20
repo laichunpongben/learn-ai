@@ -7,18 +7,36 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "design-first")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="design-first">
+<Layout title={`${lesson.title} · Learn AI`} currentId="design-first">
   <main>
     <LessonShell lesson={lesson}>
-      <p>Type a prompt. Hit Generate. Try the chips and the Warm / Dark / Brutalist variants.</p>
+      <p>
+        <strong>UI generators</strong> turn a sentence into a working piece of interface — real HTML/React,
+        not a mockup. Type a prompt, see it render, tweak, iterate, copy the code.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Output</th><th>From</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>v0.dev</td><td>React / Next.js components</td><td>Vercel</td></tr>
+          <tr><td>Lovable</td><td>Full-stack apps (React + DB)</td><td>Lovable</td></tr>
+          <tr><td>Bolt.new</td><td>Full-stack apps, in-browser dev</td><td>StackBlitz</td></tr>
+          <tr><td>Claude Design</td><td>HTML / React components</td><td>Anthropic</td></tr>
+          <tr><td>Galileo</td><td>UI mockups + design systems</td><td>Galileo AI</td></tr>
+        </tbody>
+      </table>
+
+      <p>The imitation below shows the shared pattern: prompt → canvas preview → variants. Try the chips and the Warm / Dark / Brutalist buttons.</p>
 
       <DesignSim />
 
-      <h2>The prompt template</h2>
+      <h2>The prompt template that works</h2>
       <pre>A [type of screen] for [audience].
 [Two or three style words]. Include [content].</pre>
 
-      <h2>Style words that work</h2>
+      <h2>Style words that pull the result</h2>
       <ul>
         <li><strong>Tone:</strong> playful · serious · premium · retro · brutalist · soft · technical · friendly</li>
         <li><strong>Density:</strong> generous whitespace · compact · dashboard-dense</li>

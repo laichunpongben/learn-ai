@@ -7,25 +7,31 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-first")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-first">
+<Layout title={`${lesson.title} · Learn AI`} currentId="chat-first">
   <main>
     <LessonShell lesson={lesson}>
-      <p>Drive the imitation. Try a suggestion. Open a new chat from the sidebar.</p>
+      <p>
+        <strong>Chat assistants</strong> all share this shape: a centred conversation, a sidebar of past chats,
+        and (sometimes) a panel on the right when the assistant produces something self-contained.
+        The imitation below behaves like <a href="https://chat.openai.com" target="_blank" rel="noopener">chat.openai.com</a>,
+        <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>, or
+        <a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com</a>.
+      </p>
 
       <ChatSim prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip", "Build me a simple webpage"]} />
 
-      <h2>What the real app adds</h2>
+      <h2>What real chat apps add</h2>
       <ul>
-        <li>An account; chats persist across devices.</li>
-        <li><strong>File upload</strong> — PDFs, images, spreadsheets.</li>
-        <li><strong>Model picker</strong> — Sonnet / Opus / Haiku.</li>
-        <li><strong>Projects</strong> (next lesson).</li>
+        <li>An account so chats persist across devices.</li>
+        <li><strong>File upload</strong> — PDFs, images, spreadsheets, audio.</li>
+        <li><strong>Model picker</strong> — fast vs smart vs cheap (each vendor has a tier).</li>
+        <li><strong>Projects / GPTs / Gems</strong> — covered next lesson.</li>
       </ul>
 
       <div class="callout">
-        <strong>Why not Claude Code for everything?</strong> If you're in a project folder, often you should.
-        Reach for claude.ai when: not at a dev machine; task isn't about code; you want to drop in a file;
-        a non-developer needs to use it.
+        <strong>Which chat app to pick?</strong> They're more alike than different for most tasks. Pick by:
+        which model brand you want to support; what files you need to upload; what your team already uses;
+        which one feels best to you. Switch any time — your prompts move with you.
       </div>
     </LessonShell>
   </main>

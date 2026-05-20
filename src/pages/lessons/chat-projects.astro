@@ -6,13 +6,30 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-projects">
+<Layout title={`${lesson.title} · Learn AI`} currentId="chat-projects">
   <main>
     <LessonShell lesson={lesson} hero="chat">
-      <p>A <strong>project</strong> is a folder for related chats. Same theme, same files, same instructions.</p>
+      <p>
+        Every major chat app has a way to <strong>create a custom assistant</strong> — a folder of related
+        chats with shared files and instructions. Different names, same idea.
+      </p>
 
+      <table>
+        <thead>
+          <tr><th>App</th><th>Feature name</th><th>Shareable</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ChatGPT</td><td>Projects, Custom GPTs</td><td>Yes (GPT Store)</td></tr>
+          <tr><td>Claude.ai</td><td>Projects</td><td>Team plans only</td></tr>
+          <tr><td>Gemini</td><td>Gems</td><td>Yes</td></tr>
+          <tr><td>Perplexity</td><td>Spaces</td><td>Yes</td></tr>
+          <tr><td>Mistral Le Chat</td><td>Agents</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <h2>The shared anatomy</h2>
       <div class="proj-anatomy">
-        <div class="row"><strong>Custom instructions</strong><span>System prompt for every chat inside</span></div>
+        <div class="row"><strong>Custom instructions</strong><span>System prompt prepended to every chat inside</span></div>
         <div class="row"><strong>Knowledge files</strong><span>Documents uploaded once, referenced always</span></div>
         <div class="row"><strong>Chats</strong><span>Each conversation saved and named</span></div>
       </div>
@@ -25,8 +42,8 @@ const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
       </ul>
 
       <div class="callout">
-        <strong>Mental model.</strong> Chat without a project = a conversation with a smart stranger.
-        Chat inside a project = a conversation with someone who already read your briefing pack.
+        <strong>Mental model.</strong> Plain chat = a conversation with a smart stranger.
+        Custom assistant = a conversation with someone who already read your briefing pack.
       </div>
     </LessonShell>
   </main>

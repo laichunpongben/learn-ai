@@ -2,11 +2,11 @@
 import ProductIcon from "./ProductIcon.astro";
 
 const items = [
-  { kind: "chat" as const, title: "Claude.ai", sub: "Chat" },
-  { kind: "code" as const, title: "Claude Code", sub: "Terminal" },
-  { kind: "cowork" as const, title: "Cowork", sub: "Parallel" },
-  { kind: "design" as const, title: "Design", sub: "Visual" },
-  { kind: "agents" as const, title: "Open agents", sub: "Hermes / OpenClaw" },
+  { kind: "chat" as const, title: "Chat",       sub: "ChatGPT · Claude · Gemini" },
+  { kind: "code" as const, title: "Coding CLI", sub: "Cursor · Claude Code · Codex" },
+  { kind: "cowork" as const, title: "Cloud agents", sub: "Devin · Cowork · OpenHands" },
+  { kind: "design" as const, title: "Visual UI",  sub: "v0 · Lovable · Bolt" },
+  { kind: "agents" as const, title: "Self-hosted", sub: "Hermes · OpenClaw · aider" },
 ];
 ---
 
@@ -54,7 +54,7 @@ const items = [
     font-size: 0.68rem;
     color: var(--ink-faint);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     font-weight: 500;
   }
   @media (max-width: 720px) {

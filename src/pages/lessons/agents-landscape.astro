@@ -6,18 +6,25 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "agents-landscape")!;
 
 const agents = [
-  { name: "Hermes Agent", who: "Nous Research", what: "Background daemon. Persistent memory, scheduled tasks, Telegram/Discord.", url: "https://github.com/NousResearch/hermes-agent" },
-  { name: "OpenClaw", who: "Open source", what: "Multi-agent runtime. Coordinates Claude Code, Codex, Gemini, Cursor as one.", url: "https://docs.openclaw.ai" },
-  { name: "aider", who: "Open source", what: "Terminal pair programming. Mature, git-aware, multi-model.", url: "https://aider.chat" },
-  { name: "OpenHands", who: "All Hands AI", what: "Autonomous engineer in a web UI. Local + customisable.", url: "https://github.com/All-Hands-AI/OpenHands" },
-  { name: "Continue · Cline · Goose", who: "Various", what: "IDE-embedded copilots. VS Code (Continue, Cline), CLI/desktop (Goose).", url: "" },
+  { name: "Hermes Agent",  who: "Nous Research",  what: "Background daemon. Persistent memory, scheduled tasks, Telegram/Discord.", url: "https://github.com/NousResearch/hermes-agent" },
+  { name: "OpenClaw",      who: "Open source",    what: "Multi-agent runtime. Coordinates multiple coding CLIs as one.", url: "https://docs.openclaw.ai" },
+  { name: "aider",         who: "Open source",    what: "Terminal pair programming. Mature, git-aware, multi-model.", url: "https://aider.chat" },
+  { name: "OpenHands",     who: "All Hands AI",   what: "Autonomous engineer in a web UI. Local + customisable.", url: "https://github.com/All-Hands-AI/OpenHands" },
+  { name: "Goose",         who: "Block",          what: "Extensible CLI/desktop agent. Strong tool ecosystem.", url: "https://block.github.io/goose/" },
+  { name: "AutoGen",       who: "Microsoft",      what: "Multi-agent conversation framework. Python-first.", url: "https://github.com/microsoft/autogen" },
+  { name: "crewAI",        who: "crewAI",         what: "Role-based agent orchestration. Great for workflow automation.", url: "https://www.crewai.com" },
+  { name: "Continue / Cline", who: "Various",     what: "IDE-embedded copilots inside VS Code.", url: "https://continue.dev" },
 ];
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="agents-landscape">
+<Layout title={`${lesson.title} · Learn AI`} currentId="agents-landscape">
   <main>
     <LessonShell lesson={lesson} hero="agents">
-      <p>Open-source tools that wrap Claude. Different shapes for cases the Anthropic apps don't fit.</p>
+      <p>
+        <strong>Open-source autonomous agents</strong> are tools that wrap an LLM — usually any LLM — into a different
+        shape than a chat or a CLI. Background daemons, multi-agent runtimes, IDE plugins, web sandboxes.
+        You self-host them, give them an API key, and they go to work.
+      </p>
 
       <div class="agent-list">
         {agents.map((a) => (
@@ -33,9 +40,15 @@ const agents = [
       </div>
 
       <div class="callout">
-        <strong>When to reach for these.</strong> When the Anthropic apps don't cover it: background execution,
-        cross-session memory, custom tool integrations, multi-agent orchestration, full self-hosting.
+        <strong>When to reach for these.</strong> When the polished products don't cover your case:
+        background execution, cross-session memory, custom tool integrations, multi-agent orchestration,
+        running fully on your own infrastructure, or swapping providers freely.
       </div>
+
+      <p style="color: var(--ink-soft); font-size: 0.9rem;">
+        All of these are model-agnostic — you can point them at OpenAI, Anthropic, Google, Mistral, DeepSeek,
+        or a local Ollama model. The next lesson explains how that wiring works.
+      </p>
     </LessonShell>
   </main>
 </Layout>

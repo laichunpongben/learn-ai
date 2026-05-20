@@ -10,7 +10,7 @@ const tiers = [
   {
     kind: "chat" as const,
     title: "Ship today, in chat",
-    items: ["Writing & email", "Analysis of PDFs / CSVs", "Plans & itineraries", "One-page mini-apps", "Diagrams"],
+    items: ["Writing & email", "Analyze PDFs / CSVs", "Plans & itineraries", "One-page mini-apps", "Diagrams"],
   },
   {
     kind: "code" as const,
@@ -25,7 +25,7 @@ const tiers = [
 ];
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="capabilities">
+<Layout title={`${lesson.title} · Learn AI`} currentId="capabilities">
   <main>
     <LessonShell lesson={lesson} hero="claude">
       <p>Three ambition levels. Pick the row that matches what you want.</p>
@@ -40,26 +40,26 @@ const tiers = [
         ))}
       </div>
 
-      <h2>Which product, when?</h2>
+      <h2>Which kind of tool, when?</h2>
       <table>
         <thead>
-          <tr><th>Situation</th><th>Open</th></tr>
+          <tr><th>Situation</th><th>Reach for</th></tr>
         </thead>
         <tbody>
-          <tr><td>In a project folder, touching code</td><td><strong>Claude Code</strong></td></tr>
-          <tr><td>Long chores against a repo</td><td><strong>Cowork</strong></td></tr>
-          <tr><td>Needs to look visual</td><td><strong>Design</strong></td></tr>
-          <tr><td>Phone / tablet / someone else's laptop</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>Drop in a PDF or screenshot</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>A non-developer needs to use it</td><td><strong>Claude.ai</strong></td></tr>
-          <tr><td>Persistent assistant with knowledge files</td><td><strong>Claude.ai</strong> (Projects)</td></tr>
-          <tr><td>Background daemon with memory</td><td><strong>Hermes / OpenClaw</strong></td></tr>
-          <tr><td>Embedding in your own product</td><td><strong>Claude API</strong></td></tr>
+          <tr><td>In a project folder, touching code</td><td><strong>A coding CLI</strong> (Cursor, Claude Code, Codex)</td></tr>
+          <tr><td>Long chores against a repo, in parallel</td><td><strong>A cloud agent</strong> (Devin, Cowork, Copilot Workspace)</td></tr>
+          <tr><td>Needs to look visual</td><td><strong>A UI generator</strong> (v0, Lovable, Bolt)</td></tr>
+          <tr><td>Phone / tablet / someone else's laptop</td><td><strong>A chat app</strong> (ChatGPT, Claude.ai, Gemini)</td></tr>
+          <tr><td>Drop in a PDF or screenshot</td><td><strong>A chat app</strong></td></tr>
+          <tr><td>A non-developer needs to use it</td><td><strong>A chat app</strong></td></tr>
+          <tr><td>Persistent assistant with knowledge files</td><td><strong>A chat app</strong> (Projects / GPTs / Gems)</td></tr>
+          <tr><td>Background daemon with persistent memory</td><td><strong>A self-hosted agent</strong> (Hermes, OpenClaw)</td></tr>
+          <tr><td>Embedding into your own product</td><td><strong>An LLM API</strong> (OpenAI / Anthropic / Google)</td></tr>
         </tbody>
       </table>
 
       <p style="color: var(--ink-soft); font-size: 0.92rem;">
-        If you have a terminal open in the right folder, Claude Code wins most of the time. The other products
+        If you have a terminal open in the right folder, a coding CLI wins most of the time. The other kinds
         cover the cases where you don't — or where the work isn't about code.
       </p>
     </LessonShell>

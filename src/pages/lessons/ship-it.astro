@@ -28,18 +28,18 @@ const cliPrompt = `Write a Python script rename.py that:
 Then create samples/ with two fake .jpg files and run as a sanity check.`;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="ship-it">
+<Layout title={`${lesson.title} · Learn AI`} currentId="ship-it">
   <main>
     <LessonShell lesson={lesson} hero="ship">
-      <p>Pick one. Build it. Keep it.</p>
+      <p>Pick one. Build it. Keep it. Any chat assistant works for A and B; any coding CLI works for C.</p>
 
       <div class="paths">
         <article>
           <div class="ph"><ProductIcon kind="chat" size={36} /><span class="time">~5 min · no install</span></div>
           <h3>A · Writing assistant</h3>
-          <p>A saved Claude.ai project that turns rough notes into polished prose in your voice.</p>
+          <p>A saved custom assistant (Project / GPT / Gem) that turns rough notes into polished prose in your voice.</p>
           <ol class="mini">
-            <li>claude.ai → Projects → New project</li>
+            <li>Open any chat app (ChatGPT, Claude.ai, Gemini) → create a Project / GPT / Gem</li>
             <li>Paste the prompt below into <strong>Custom instructions</strong></li>
             <li>(Optional) Drop in 2–3 writing samples as knowledge</li>
             <li>Start a chat. Paste rough notes. Done.</li>
@@ -52,7 +52,7 @@ Then create samples/ with two fake .jpg files and run as a sanity check.`;
           <h3>B · Tiny live webpage</h3>
           <p>A working page you can share — portfolio, event invite, calculator.</p>
           <ol class="mini">
-            <li>claude.ai → New chat</li>
+            <li>Open a chat app with artifacts/canvas (Claude.ai, ChatGPT) <em>or</em> a UI generator (v0, Lovable, Bolt)</li>
             <li>Paste the prompt</li>
             <li>Watch the artifact panel render live</li>
             <li>Iterate ("darker background", "add hover animation"), download HTML</li>
@@ -61,12 +61,12 @@ Then create samples/ with two fake .jpg files and run as a sanity check.`;
         </article>
 
         <article>
-          <div class="ph"><ProductIcon kind="code" size={36} /><span class="time">~15 min · Claude Code</span></div>
+          <div class="ph"><ProductIcon kind="code" size={36} /><span class="time">~15 min · coding CLI</span></div>
           <h3>C · Personal script</h3>
           <p>Rename a folder of photos by their EXIF dates.</p>
           <ol class="mini">
             <li><code class="inline">mkdir photo-renamer &amp;&amp; cd photo-renamer</code></li>
-            <li><code class="inline">claude</code></li>
+            <li>Open your CLI: <code class="inline">claude</code> / <code class="inline">codex</code> / <code class="inline">aider</code> / <code class="inline">cursor .</code></li>
             <li>Paste the prompt</li>
             <li>Approve the actions it asks about</li>
           </ol>

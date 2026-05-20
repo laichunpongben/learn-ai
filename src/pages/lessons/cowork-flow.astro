@@ -7,10 +7,13 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`} currentId="cowork-flow">
+<Layout title={`${lesson.title} · Learn AI`} currentId="cowork-flow">
   <main>
     <LessonShell lesson={lesson}>
-      <p>Hit <strong>▶ Run all</strong>. Tasks run in parallel. Click each to see the diff. Approve or discard.</p>
+      <p>
+        Every cloud-agent platform has roughly the same flow. The imitation below shows the pattern.
+        Hit <strong>▶ Run all</strong> — tasks run in parallel. Click each to see the diff. Approve or discard.
+      </p>
 
       <CoworkSim />
 
@@ -27,6 +30,11 @@ const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
         <li><strong>Constraints.</strong> "Don't touch the API." "Match the settings page style."</li>
         <li><strong>Verify.</strong> "Tests pass." "Clicking the toggle switches colours."</li>
       </ul>
+
+      <div class="callout">
+        <strong>Same shape across vendors.</strong> Devin's "task", Cowork's "task", Copilot Workspace's "spec",
+        Codex Cloud's "session" all behave like the boxes on the left. The diff review is GitHub-style across all of them.
+      </div>
     </LessonShell>
   </main>
 </Layout>

@@ -19,3 +19,4 @@ Each ADR is a short Markdown file with:
 | 0002 | [Tutorial centered on product imitations](./0002-product-imitations-as-core.md) | Accepted (supersedes part of 0001) |
 | 0003 | [Scope includes open-source agents on top of Claude](./0003-open-source-agents-in-scope.md) | Accepted |
 | 0004 | [Progress persisted in localStorage only](./0004-localstorage-progress.md) | Accepted |
+| 0005 | [Repurposed to generic AI/agent scope](./0005-generic-ai-scope.md) | Accepted (supersedes Claude-only framing of 0001–0003) |
