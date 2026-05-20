@@ -1,4 +1,4 @@
-export type TrackId = "start" | "chat" | "code" | "cloud" | "design" | "agents" | "ship";
+export type TrackId = "start" | "concepts" | "chat" | "code" | "cloud" | "design" | "agents" | "ship";
 
 export interface Lesson {
   id: string;
@@ -22,6 +22,12 @@ export const TRACKS: Track[] = [
     title: "Start Here",
     tagline: "What modern AI assistants are, and what you can build with them.",
     accent: "#f0a05a",
+  },
+  {
+    id: "concepts",
+    title: "Foundations",
+    tagline: "CLI, git, MCP — the three things every AI tutorial assumes you know.",
+    accent: "#b07a3a",
   },
   {
     id: "chat",
@@ -77,6 +83,30 @@ export const LESSONS: Lesson[] = [
     blurb: "A capability map — from a doc to a deployed app.",
     minutes: 4,
     track: "start",
+  },
+  {
+    id: "concept-cli",
+    slug: "concept-cli",
+    title: "The CLI / terminal",
+    blurb: "A text window where you tell your computer what to do. Where most AI tools live.",
+    minutes: 4,
+    track: "concepts",
+  },
+  {
+    id: "concept-git",
+    slug: "concept-git",
+    title: "Git — your AI safety net",
+    blurb: "Version control as 'undo for your whole project'. Essential when AI edits files.",
+    minutes: 4,
+    track: "concepts",
+  },
+  {
+    id: "concept-mcp",
+    slug: "concept-mcp",
+    title: "MCP — how AI plugs into your tools",
+    blurb: "The standard that lets agents talk to your filesystem, Slack, GitHub, Postgres, etc.",
+    minutes: 4,
+    track: "concepts",
   },
   {
     id: "chat-first",

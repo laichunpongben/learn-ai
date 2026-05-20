@@ -1,0 +1,102 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-git")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="concept-git">
+  <main>
+    <LessonShell lesson={lesson} hero="code">
+      <p>
+        <strong>Git</strong> is the "undo button" for your entire project. It tracks every change so you can
+        review, revert, branch, or merge. When an AI tool is editing your code, git is what keeps you
+        unafraid — you can always go back.
+      </p>
+
+      <div class="git-pic">
+        <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg" aria-label="A timeline of git commits with a branch">
+          <line x1="40" y1="70" x2="560" y2="70" stroke="#d4d2cd" stroke-width="1.5"/>
+          <circle cx="80" cy="70" r="9" fill="#0a0a0a"/>
+          <circle cx="180" cy="70" r="9" fill="#0a0a0a"/>
+          <circle cx="280" cy="70" r="9" fill="#0a0a0a"/>
+          <circle cx="380" cy="70" r="9" fill="#cc5500"/>
+          <line x1="380" y1="70" x2="460" y2="30" stroke="#d4d2cd" stroke-width="1.5"/>
+          <circle cx="460" cy="30" r="9" fill="#1f7a3a"/>
+          <circle cx="540" cy="70" r="9" fill="#a3a3a3"/>
+          <text x="80" y="105" font-family="Inter, sans-serif" font-size="11" fill="#525252" text-anchor="middle">initial</text>
+          <text x="180" y="105" font-family="Inter, sans-serif" font-size="11" fill="#525252" text-anchor="middle">feature A</text>
+          <text x="280" y="105" font-family="Inter, sans-serif" font-size="11" fill="#525252" text-anchor="middle">fix bug</text>
+          <text x="380" y="105" font-family="Inter, sans-serif" font-size="11" fill="#cc5500" text-anchor="middle" font-weight="600">you are here</text>
+          <text x="460" y="20" font-family="Inter, sans-serif" font-size="11" fill="#1f7a3a" text-anchor="middle">experiment branch</text>
+          <text x="540" y="105" font-family="Inter, sans-serif" font-size="11" fill="#a3a3a3" text-anchor="middle">next?</text>
+        </svg>
+      </div>
+
+      <h2>The five commands that cover 90% of daily git</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>When you'd use it</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="inline">git init</code></td><td>Once, in a new project, to start tracking</td></tr>
+          <tr><td><code class="inline">git status</code></td><td>"What changed since my last save?"</td></tr>
+          <tr><td><code class="inline">git diff</code></td><td>"Show me exactly what changed"</td></tr>
+          <tr><td><code class="inline">git commit -am "msg"</code></td><td>Save a checkpoint of all tracked file changes</td></tr>
+          <tr><td><code class="inline">git restore .</code></td><td>"Undo everything since my last commit"</td></tr>
+        </tbody>
+      </table>
+
+      <h2>The AI safety pattern</h2>
+      <ol class="steps">
+        <li>Before letting an AI edit, <strong>commit</strong> what you have: <code class="inline">git commit -am "before AI"</code></li>
+        <li>Let the AI make its changes.</li>
+        <li>Run <strong>git diff</strong> — read the actual changes, not the AI's summary.</li>
+        <li>If you like it: <strong>git commit -am "AI: added X"</strong>. If not: <strong>git restore .</strong> and try a different prompt.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Why this matters more for AI than for human edits.</strong> An AI can touch 20 files in 10 seconds.
+        Without git, "undo" becomes "rewrite from memory". With git, "undo" is one command.
+      </div>
+
+      <h2>AI tools that are git-aware</h2>
+      <ul>
+        <li><strong>aider</strong> auto-commits each AI edit — every change is its own undoable commit.</li>
+        <li><strong>Cursor</strong> shows a diff in the editor before applying changes.</li>
+        <li><strong>Claude Code</strong> respects <code class="inline">.gitignore</code> and runs <code class="inline">git</code> when you ask.</li>
+        <li><strong>Cloud agents</strong> (Devin, Cowork, Copilot Workspace) return their work as <em>pull requests</em> — a git construct.</li>
+      </ul>
+
+      <h2>Going further (optional)</h2>
+      <ul>
+        <li><strong>Branches</strong> — try a wild idea on a parallel timeline: <code class="inline">git checkout -b experiment</code></li>
+        <li><strong>GitHub / GitLab</strong> — a website that hosts your git repo and shows beautiful diffs</li>
+        <li><strong>Pull requests (PRs)</strong> — propose changes for review before merging into main</li>
+      </ul>
+
+      <Reveal q="What if I just deleted my AI's work and didn't have git?">
+        Depends. Most editors keep a local history (VS Code's "Local History" panel; macOS Time Machine).
+        But git is the only reliable undo across many files and many sessions. Add it to every project — even ones you think are throwaway.
+      </Reveal>
+      <Reveal q="Is git the same as GitHub?">
+        No. <strong>Git</strong> is the version control tool that runs on your machine.
+        <strong>GitHub</strong> (and GitLab, Bitbucket, Codeberg) are websites that host your git repos and add team features.
+        You can use git without GitHub forever.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
+
+<style>
+  .git-pic {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+    margin: 1.2rem 0;
+  }
+  .git-pic svg { width: 100%; height: auto; display: block; }
+</style>

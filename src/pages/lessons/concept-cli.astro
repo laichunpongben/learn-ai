@@ -1,0 +1,75 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import FakeTerminal from "../../components/FakeTerminal.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-cli")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="concept-cli">
+  <main>
+    <LessonShell lesson={lesson} hero="code">
+      <p>
+        The <strong>CLI</strong> (command-line interface) is a plain text window where you tell your
+        computer what to do — instead of clicking buttons. Most AI coding tools live there because
+        text is the easiest interface for an AI to drive.
+      </p>
+
+      <h2>Anatomy of a prompt</h2>
+      <pre>~/my-project $ █</pre>
+      <ul>
+        <li><code class="inline">~/my-project</code> — where you are right now ("current directory")</li>
+        <li><code class="inline">$</code> — your shell waiting for input (sometimes <code class="inline">%</code> or <code class="inline">›</code>)</li>
+        <li><code class="inline">█</code> — your cursor</li>
+      </ul>
+
+      <h2>The five commands you'll see in every tutorial</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="inline">pwd</code></td><td>Print Working Directory — "where am I?"</td></tr>
+          <tr><td><code class="inline">ls</code></td><td>List files in the current folder</td></tr>
+          <tr><td><code class="inline">cd folder/</code></td><td>Change Directory — "go into that folder"</td></tr>
+          <tr><td><code class="inline">cd ..</code></td><td>Go up one folder</td></tr>
+          <tr><td><code class="inline">mkdir name</code></td><td>Make a new folder</td></tr>
+          <tr><td><code class="inline">cat file.txt</code></td><td>Print the contents of a file</td></tr>
+        </tbody>
+      </table>
+
+      <h2>How to open one (real, on your machine)</h2>
+      <ul>
+        <li><strong>macOS:</strong> press <kbd>⌘</kbd>+<kbd>Space</kbd>, type "Terminal", hit Enter.</li>
+        <li><strong>Windows:</strong> press <kbd>Win</kbd>, type "Windows Terminal" (or PowerShell), hit Enter.</li>
+        <li><strong>Linux:</strong> <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> in most desktop environments.</li>
+      </ul>
+      <p>Type <code class="inline">pwd</code> and press Enter. That's it — you've used a CLI.</p>
+
+      <h2>Try it (no install)</h2>
+      <p>This is the same pretend terminal you'll see in the coding-CLI lesson. Type <code class="inline">list files</code> or <code class="inline">/help</code>.</p>
+      <FakeTerminal cwd="~/sandbox" />
+
+      <h2>Why AI tools love the CLI</h2>
+      <ul>
+        <li><strong>Real file access.</strong> Reading and writing files is just text.</li>
+        <li><strong>Real command execution.</strong> "Run the tests" → it runs them and reads the output.</li>
+        <li><strong>Composability.</strong> Pipe one tool's output into another with <code class="inline">|</code>.</li>
+        <li><strong>It's everywhere.</strong> Same shell, every machine, every OS.</li>
+      </ul>
+
+      <Reveal q="What's the difference between 'shell', 'terminal', and 'CLI'?">
+        <strong>Terminal</strong> is the window (Terminal.app, iTerm2, Windows Terminal).
+        <strong>Shell</strong> is the program running inside it that interprets your commands (bash, zsh, fish, PowerShell).
+        <strong>CLI</strong> is the general concept: command-line interface. People use the three words interchangeably; you can too.
+      </Reveal>
+      <Reveal q="What about Git Bash / WSL on Windows?">
+        Windows historically had a clunky CLI. Two modern fixes: <strong>Windows Terminal</strong> (Microsoft, native) is fine.
+        <strong>WSL</strong> (Windows Subsystem for Linux) gives you a real Linux shell inside Windows — often the smoothest path
+        when you'll work with AI coding tools.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
