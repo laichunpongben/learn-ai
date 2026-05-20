@@ -1,0 +1,159 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-rag")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-rag">
+  <main>
+    <LessonShell lesson={lesson} hero="agents">
+      <p>
+        A trained model knows what it read during training. It doesn't know your company's wiki,
+        last week's emails, or the PDF you just opened. <strong>RAG — Retrieval-Augmented Generation</strong>
+        — is the standard pattern for fixing that. The name sounds complicated; the idea is simple.
+      </p>
+
+      <h2>The 30-second mental model</h2>
+      <ol class="steps">
+        <li><strong>You have a pile of documents</strong> the model doesn't know about.</li>
+        <li><strong>You ask a question.</strong></li>
+        <li><strong>A search step</strong> finds the most relevant chunks from your pile.</li>
+        <li><strong>The model answers</strong> with those chunks attached to the prompt.</li>
+      </ol>
+      <p>That's it. Retrieval (find the docs) + Generation (answer with them in context).</p>
+
+      <div class="rag-pic">
+        <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" aria-label="RAG flow diagram">
+          <!-- Query -->
+          <rect x="10" y="80" width="100" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <text x="60" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="currentColor">Your question</text>
+
+          <!-- Arrow -->
+          <line x1="110" y1="100" x2="155" y2="100" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Retriever -->
+          <rect x="160" y="80" width="120" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <text x="220" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="currentColor">Retriever</text>
+
+          <!-- Doc pile -->
+          <g stroke="currentColor" fill="none" stroke-width="1">
+            <rect x="170" y="20" width="40" height="30" rx="2"/>
+            <rect x="180" y="14" width="40" height="30" rx="2"/>
+            <rect x="190" y="8" width="40" height="30" rx="2"/>
+          </g>
+          <text x="200" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="currentColor" opacity="0.6">Your docs</text>
+          <line x1="210" y1="48" x2="220" y2="80" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+
+          <!-- Arrow with attached snippets -->
+          <line x1="280" y1="100" x2="330" y2="100" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <text x="305" y="92" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.6">top-k chunks</text>
+
+          <!-- LLM -->
+          <rect x="335" y="80" width="100" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <text x="385" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="currentColor">LLM</text>
+
+          <!-- Arrow -->
+          <line x1="435" y1="100" x2="485" y2="100" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+          <!-- Answer -->
+          <rect x="490" y="80" width="130" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <text x="555" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" fill="currentColor">Grounded answer</text>
+
+          <defs>
+            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0, 6 3, 0 6" fill="currentColor"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h2>How retrieval actually works</h2>
+      <ol class="steps">
+        <li><strong>Chunk.</strong> Split every document into ~500–1500 token pieces. Overlap them slightly so context isn't sliced apart.</li>
+        <li><strong>Embed.</strong> Run each chunk through an embedding model (OpenAI, Cohere, Voyage, open-source like nomic-embed). Out comes a high-dimensional vector — a "fingerprint of meaning".</li>
+        <li><strong>Store.</strong> Save the chunks + their vectors in a vector database — Postgres with pgvector, Pinecone, Qdrant, Weaviate, LanceDB.</li>
+        <li><strong>Search.</strong> When a question comes in, embed it too. Find the chunks whose vectors are nearest (cosine similarity).</li>
+        <li><strong>Generate.</strong> Stuff the top 3–10 chunks into the LLM's prompt: "Answer the user's question using only these snippets." Cite the source where possible.</li>
+      </ol>
+
+      <h2>When RAG is the right answer</h2>
+      <ul>
+        <li><strong>Internal company knowledge.</strong> Wiki, runbooks, sales playbooks, policy docs.</li>
+        <li><strong>Customer support.</strong> Help center articles + past tickets.</li>
+        <li><strong>Code search.</strong> "Find a function that does X" across a large codebase.</li>
+        <li><strong>Anywhere with a long tail of facts</strong> that can't all fit in a system prompt.</li>
+      </ul>
+
+      <h2>The "you might not need RAG" alternatives</h2>
+      <p>Most non-engineers reach for RAG and over-engineer. Try these first:</p>
+      <div class="card">
+        <ul style="margin: 0;">
+          <li><strong>Long context window.</strong> 2026 models hold 200K–2M tokens. If your data is &lt;100K tokens (~75K words), just paste it into the prompt or attach as a file. Simpler, no infrastructure.</li>
+          <li><strong>Projects / Custom GPTs / Gems.</strong> Upload your docs as <em>knowledge files</em>. The product handles the chunking + retrieval for you. See <a href="/lessons/chat-projects">the projects lesson</a>.</li>
+          <li><strong>A really good system prompt.</strong> Often the "data" you wanted to retrieve is just a few hundred words of policy. Bake it into the system prompt and skip retrieval entirely.</li>
+          <li><strong>MCP filesystem server.</strong> Let the agent read your files on demand. No vector DB needed; the agent grep's its way to the answer. See <a href="/lessons/concept-mcp">the MCP lesson</a>.</li>
+        </ul>
+      </div>
+
+      <h2>Where RAG goes wrong</h2>
+      <table>
+        <thead>
+          <tr><th>Symptom</th><th>Likely cause</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Model invents an answer</td><td>Retrieval didn't return relevant chunks; model filled the gap</td></tr>
+          <tr><td>Answer cites a wrong chunk</td><td>Chunking sliced the context away from the answer</td></tr>
+          <tr><td>Retrieval misses obvious matches</td><td>Embedding model can't tell the question and the doc share a topic — try a better embedder or add keyword search</td></tr>
+          <tr><td>Slow / expensive</td><td>Too many retrieved chunks, or chunks too large — top-3 of ~800 tokens is usually plenty</td></tr>
+          <tr><td>Stale answers</td><td>Embedding store never re-indexes — add a cron / webhook</td></tr>
+        </tbody>
+      </table>
+
+      <h2>2026 patterns worth knowing</h2>
+      <ul>
+        <li><strong>Hybrid search.</strong> Combine semantic (embeddings) with keyword (BM25). Names, IDs, exact phrases — keywords still beat embeddings for those.</li>
+        <li><strong>Reranking.</strong> Retrieve 30 candidates, then ask a small reranker model to score and keep the top 3. Big quality jump for small cost.</li>
+        <li><strong>Agentic retrieval.</strong> Instead of one search step, let the agent search, read, search again. Costs more but answers harder questions.</li>
+        <li><strong>Citation-required prompts.</strong> "Cite the chunk number for every claim." Cuts hallucinations and makes verification possible.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Build path:</strong> if you want to ship a RAG app, the shortest route in 2026 is OpenAI Assistants API or
+        Anthropic's file search — both handle chunking, embedding, retrieval for you. Roll-your-own pays off only when
+        you need control over the embeddings, the reranker, or the storage layer.
+      </div>
+
+      <Reveal q="Is fine-tuning the same thing?">
+        No, opposite ends of the spectrum. Fine-tuning bakes patterns into the model's weights —
+        permanent, slow to change. RAG keeps the data <em>outside</em> the model — fast to update,
+        fast to swap. Most use cases want RAG; fine-tune only when the model needs to learn a
+        consistent <em>format</em> or <em>style</em> it can't get from a prompt.
+      </Reveal>
+      <Reveal q="What does an embedding model actually output?">
+        A vector of 768 or 1536 or 3072 numbers (depending on the model). Each number doesn't mean
+        anything individually; <em>distances</em> between vectors are what matter. Two vectors close
+        together = two pieces of text that are about similar things.
+      </Reveal>
+      <Reveal q="Do I need a vector DB or can I use Postgres?">
+        Postgres + pgvector is excellent for under ~10M chunks and is the default recommendation now.
+        Reach for a dedicated vector DB (Pinecone, Qdrant, Weaviate) when you need distributed scale,
+        fancy hybrid search, or specific operational features.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
+
+<style>
+  .rag-pic {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+    margin: 1.2rem 0;
+    color: var(--ink-soft);
+  }
+  .rag-pic svg { width: 100%; height: auto; display: block; }
+</style>
