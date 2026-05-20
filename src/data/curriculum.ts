@@ -295,6 +295,14 @@ export const LESSONS: Lesson[] = [
     minutes: 20,
     track: "ship",
   },
+  {
+    id: "build-slackbot",
+    slug: "build-slackbot",
+    title: "Build · A Slack channel digest bot",
+    blurb: "A bot that posts a daily summary to a Slack channel. Real API tokens, real scheduling. ~25 min.",
+    minutes: 25,
+    track: "ship",
+  },
 ];
 
 export function lessonByIndex(i: number): Lesson | undefined {
