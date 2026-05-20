@@ -15,23 +15,33 @@ const THEME_KEY = "learn-ai.theme.v1";
 
 type Action = "toggle-theme" | "open-search" | "close-search" | "toggle-sidebar" | "close-sidebar";
 
-function readTheme(): "light" | "dark" {
-  let stored: string | null = null;
+type Mode = "light" | "dark" | "auto";
+
+function readMode(): Mode {
   try {
-    stored = localStorage.getItem(THEME_KEY);
+    const s = localStorage.getItem(THEME_KEY);
+    if (s === "light" || s === "dark") return s;
   } catch {
     /* private mode */
   }
-  if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "auto";
 }
 
-function writeTheme(t: "light" | "dark"): void {
-  document.documentElement.setAttribute("data-theme", t);
-  try {
-    localStorage.setItem(THEME_KEY, t);
-  } catch {
-    /* private mode */
+function applyMode(m: Mode): void {
+  if (m === "auto") {
+    document.documentElement.removeAttribute("data-theme");
+    try {
+      localStorage.removeItem(THEME_KEY);
+    } catch {
+      /* ignore */
+    }
+  } else {
+    document.documentElement.setAttribute("data-theme", m);
+    try {
+      localStorage.setItem(THEME_KEY, m);
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -39,7 +49,9 @@ const dialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]")
 const html = document.documentElement;
 
 function toggleTheme(): void {
-  writeTheme(readTheme() === "dark" ? "light" : "dark");
+  // light → dark → auto → light
+  const cur = readMode();
+  applyMode(cur === "light" ? "dark" : cur === "dark" ? "auto" : "light");
 }
 
 function openSearch(): void {
