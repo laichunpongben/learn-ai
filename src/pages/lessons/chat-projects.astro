@@ -6,7 +6,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-projects">
   <main>
     <LessonShell lesson={lesson} hero="chat">
       <p>A <strong>project</strong> is a folder for related chats. Same theme, same files, same instructions.</p>

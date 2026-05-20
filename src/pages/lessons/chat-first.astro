@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-first")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-first">
   <main>
     <LessonShell lesson={lesson}>
       <p>Drive the imitation. Try a suggestion. Open a new chat from the sidebar.</p>

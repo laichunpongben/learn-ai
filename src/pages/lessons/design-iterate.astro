@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "design-iterate")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="design-iterate">
   <main>
     <LessonShell lesson={lesson}>
       <p>React, don't redirect. Change one thing at a time. Branch when unsure.</p>

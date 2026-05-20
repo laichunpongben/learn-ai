@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="cowork-flow">
   <main>
     <LessonShell lesson={lesson}>
       <p>Hit <strong>▶ Run all</strong>. Tasks run in parallel. Click each to see the diff. Approve or discard.</p>

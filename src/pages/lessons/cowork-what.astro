@@ -6,7 +6,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="cowork-what">
   <main>
     <LessonShell lesson={lesson} hero="cowork">
       <p>Cowork runs many tasks at once, in the background. You submit, step away, come back to diffs.</p>

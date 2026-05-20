@@ -7,7 +7,7 @@ import { LESSONS } from "../../data/curriculum";
 const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
 ---
 
-<Layout title={`${lesson.title} · Learn Claude`}>
+<Layout title={`${lesson.title} · Learn Claude`} currentId="chat-artifacts">
   <main>
     <LessonShell lesson={lesson}>
       <p>Anything self-contained — a doc, code, a webpage — pops out into a side panel. Try a suggestion below and watch the right side open.</p>
