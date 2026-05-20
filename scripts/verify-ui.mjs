@@ -38,13 +38,16 @@ try {
   await page.reload({ waitUntil: "domcontentloaded" });
   await new Promise((r) => setTimeout(r, 400));
 
-  // 1. Click on the toggle button must reach an SVG (not absorbed by a hidden overlay).
-  const at = await page.evaluate(() => {
+  // 1. Click on the toggle button must reach something INSIDE the toggle —
+  //    any descendant is fine (svg, path, circle, …); the test exists to catch
+  //    an external overlay absorbing the click.
+  const occluded = await page.evaluate(() => {
     const t = document.querySelector("[data-ui-action='toggle-theme']");
     const r = t.getBoundingClientRect();
-    return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2).tagName.toLowerCase();
+    const el = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return !t.contains(el);
   });
-  assert("toggle is not occluded by an overlay", at === "svg" || at === "button", at);
+  assert("toggle is not occluded by an overlay", occluded === false, occluded);
 
   // 2. Theme actually toggles between light and dark.
   await page.click("[data-ui-action='toggle-theme']");
