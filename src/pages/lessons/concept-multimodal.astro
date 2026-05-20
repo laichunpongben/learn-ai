@@ -81,7 +81,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-multimodal")!;
           <tr><td>Exactly-rendered text in an image</td><td>Ideogram or Imagen (best text fidelity)</td></tr>
           <tr><td>A quick illustration inside a chat conversation</td><td>DALL-E in ChatGPT, Imagen in Gemini</td></tr>
           <tr><td>Local / private / no per-image cost</td><td>Stable Diffusion / Flux locally</td></tr>
-          <tr><td>Photorealistic faces / product shots</td><td>Flux Pro, Midjourney v7</td></tr>
+          <tr><td>Photorealistic faces / product shots</td><td>Flux Pro, latest Midjourney</td></tr>
         </tbody>
       </table>
 
@@ -105,10 +105,9 @@ const lesson = LESSONS.find((l) => l.id === "concept-multimodal")!;
         generated second. Check the <a href="/lessons/concept-cost">cost lesson</a> for tier breakdowns.
       </Reveal>
       <Reveal q="Privacy concerns specific to images / voice?">
-        Photos of your face, kids, ID documents, whiteboards with company data — all flow through the
-        provider just like text. Use enterprise-tier accounts with no-training agreements for
-        sensitive material; strip metadata first. Voice mode is similar: assume conversations are
-        logged unless you've opted out.
+        Same defaults as the <a href="/lessons/concept-safety">safety lesson</a> — the additional
+        wrinkle is metadata. Strip EXIF from photos before uploading (it embeds location and device).
+        For voice, assume the audio is logged unless you've opted out.
       </Reveal>
       <Reveal q="Why are there so many image generators?">
         Two reasons. (1) Different models hit different style sweet spots — Midjourney is editorial,
