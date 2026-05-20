@@ -26,13 +26,13 @@ export const TRACKS: Track[] = [
   {
     id: "chat",
     title: "Claude.ai — Chat",
-    tagline: "Drive a faithful imitation of the real app, no account needed.",
+    tagline: "The browser product. Best for non-code work, mobile, and non-developers.",
     accent: "#d4895a",
   },
   {
     id: "code",
     title: "Claude Code — Coding",
-    tagline: "A pretend terminal that behaves like the real CLI.",
+    tagline: "The developer's default. If you have a terminal open, start here.",
     accent: "#7a9eaf",
   },
   {

@@ -74,14 +74,38 @@ const lesson = LESSONS.find((l) => l.id === "capabilities")!;
         </tbody>
       </table>
 
-      <h2>"Which product should I open?"</h2>
-      <ul class="steps">
-        <li><strong>Need a document, plan, or analysis right now?</strong> → claude.ai.</li>
-        <li><strong>Want to build a working tool you'll use over and over?</strong> → Claude Code.</li>
-        <li><strong>Have a list of small chores against a codebase?</strong> → Claude Cowork.</li>
-        <li><strong>Need to make it look like something?</strong> → Claude Design.</li>
-        <li><strong>Embedding Claude into your own product?</strong> → Claude API (covered after this tour in the docs).</li>
-      </ul>
+      <h2>Honest take: which product should I open?</h2>
+      <p>
+        These products overlap a lot. <strong>Claude Code is the most powerful</strong> — it can do almost
+        everything Claude.ai can, plus everything Claude.ai can't (read your files, run your tests, edit
+        a real project). For a developer in a project folder, it's the default. Claude.ai's real edge is
+        narrower than the marketing suggests:
+      </p>
+      <table style="width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.92rem;">
+        <thead>
+          <tr style="background: var(--surface-2);">
+            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">Situation</th>
+            <th style="text-align: left; padding: 0.5rem; border: 1px solid var(--line);">Open</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">In a project folder, touching code</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Code</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Long-running chores against a repo (and you don't want to babysit)</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Cowork</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Needs to look like something visual</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude Design</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">On phone / tablet / someone else's laptop</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Need to drop in a PDF / image / spreadsheet that isn't in any repo</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">A non-developer (spouse, manager, parent) needs to use it</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want a persistent "custom assistant" with knowledge files (projects feature)</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want to share a chat link with someone</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">No paid plan yet</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude.ai</strong> (free tier)</td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Embedding Claude into your own product</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Claude API</strong></td></tr>
+          <tr><td style="padding: 0.5rem; border: 1px solid var(--line);">Want a background daemon with persistent memory</td><td style="padding: 0.5rem; border: 1px solid var(--line);"><strong>Hermes / OpenClaw</strong></td></tr>
+        </tbody>
+      </table>
+      <p>
+        Phrased differently: if you have a terminal open in the right folder, you'll usually reach for Claude Code.
+        The other products exist for the cases where you <em>don't</em> — or where the work isn't about code at all.
+      </p>
 
       <div class="callout">
         <strong>Permission to start small.</strong> Most useful tools are tiny — a 30-line script, a one-page site,
