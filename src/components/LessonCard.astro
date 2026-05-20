@@ -1,0 +1,17 @@
+---
+import type { Lesson } from "../data/curriculum";
+
+interface Props {
+  lesson: Lesson;
+}
+const { lesson } = Astro.props;
+---
+
+<a class="lesson-card" data-lesson-card data-lesson-id={lesson.id} href={`/lessons/${lesson.slug}`}>
+  <div class="row">
+    <span>{lesson.minutes} min</span>
+    <span class="check" data-check>✓</span>
+  </div>
+  <h3>{lesson.title}</h3>
+  <div class="blurb">{lesson.blurb}</div>
+</a>

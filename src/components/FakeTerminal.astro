@@ -1,0 +1,84 @@
+---
+/**
+ * A pretend terminal with autocomplete on "/" — used to teach slash commands.
+ */
+---
+
+<div class="term" data-term>
+  <div class="row">
+    <span class="prompt">~</span>
+    <span class="you">$</span>
+    <span>claude</span>
+  </div>
+  <p class="out">Welcome to Claude Code (pretend edition). Try typing <code>/</code> to see slash commands.</p>
+  <div class="row">
+    <span class="prompt">›</span>
+    <input type="text" placeholder="Type / for commands…" data-term-input autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="menu" data-term-menu>
+    <div><code>/help</code> — what can I do?</div>
+    <div><code>/agents</code> — list specialized assistants</div>
+    <div><code>/plan</code> — plan first, code later</div>
+    <div><code>/clear</code> — start a fresh chat</div>
+    <div><code>/exit</code> — leave the session</div>
+  </div>
+  <div data-term-log></div>
+</div>
+
+<script>
+  const RESPONSES: Record<string, string> = {
+    "/help": "I can read files, write code, run commands, and call specialized agents. Try: 'add a button to the homepage'.",
+    "/agents": "Available: code-reviewer · tdd-guide · build-error-resolver · planner · security-reviewer · doc-updater",
+    "/plan": "Plan mode is on. I'll outline the steps and wait for your OK before touching files.",
+    "/clear": "(chat cleared)",
+    "/exit": "Bye! Run `claude` again any time.",
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-term]").forEach((term) => {
+    const input = term.querySelector<HTMLInputElement>("[data-term-input]")!;
+    const menu = term.querySelector<HTMLElement>("[data-term-menu]")!;
+    const log = term.querySelector<HTMLElement>("[data-term-log]")!;
+
+    function appendLine(cmd: string, response: string) {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `<span class="prompt">›</span><span class="you">${cmd}</span>`;
+      log.appendChild(row);
+      const out = document.createElement("p");
+      out.className = "out";
+      out.textContent = response;
+      log.appendChild(out);
+    }
+
+    input.addEventListener("input", () => {
+      const v = input.value;
+      if (v.startsWith("/") && v.length <= 1) {
+        menu.classList.add("open");
+      } else if (v === "") {
+        menu.classList.add("open");
+        // also leave it open on focus
+      } else {
+        menu.classList.remove("open");
+      }
+    });
+
+    input.addEventListener("focus", () => {
+      if (input.value === "" || input.value === "/") menu.classList.add("open");
+    });
+
+    input.addEventListener("blur", () => {
+      // small delay so click on menu items can still register if we made them clickable later
+      setTimeout(() => menu.classList.remove("open"), 80);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const cmd = input.value.trim();
+      if (!cmd) return;
+      const reply = RESPONSES[cmd] ?? `Pretending to run: "${cmd}". In the real CLI I'd read your files and answer for real.`;
+      appendLine(cmd, reply);
+      input.value = "";
+      menu.classList.remove("open");
+    });
+  });
+</script>

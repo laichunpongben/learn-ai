@@ -1,0 +1,70 @@
+---
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+<div class="mark-done" data-mark-done data-lesson-id={id}>
+  <button class="accent" data-toggle>Mark this lesson as done</button>
+  <span class="status" data-status></span>
+</div>
+
+<script>
+  const KEY = "claude-tutorial.progress.v1";
+
+  type Progress = { done: string[]; lastVisited?: string; startedAt?: string };
+
+  function read(): Progress {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { done: [] };
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.done)) return { done: [] };
+      return parsed;
+    } catch {
+      return { done: [] };
+    }
+  }
+
+  function write(p: Progress): void {
+    localStorage.setItem(KEY, JSON.stringify(p));
+    window.dispatchEvent(new CustomEvent("ct:progress", { detail: p }));
+  }
+
+  function paint(root: HTMLElement, id: string) {
+    const cur = read();
+    const done = cur.done.includes(id);
+    const btn = root.querySelector<HTMLButtonElement>("[data-toggle]");
+    const status = root.querySelector<HTMLElement>("[data-status]");
+    if (!btn || !status) return;
+    if (done) {
+      btn.textContent = "Unmark";
+      btn.classList.remove("accent");
+      btn.classList.add("ghost");
+      status.textContent = "Done. Move on whenever you're ready.";
+      status.classList.add("done");
+    } else {
+      btn.textContent = "Mark this lesson as done";
+      btn.classList.add("accent");
+      btn.classList.remove("ghost");
+      status.textContent = "No pressure — read at your own pace.";
+      status.classList.remove("done");
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-mark-done]").forEach((root) => {
+    const id = root.dataset.lessonId;
+    if (!id) return;
+    paint(root, id);
+    root.querySelector<HTMLButtonElement>("[data-toggle]")?.addEventListener("click", () => {
+      const cur = read();
+      const has = cur.done.includes(id);
+      const next: Progress = has
+        ? { ...cur, done: cur.done.filter((x) => x !== id) }
+        : { ...cur, done: [...cur.done, id], startedAt: cur.startedAt ?? new Date().toISOString() };
+      write(next);
+      paint(root, id);
+    });
+  });
+</script>

@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        The Cowork flow is a loop you'll do many times a day once it clicks. Submit, wait, review, decide.
+      </p>
+
+      <h2>The four steps</h2>
+      <ol class="steps">
+        <li><strong>Pick a repo and write the prompt.</strong> One task, one outcome. "Add a dark-mode toggle in the header." Keep the scope small enough that you'd trust an intern to finish it in an afternoon.</li>
+        <li><strong>Submit and step away.</strong> Cowork checks the code out into its own sandbox and starts working. There's no live chat — it just runs.</li>
+        <li><strong>Get a diff back.</strong> Usually within minutes for small tasks. You'll see the file changes, the test runs, and a short summary of what was done.</li>
+        <li><strong>Decide.</strong> Three options: merge, comment back ("looks good but rename the variable"), or discard.</li>
+      </ol>
+
+      <h2>Writing a good task prompt</h2>
+      <div class="card">
+        <p style="margin-top: 0;"><strong>Three ingredients:</strong></p>
+        <ul>
+          <li><strong>The outcome.</strong> What does "done" look like?</li>
+          <li><strong>Any constraints.</strong> "Don't touch the API". "Match the existing style of the settings page."</li>
+          <li><strong>How to verify.</strong> "Tests should still pass." "I should be able to click the toggle and see the colours switch."</li>
+        </ul>
+      </div>
+
+      <h2>A real example, written out</h2>
+      <blockquote class="callout" style="font-style: italic;">
+        "On the login page, the error message ('Invalid credentials') is currently red and very small. Make it the same size as the input labels and add a small warning icon to the left of the text. Match the icon style used elsewhere in the app — there's probably a Lucide or Heroicons import already. Don't change any of the auth logic. Tests should still pass."
+      </blockquote>
+
+      <h2>What Cowork is great at — and not</h2>
+      <ul>
+        <li><strong>Great at:</strong> small features, bug fixes, refactors with a clear before/after, dependency upgrades, adding tests, documentation passes.</li>
+        <li><strong>Less great at:</strong> "design this product", architectural debates, anything where you'd want to argue back and forth. Use Claude.ai or Claude Code for those.</li>
+      </ul>
+
+      <Reveal q="What if it goes the wrong way?">
+        Comment on the diff and Cowork iterates — same as a normal code review. Or close it and start over with a clearer prompt.
+      </Reveal>
+      <Reveal q="Can multiple tasks touch the same file?">
+        Yes — each task runs on its own branch. If two PRs end up overlapping, you'll resolve the conflict at merge time, just like with humans.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

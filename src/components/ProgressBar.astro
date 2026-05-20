@@ -1,0 +1,51 @@
+---
+import { LESSONS } from "../data/curriculum";
+
+const total = LESSONS.length;
+---
+
+<div data-progress>
+  <div class="progress-bar"><span data-progress-fill style="width: 0%"></span></div>
+  <div class="progress-meta">
+    <span><strong data-progress-count>0</strong> of {total} lessons done</span>
+    <button class="ghost" data-reset>Reset progress</button>
+  </div>
+</div>
+
+<script is:inline define:vars={{ total }}>
+  const KEY = "claude-tutorial.progress.v1";
+
+  function read() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { done: [] };
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.done)) return { done: [] };
+      return parsed;
+    } catch {
+      return { done: [] };
+    }
+  }
+
+  function paint() {
+    const cur = read();
+    const n = cur.done.length;
+    document.querySelectorAll("[data-progress]").forEach((root) => {
+      const fill = root.querySelector("[data-progress-fill]");
+      const count = root.querySelector("[data-progress-count]");
+      if (fill) fill.style.width = `${total ? (n / total) * 100 : 0}%`;
+      if (count) count.textContent = String(n);
+    });
+  }
+
+  document.querySelectorAll("[data-reset]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!confirm("Reset progress and start fresh? This only clears your browser — nothing is sent anywhere.")) return;
+      localStorage.removeItem(KEY);
+      window.dispatchEvent(new CustomEvent("ct:progress"));
+    });
+  });
+
+  window.addEventListener("ct:progress", paint);
+  paint();
+</script>

@@ -1,0 +1,48 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import ChatSim from "../../components/ChatSim.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "chat-first")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        The chat product lives at <code class="inline">claude.ai</code>. After you sign in,
+        you get a single text box. That's it. The whole experience is: you type, it replies.
+      </p>
+
+      <h2>The shape of a chat</h2>
+      <ol class="steps">
+        <li>You type a message at the bottom of the screen and press <kbd>Enter</kbd>.</li>
+        <li>Claude's reply appears above, streaming word-by-word. That's normal — it's "thinking out loud".</li>
+        <li>You reply, it replies, you reply. Each new message can refer to anything earlier in the conversation.</li>
+      </ol>
+
+      <h2>Try it</h2>
+      <p>This is a tiny imitation, but it answers most everyday prompts. Click a suggestion or type your own.</p>
+      <ChatSim
+        starter="What can I help with? Try asking me to write something, summarize something, or explain something."
+        prompts={["Write a thank-you note", "Summarize the news in one line", "Explain Bitcoin like I'm 10"]}
+      />
+
+      <h2>Three habits that make chats better</h2>
+      <ul>
+        <li><strong>Say what you want, then say why.</strong> "Rewrite this in a warmer tone — it's for my manager."</li>
+        <li><strong>Give an example of "good".</strong> "Like this paragraph, but two sentences shorter."</li>
+        <li><strong>Course-correct.</strong> If the answer is off, don't start over — just say what's wrong. "Drop the bullet points. Make it sound less corporate."</li>
+      </ul>
+
+      <Reveal q="What if I make a typo?">
+        Claude can usually figure it out. It's also fine to hit edit on your own message and resend — the chat will branch from that point.
+      </Reveal>
+      <Reveal q="How long can a chat get?">
+        Long. A single conversation can hold tens of thousands of words. If you reach the end, start a new chat — but consider a "project" first (next lesson).
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

@@ -1,0 +1,89 @@
+---
+interface Props {
+  starter?: string;
+  prompts?: string[];
+}
+
+const { starter, prompts = [] } = Astro.props;
+---
+
+<div class="chat-sim" data-chatsim>
+  <div class="bubbles" data-bubbles>
+    {starter ? <div class="bubble claude">{starter}</div> : null}
+  </div>
+  <div class="input-row">
+    <input type="text" placeholder="Type something and press Enter…" data-input />
+    <button data-send>Send</button>
+  </div>
+  {
+    prompts.length ? (
+      <p class="hint">
+        Try one:
+        {prompts.map((p, i) => (
+          <>
+            {i > 0 ? " · " : " "}
+            <a href="#" data-prompt={p}>{p}</a>
+          </>
+        ))}
+      </p>
+    ) : null
+  }
+</div>
+
+<script>
+  // Tiny, deterministic "Claude-like" responder. No network calls — it's all canned,
+  // but the matching makes it feel like a real chat.
+  const REPLIES: { match: RegExp; reply: string }[] = [
+    { match: /^hi|^hello|^hey/i, reply: "Hi! I'm Claude. Ask me anything, or paste something you want help with." },
+    { match: /your name|who are you/i, reply: "I'm Claude — an AI assistant made by Anthropic. Think of me as a curious, patient colleague." },
+    { match: /summari[sz]e|tl;?dr/i, reply: "Sure — paste the text and tell me how short you want it (one line, one paragraph, bullets)." },
+    { match: /python|javascript|code|function|bug/i, reply: "Happy to help with code. Share the snippet and tell me what you expect to happen versus what you're seeing." },
+    { match: /email|message|write/i, reply: "Give me the audience, the goal, and a couple of facts — I'll draft something you can edit." },
+    { match: /plan|trip|itinerary|holiday|vacation/i, reply: "Tell me the dates, who's going, and your budget. I'll lay out an itinerary you can tweak." },
+    { match: /recipe|dinner|cook/i, reply: "Tell me what's in the fridge and any constraints (vegetarian, 20 minutes, etc.) and I'll suggest a few options." },
+    { match: /joke|funny/i, reply: "Why did the developer go broke? Because they used up all their cache." },
+    { match: /sorry|stupid|dumb/i, reply: "No bad questions here. Ask away — I'd rather you ask twice than guess once." },
+  ];
+
+  function reply(text: string): string {
+    const t = text.trim();
+    if (!t) return "Type something first and I'll respond.";
+    for (const r of REPLIES) if (r.match.test(t)) return r.reply;
+    return "Got it. In a real chat I'd answer that in a few sentences and ask a clarifying question if needed.";
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-chatsim]").forEach((root) => {
+    const bubbles = root.querySelector<HTMLElement>("[data-bubbles]")!;
+    const input = root.querySelector<HTMLInputElement>("[data-input]")!;
+    const send = root.querySelector<HTMLButtonElement>("[data-send]")!;
+
+    function push(role: "you" | "claude", text: string) {
+      const div = document.createElement("div");
+      div.className = `bubble ${role}`;
+      div.textContent = text;
+      bubbles.appendChild(div);
+      bubbles.scrollTop = bubbles.scrollHeight;
+    }
+
+    function submit(value: string) {
+      const t = value.trim();
+      if (!t) return;
+      push("you", t);
+      input.value = "";
+      // Tiny delay so the reply feels typed, not instant.
+      setTimeout(() => push("claude", reply(t)), 260);
+    }
+
+    send.addEventListener("click", () => submit(input.value));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submit(input.value);
+    });
+
+    root.querySelectorAll<HTMLAnchorElement>("[data-prompt]").forEach((a) => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        submit(a.dataset.prompt ?? "");
+      });
+    });
+  });
+</script>

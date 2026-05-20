@@ -1,0 +1,61 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import ChatSim from "../../components/ChatSim.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "welcome")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        Claude is an <strong>AI assistant</strong>. The simplest way to picture it:
+        a very well-read, very patient colleague who is always available and never gets annoyed
+        at follow-up questions. You write what you want; it writes back.
+      </p>
+
+      <h2>It comes in a few flavors</h2>
+      <p>That's why this tutorial has four tracks — same Claude underneath, but each product is shaped for a different kind of work:</p>
+      <ul>
+        <li><strong>Claude.ai</strong> — a chat website. Good for "help me with this email / idea / explanation".</li>
+        <li><strong>Claude Code</strong> — for software engineers. Lives in your computer's terminal and can edit your files.</li>
+        <li><strong>Claude Cowork</strong> — runs many tasks at once, in the background. Like hiring temp staff.</li>
+        <li><strong>Claude Design</strong> — describe a screen in plain English; it builds the interface.</li>
+      </ul>
+
+      <h2>Try it: say hello</h2>
+      <p>This is a pretend chat box — no internet needed. Type something and press Enter.</p>
+      <ChatSim
+        starter="Hi! I'm Claude. Type anything and I'll reply."
+        prompts={["Hello", "Tell me a joke", "Write me an email"]}
+      />
+
+      <div class="callout">
+        <strong>One thing to know up front.</strong> AI assistants can sound confident and still be wrong.
+        Treat Claude as a smart first draft, not a final answer — especially for facts, numbers, and code.
+      </div>
+
+      <h2>Quick check-yourself</h2>
+      <Reveal q="Is Claude a search engine?">
+        Not quite. A search engine finds existing pages. Claude generates a fresh response based on patterns
+        in what it's read. It can search the web when asked, but its default mode is to answer directly.
+      </Reveal>
+      <Reveal q="Will it remember me later?">
+        Inside the same chat, yes — it sees everything you've said in that conversation. Across chats,
+        it depends on the product. Some have a "memory" feature you can opt in to.
+      </Reveal>
+      <Reveal q="Do I need to know how to code?">
+        No. Claude.ai, Cowork, and Design are aimed at anyone who can type. Claude Code is for people who
+        already write code (or want to learn).
+      </Reveal>
+
+      <div class="tip">
+        <strong>Pace tip.</strong> Each lesson is 3–4 minutes. Hit "Mark as done" when you're ready —
+        the curriculum page tracks your spot.
+      </div>
+    </LessonShell>
+  </main>
+</Layout>

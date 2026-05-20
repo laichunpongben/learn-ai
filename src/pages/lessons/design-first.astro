@@ -1,0 +1,63 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "design-first")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        <strong>Claude Design</strong> (at <code class="inline">claude.ai/design</code>) turns a sentence
+        into a working piece of interface. Describe the screen you want; you get a real, interactive prototype
+        in seconds — buttons that click, inputs that type, animations that animate.
+      </p>
+
+      <h2>What it's for</h2>
+      <ul>
+        <li><strong>Visuals you can show.</strong> Pitches, landing pages, mood boards, prototypes.</li>
+        <li><strong>Reusable components.</strong> A pricing table, a loader animation, a hero section — copy-pasted into your real project.</li>
+        <li><strong>Design exploration.</strong> Get six versions of an idea in the time it would take to sketch one.</li>
+      </ul>
+
+      <h2>What it's not for</h2>
+      <p>It's not a full code generator for your production app — that's where Claude Code shines.
+      Design is for the <em>visual</em> layer: how it looks, how it feels, how it behaves on hover.</p>
+
+      <h2>Writing a first prompt</h2>
+      <div class="card">
+        <p style="margin-top: 0;"><strong>A simple template:</strong></p>
+        <p style="font-family: var(--mono); font-size: 0.92rem; background: var(--surface-2); padding: 0.6rem 0.8rem; border-radius: 8px;">
+          A [type of screen] for [audience]. [Two or three style words]. Include [content].
+        </p>
+        <p style="margin-bottom: 0;"><strong>Worked example:</strong></p>
+        <p style="font-family: var(--mono); font-size: 0.92rem; background: var(--surface-2); padding: 0.6rem 0.8rem; border-radius: 8px;">
+          A landing page for a sourdough bakery. Warm, hand-drawn, generous whitespace. Hero with a loaf
+          photo, a three-card menu section, an order form at the bottom.
+        </p>
+      </div>
+
+      <h2>Style words that work well</h2>
+      <ul>
+        <li><strong>Tone:</strong> playful, serious, premium, retro, brutalist, soft, technical, friendly.</li>
+        <li><strong>Density:</strong> generous whitespace, compact, dashboard-dense.</li>
+        <li><strong>Inspiration:</strong> "like Linear", "like a Japanese menu", "like an old paperback".</li>
+      </ul>
+
+      <div class="tip">
+        <strong>Don't over-specify on the first try.</strong> Get a rough version in front of your eyes,
+        then iterate. It's much easier to react to a draft than to predict perfection.
+      </div>
+
+      <Reveal q="Can I export the code?">
+        Yes. Once you're happy, the design panel gives you the HTML/CSS/React you can drop into your project.
+      </Reveal>
+      <Reveal q="Does it use my real brand colours?">
+        Tell it. "Use #1F2937 for headings and #F97316 for accents." Or upload a brand guide and reference it.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

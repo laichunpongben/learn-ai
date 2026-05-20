@@ -1,0 +1,36 @@
+---
+import type { Lesson } from "../data/curriculum";
+
+interface Props {
+  prev?: Lesson;
+  next?: Lesson;
+}
+
+const { prev, next } = Astro.props;
+---
+
+<nav class="next-prev">
+  {
+    prev ? (
+      <a href={`/lessons/${prev.slug}`}>
+        <small>← Previous</small>
+        {prev.title}
+      </a>
+    ) : (
+      <a href="/"><small>← Back</small>Curriculum home</a>
+    )
+  }
+  {
+    next ? (
+      <a href={`/lessons/${next.slug}`} class="right">
+        <small>Next →</small>
+        {next.title}
+      </a>
+    ) : (
+      <a href="/" class="right">
+        <small>You finished →</small>
+        Back to curriculum
+      </a>
+    )
+  }
+</nav>

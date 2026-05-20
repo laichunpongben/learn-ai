@@ -1,0 +1,60 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import FakeTerminal from "../../components/FakeTerminal.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "code-slash")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        Inside Claude Code, typing <code class="inline">/</code> opens a small menu of built-in
+        commands. They're shortcuts for things you'd otherwise type out — "switch model",
+        "show me running tasks", "make a new git commit".
+      </p>
+
+      <h2>Try it</h2>
+      <p>Pretend terminal. Type <code class="inline">/</code> to see the menu, then try one of the commands.</p>
+      <FakeTerminal />
+
+      <h2>Commands worth knowing on day one</h2>
+      <ul>
+        <li><code class="inline">/help</code> — full list of commands.</li>
+        <li><code class="inline">/clear</code> — start a fresh chat (keeps your project context).</li>
+        <li><code class="inline">/plan</code> — turn on plan mode: Claude outlines steps before touching anything.</li>
+        <li><code class="inline">/agents</code> — list specialized assistants (see below).</li>
+        <li><code class="inline">/exit</code> — quit.</li>
+      </ul>
+
+      <h2>Agents: specialized helpers</h2>
+      <p>An <strong>agent</strong> is a focused version of Claude — same model, but with a job description and only the tools it needs. Examples:</p>
+      <ul>
+        <li><strong>code-reviewer</strong> — reads a diff and reports bugs, smells, missing tests.</li>
+        <li><strong>tdd-guide</strong> — enforces "write the test first" when you're adding a feature.</li>
+        <li><strong>build-error-resolver</strong> — narrows in on a failing build and fixes only what's needed.</li>
+      </ul>
+      <p>You don't usually call them directly — Claude reaches for them when the work matches. You'll just notice that the right kind of helper showed up.</p>
+
+      <h2>Skills</h2>
+      <p>A <strong>skill</strong> is a reusable recipe (Markdown + maybe a script) for "how we do X here". A skill called <em>hotel-research</em> tells Claude exactly how to research hotels for you: which sites to check, what to summarize, what to skip. Skills live in <code class="inline">~/.claude/skills/</code>; you can write your own.</p>
+
+      <div class="callout">
+        <strong>Slash command vs agent vs skill — quick map.</strong>
+        <ul style="margin: 0.5rem 0 0 0;">
+          <li><strong>Slash command:</strong> "do this <em>action</em> now" (clear chat, change model).</li>
+          <li><strong>Agent:</strong> "switch to this <em>persona</em> for the next bit of work".</li>
+          <li><strong>Skill:</strong> "use this <em>recipe</em> whenever the situation matches".</li>
+        </ul>
+      </div>
+
+      <Reveal q="Do I have to learn all of these to start?">
+        Not at all. Just open <code class="inline">claude</code> and chat. The slash menu and agents are there
+        when you're curious — you'll discover them naturally.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>

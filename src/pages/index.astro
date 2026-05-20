@@ -1,0 +1,112 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProgressBar from "../components/ProgressBar.astro";
+import LessonCard from "../components/LessonCard.astro";
+import { TRACKS, lessonsInTrack } from "../data/curriculum";
+---
+
+<Layout title="Learn Claude — a friendly tour">
+  <main>
+    <p><span class="track-pill">Self-paced · ~35 min total</span></p>
+    <h1>A friendly tour of Claude</h1>
+    <p class="lede">
+      Eleven short lessons across Claude's main products — chat, code, parallel work, and visual UI.
+      No prior AI experience required. Read at your own pace; your spot saves automatically.
+    </p>
+
+    <div class="card" style="margin-top: 1.2rem;">
+      <ProgressBar />
+      <div id="continue" style="margin-top: 0.8rem;"></div>
+    </div>
+
+    {
+      TRACKS.map((t) => (
+        <section class="track-section" id={`track-${t.id}`}>
+          <div class="track-header" style={`border-color: ${t.accent}55;`}>
+            <h2>{t.title}</h2>
+            <span class="tagline">{t.tagline}</span>
+          </div>
+          <div class="lesson-grid">
+            {lessonsInTrack(t.id).map((l) => (
+              <LessonCard lesson={l} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    <div class="divider"></div>
+    <h2>How this works</h2>
+    <ul>
+      <li><strong>Replayable.</strong> Tap "Reset progress" above to start completely fresh — useful for a new joiner on the same device.</li>
+      <li><strong>Resumable.</strong> If you come back later, the tutorial remembers what you've done and offers to continue.</li>
+      <li><strong>Private.</strong> Progress is stored only in your browser. Nothing leaves your machine.</li>
+    </ul>
+  </main>
+</Layout>
+
+<script>
+  const KEY = "claude-tutorial.progress.v1";
+  type Progress = { done: string[]; lastVisited?: string };
+
+  function read(): Progress {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { done: [] };
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.done)) return { done: [] };
+      return parsed;
+    } catch {
+      return { done: [] };
+    }
+  }
+
+  function paintCards() {
+    const cur = read();
+    document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
+      const id = el.dataset.lessonId!;
+      if (cur.done.includes(id)) {
+        el.classList.add("done");
+      } else {
+        el.classList.remove("done");
+      }
+    });
+  }
+
+  function paintContinue() {
+    const cur = read();
+    const c = document.getElementById("continue");
+    if (!c) return;
+    if (cur.done.length === 0 && !cur.lastVisited) {
+      c.innerHTML = '<a class="button" href="/lessons/welcome">Start the tour →</a>';
+      return;
+    }
+    // Find first not-done lesson; fall back to lastVisited.
+    const firstUndone = LESSONS_IDS.find((id) => !cur.done.includes(id));
+    const target = firstUndone ?? cur.lastVisited;
+    if (!target) {
+      c.innerHTML = '<span class="tiny-link">You\'ve completed everything. Nice. Reset above to replay.</span>';
+      return;
+    }
+    const slug = LESSON_SLUGS[target] ?? "welcome";
+    const label = firstUndone ? "Continue where you left off" : "Revisit your last lesson";
+    c.innerHTML = `<a class="button" href="/lessons/${slug}">${label} →</a>`;
+  }
+
+  // Inlined IDs/slugs so we don't ship the whole curriculum module to the client.
+  const LESSONS_IDS: string[] = [];
+  const LESSON_SLUGS: Record<string, string> = {};
+  document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
+    const id = el.dataset.lessonId!;
+    LESSONS_IDS.push(id);
+    const slug = el.getAttribute("href")!.replace("/lessons/", "");
+    LESSON_SLUGS[id] = slug;
+  });
+
+  window.addEventListener("ct:progress", () => {
+    paintCards();
+    paintContinue();
+  });
+  paintCards();
+  paintContinue();
+</script>

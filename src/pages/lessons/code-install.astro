@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "code-install")!;
+---
+
+<Layout title={`${lesson.title} · Learn Claude`}>
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        Three steps: install, sign in, run. Total time: under five minutes the first time;
+        seconds every time after.
+      </p>
+
+      <h2>1. Install</h2>
+      <p>The simplest way is via npm (which comes with Node.js). In your terminal:</p>
+      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">npm install -g @anthropic-ai/claude-code</pre>
+      <p>The <code class="inline">-g</code> means "install globally so I can run <code class="inline">claude</code> from anywhere".</p>
+
+      <Reveal q="I don't have Node.js installed.">
+        Grab it from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> — pick the LTS version. Or use a package manager like Homebrew (macOS) or your distro's package manager (Linux).
+      </Reveal>
+      <Reveal q="Is there a non-npm install path?">
+        Yes — a downloadable installer. Check the Claude Code download page in your Claude.ai account.
+      </Reveal>
+
+      <h2>2. Sign in</h2>
+      <p>Open a terminal and type:</p>
+      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">claude</pre>
+      <p>A browser window opens for you to log in to your Anthropic account. That's the once-per-machine step.</p>
+
+      <h2>3. Your first prompt</h2>
+      <p><code class="inline">cd</code> into a folder you want to work in, then run <code class="inline">claude</code> again. You'll see a prompt:</p>
+      <pre class="term" style="background: #1c1916; color: #e8dec8; padding: 1rem; border-radius: 12px; font-family: var(--mono); font-size: 0.85rem;">› _</pre>
+      <p>Type something. A few first prompts to try:</p>
+      <ul>
+        <li><em>"What does this project do? Read README and main entry files."</em></li>
+        <li><em>"Add a hello-world comment to the top of the main file."</em></li>
+        <li><em>"Run the tests."</em></li>
+      </ul>
+
+      <div class="tip">
+        <strong>If nothing exists yet:</strong> create an empty folder, <code class="inline">cd</code> into it,
+        run <code class="inline">claude</code>, and ask: <em>"Set up a tiny Node.js project that prints 'hi' when I run it."</em> Watch what happens.
+      </div>
+
+      <h2>Exiting</h2>
+      <p>Press <kbd>Ctrl</kbd>+<kbd>C</kbd> twice, or type <code class="inline">/exit</code>. Your conversation is saved; reopen it later with <code class="inline">claude --continue</code>.</p>
+    </LessonShell>
+  </main>
+</Layout>

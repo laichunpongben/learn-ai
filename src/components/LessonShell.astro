@@ -1,0 +1,38 @@
+---
+import { neighbors, trackById, type Lesson } from "../data/curriculum";
+import NextPrev from "./NextPrev.astro";
+import MarkDone from "./MarkDone.astro";
+
+interface Props {
+  lesson: Lesson;
+}
+
+const { lesson } = Astro.props;
+const track = trackById(lesson.track);
+const { prev, next } = neighbors(lesson.id);
+---
+
+<article>
+  <p>
+    <span class="track-pill" style={`border-color: ${track.accent}66; color: ${track.accent};`}>{track.title}</span>
+    <span class="tiny-link" style="margin-left: 0.5rem;">{lesson.minutes} min read</span>
+  </p>
+  <h1>{lesson.title}</h1>
+  <p class="lede">{lesson.blurb}</p>
+
+  <slot />
+
+  <MarkDone id={lesson.id} />
+  <NextPrev prev={prev} next={next} />
+</article>
+
+<script is:inline define:vars={{ id: lesson.id }}>
+  // Remember where the learner left off, so the homepage can offer "Continue".
+  try {
+    const KEY = "claude-tutorial.progress.v1";
+    const raw = localStorage.getItem(KEY);
+    const cur = raw ? JSON.parse(raw) : { done: [] };
+    cur.lastVisited = id;
+    localStorage.setItem(KEY, JSON.stringify(cur));
+  } catch (_e) {}
+</script>
