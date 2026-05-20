@@ -20,58 +20,37 @@ const entries: Entry[] = [
 const indexJSON: string = JSON.stringify(entries);
 ---
 
-<button
-  type="button"
-  class="search-trigger"
-  data-search-open
-  aria-label="Search (⌘K)"
-  title="Search (⌘K)"
-  onclick="window.__openSearch && window.__openSearch()"
->
+<button type="button" class="search-trigger" data-ui-action="open-search" aria-label="Search (⌘K)" title="Search (⌘K)">
   <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
     <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
     <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
 </button>
 
-<div class="search-overlay" data-search-overlay hidden role="dialog" aria-modal="true" aria-label="Search">
-  <div class="search-backdrop" data-search-close onclick="window.__closeSearch && window.__closeSearch()"></div>
-  <div class="search-panel">
-    <div class="search-input-row">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="search-icon">
-        <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<!-- Native <dialog>: UA stylesheet handles show/hide. Closed = display:none. -->
+<dialog class="search-dialog" data-search-dialog aria-label="Search">
+  <form method="dialog" class="search-input-row">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="search-icon">
+      <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input type="text" placeholder="Search lessons and pages…" data-search-input autocomplete="off" spellcheck="false" />
+    <button type="button" class="search-close" data-ui-action="close-search" aria-label="Close search">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <line x1="3" y1="3" x2="11" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="11" y1="3" x2="3" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <input
-        type="text"
-        placeholder="Search lessons and pages…"
-        data-search-input
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button
-        type="button"
-        class="search-close"
-        data-search-close
-        aria-label="Close search"
-        onclick="window.__closeSearch && window.__closeSearch()"
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-          <line x1="3" y1="3" x2="11" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="11" y1="3" x2="3" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <ul class="search-results" data-search-results></ul>
+    </button>
+  </form>
+  <ul class="search-results" data-search-results></ul>
   <script id="search-index" type="application/json" set:html={indexJSON} />
-    <div class="search-foot">
-      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
-      <span><kbd>Enter</kbd> open</span>
-      <span><kbd>Esc</kbd> close</span>
-      <span style="margin-left: auto;">Open with <kbd>⌘</kbd><kbd>K</kbd></span>
-    </div>
+  <div class="search-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+    <span><kbd>Enter</kbd> open</span>
+    <span><kbd>Esc</kbd> close</span>
+    <span style="margin-left: auto;">Open with <kbd>⌘</kbd><kbd>K</kbd></span>
   </div>
-</div>
+</dialog>
 
 <style>
   .search-trigger {
@@ -92,36 +71,26 @@ const indexJSON: string = JSON.stringify(entries);
     border-color: var(--line);
   }
 
-  /* CRITICAL: only display the overlay when it's NOT hidden. Without this,
-     `display: flex` overrides the UA stylesheet's `[hidden] { display: none }`
-     and the invisible overlay still absorbs every click in the header area. */
-  .search-overlay[hidden] {
-    display: none !important;
-  }
-  .search-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 8vh 1rem 1rem;
-  }
-  .search-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    animation: fade-in 0.12s ease;
-  }
-  .search-panel {
-    position: relative;
-    width: min(640px, 100%);
+  /* Native <dialog>: closed by default; opens via .showModal(). UA stylesheet
+     handles the closed = display:none state — no [hidden]-vs-display traps. */
+  .search-dialog {
+    margin: 8vh auto auto;
+    padding: 0;
+    width: min(640px, calc(100% - 2rem));
+    max-height: 80vh;
     background: var(--surface);
+    color: var(--ink);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
     overflow: hidden;
+  }
+  .search-dialog[open] {
     animation: pop-in 0.18s cubic-bezier(.34,1.36,.64,1);
+  }
+  .search-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    animation: fade-in 0.12s ease;
   }
   @keyframes pop-in {
     from { opacity: 0; transform: translateY(-8px) scale(0.98); }
@@ -133,6 +102,7 @@ const indexJSON: string = JSON.stringify(entries);
     gap: 0.55rem;
     padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--line);
+    margin: 0;
   }
   .search-icon { color: var(--ink-faint); flex-shrink: 0; }
   .search-input-row input {
@@ -145,15 +115,6 @@ const indexJSON: string = JSON.stringify(entries);
     font-size: 1rem;
   }
   .search-input-row input::placeholder { color: var(--ink-faint); }
-  .search-input-row kbd {
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    color: var(--ink-soft);
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-  }
   .search-close {
     background: transparent;
     border: 1px solid transparent;
@@ -177,7 +138,7 @@ const indexJSON: string = JSON.stringify(entries);
     list-style: none;
     margin: 0;
     padding: 0.3rem;
-    max-height: 60vh;
+    max-height: 50vh;
     overflow-y: auto;
   }
   .search-results li {
@@ -189,16 +150,8 @@ const indexJSON: string = JSON.stringify(entries);
     gap: 0.15rem;
   }
   .search-results li.sel { background: var(--surface-2); }
-  .search-results .row {
-    display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-  }
-  .search-results .title {
-    font-weight: 500;
-    color: var(--ink);
-    font-size: 0.94rem;
-  }
+  .search-results .row { display: flex; align-items: baseline; gap: 0.55rem; }
+  .search-results .title { font-weight: 500; color: var(--ink); font-size: 0.94rem; }
   .search-results .pill {
     font-size: 0.66rem;
     text-transform: uppercase;
@@ -208,17 +161,8 @@ const indexJSON: string = JSON.stringify(entries);
     padding: 0.05rem 0.4rem;
     border-radius: 4px;
   }
-  .search-results .blurb {
-    font-size: 0.82rem;
-    color: var(--ink-soft);
-    line-height: 1.4;
-  }
-  .search-results .empty {
-    padding: 1.2rem;
-    color: var(--ink-faint);
-    text-align: center;
-    font-size: 0.9rem;
-  }
+  .search-results .blurb { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.4; }
+  .search-results .empty { padding: 1.2rem; color: var(--ink-faint); text-align: center; font-size: 0.9rem; }
   .search-foot {
     display: flex;
     gap: 1rem;
@@ -228,20 +172,22 @@ const indexJSON: string = JSON.stringify(entries);
     font-size: 0.74rem;
     color: var(--ink-faint);
   }
-  .search-foot kbd {
-    background: transparent;
+  .search-foot kbd,
+  .search-input-row kbd {
+    background: var(--surface-2);
     border: 1px solid var(--line);
-    color: var(--ink-faint);
+    color: var(--ink-soft);
     font-family: var(--mono);
     font-size: 0.7rem;
-    padding: 0;
-    border-radius: 3px;
-    margin: 0 0.15rem 0 0;
-    padding: 0 0.3rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 4px;
   }
 </style>
 
 <script>
+  // Search-results rendering only. Dialog open/close + ⌘K + backdrop-click
+  // are owned by src/scripts/ui.ts (single owner per interaction).
+
   type Entry = { kind: "lesson" | "page"; title: string; blurb: string; href: string; track?: string };
   const INDEX: Entry[] = JSON.parse(
     document.getElementById("search-index")?.textContent ?? "[]",
@@ -254,7 +200,6 @@ const indexJSON: string = JSON.stringify(entries);
     if (e.title.toLowerCase() === ql) return 1000;
     if (e.title.toLowerCase().startsWith(ql)) return 800;
     if (e.title.toLowerCase().includes(ql)) return 600;
-    // Match all tokens?
     const tokens = ql.split(/\s+/).filter(Boolean);
     if (tokens.every((t) => hay.includes(t))) return 400;
     return 0;
@@ -272,7 +217,9 @@ const indexJSON: string = JSON.stringify(entries);
 
   function highlight(text: string, q: string): string {
     if (!q.trim()) return text;
-    const safe = text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+    const safe = text.replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
+    );
     const tokens = q.toLowerCase().split(/\s+/).filter(Boolean);
     let out = safe;
     for (const t of tokens) {
@@ -282,11 +229,17 @@ const indexJSON: string = JSON.stringify(entries);
     return out;
   }
 
-  const overlay = document.querySelector<HTMLElement>("[data-search-overlay]")!;
+  // These elements are always rendered with this script — no defensive guard.
+  const dialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]")!;
   const input = document.querySelector<HTMLInputElement>("[data-search-input]")!;
   const list = document.querySelector<HTMLUListElement>("[data-search-results]")!;
+
   let cur: Entry[] = [];
   let sel = 0;
+
+  function paintSel() {
+    list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+  }
 
   function render() {
     cur = search(input.value);
@@ -300,83 +253,57 @@ const indexJSON: string = JSON.stringify(entries);
     }
     cur.forEach((e, i) => {
       const li = document.createElement("li");
-      li.dataset.idx = String(i);
       if (i === sel) li.classList.add("sel");
       const q = input.value;
       li.innerHTML = `
         <div class="row">
           <span class="title">${highlight(e.title, q)}</span>
-          <span class="pill">${e.kind === "lesson" ? e.track ?? "Lesson" : "Page"}</span>
+          <span class="pill">${e.kind === "lesson" ? (e.track ?? "Lesson") : "Page"}</span>
         </div>
         <div class="blurb">${highlight(e.blurb, q)}</div>
       `;
       li.addEventListener("click", () => navigate(e));
       li.addEventListener("mouseenter", () => {
         sel = i;
-        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+        paintSel();
       });
       list.appendChild(li);
     });
   }
 
   function navigate(e: Entry) {
-    close();
+    dialog.close();
     window.location.href = e.href;
   }
 
-  function open() {
-    overlay.removeAttribute("hidden");
-    document.documentElement.style.overflow = "hidden";
-    setTimeout(() => {
-      input.value = "";
-      sel = 0;
-      input.focus();
-      render();
-    }, 0);
-  }
-
-  function close() {
-    overlay.setAttribute("hidden", "");
-    document.documentElement.style.overflow = "";
-  }
-
-  // Open/close are also handled by window.__openSearch / __closeSearch from
-  // Layout's head inline script + onclick attributes + doc-level delegation there.
-  // The functions below are the local fallback that handles result-list rendering.
-  // Expose render so the head-defined open can trigger it.
-  (window as any).__searchRender = render;
-
-  // Keyboard: Cmd+K / Ctrl+K to open. "/" is intentionally NOT bound — too easy to trigger by accident.
-  window.addEventListener("keydown", (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-      e.preventDefault();
-      if (overlay.hasAttribute("hidden")) open();
-      else close();
-      return;
-    }
-    if (!overlay.hasAttribute("hidden")) {
-      if (e.key === "Escape") { e.preventDefault(); close(); }
-      else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        sel = Math.min(cur.length - 1, sel + 1);
-        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
-        list.querySelector(`li.sel`)?.scrollIntoView({ block: "nearest" });
-      }
-      else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        sel = Math.max(0, sel - 1);
-        list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
-        list.querySelector(`li.sel`)?.scrollIntoView({ block: "nearest" });
-      }
-      else if (e.key === "Enter") {
-        e.preventDefault();
-        if (cur[sel]) navigate(cur[sel]);
-      }
-    }
-  });
+  // Hook ui.ts's openSearch() into our render reset.
+  (window as Window & { __searchRender?: () => void }).__searchRender = () => {
+    sel = 0;
+    input.value = "";
+    render();
+    setTimeout(() => input.focus(), 0);
+  };
 
   input.addEventListener("input", () => {
     sel = 0;
     render();
+  });
+
+  // Result-list keyboard nav. Dialog handles Esc natively; ui.ts handles ⌘K.
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      sel = Math.min(cur.length - 1, sel + 1);
+      paintSel();
+      list.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      sel = Math.max(0, sel - 1);
+      paintSel();
+      list.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (cur[sel]) navigate(cur[sel]);
+    }
   });
 </script>
