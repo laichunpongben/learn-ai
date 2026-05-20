@@ -91,7 +91,7 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     const firstUndone = LESSONS_IDS.find((id) => !cur.done.includes(id));
     const target = firstUndone ?? cur.lastVisited;
     if (!target) {
-      c.innerHTML = '<span class="tiny-link">All done. Reset above to replay.</span>';
+      c.innerHTML = "<a class=\"button\" href=\"/whats-next\">You finished — what's next →</a>";
       return;
     }
     const slug = LESSON_SLUGS[target] ?? "welcome";
