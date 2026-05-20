@@ -1,9 +1,5 @@
 ---
-/**
- * Markup only. Theme switching logic lives in src/scripts/ui.ts (loaded via Layout).
- * Sun/moon icon-swap CSS lives in global.css because it depends on the global
- * [data-theme] attribute on <html>, which can't live in scoped component styles.
- */
+/** Markup only. Behavior in src/scripts/ui.ts; CSS in src/styles/global.css. */
 ---
 
 <button type="button" class="theme-toggle" data-ui-action="toggle-theme" aria-label="Toggle dark mode">

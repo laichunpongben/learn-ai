@@ -29,7 +29,7 @@ const indexJSON: string = JSON.stringify(entries);
 
 <!-- Native <dialog>: UA stylesheet handles show/hide. Closed = display:none. -->
 <dialog class="search-dialog" data-search-dialog aria-label="Search">
-  <form method="dialog" class="search-input-row" data-ui-noclose>
+  <form method="dialog" class="search-input-row">
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="search-icon">
       <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
       <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -229,83 +229,81 @@ const indexJSON: string = JSON.stringify(entries);
     return out;
   }
 
-  const dialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]");
-  const input = document.querySelector<HTMLInputElement>("[data-search-input]");
-  const list = document.querySelector<HTMLUListElement>("[data-search-results]");
-  if (dialog && input && list) {
-    let cur: Entry[] = [];
-    let sel = 0;
+  // These elements are always rendered with this script — no defensive guard.
+  const dialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]")!;
+  const input = document.querySelector<HTMLInputElement>("[data-search-input]")!;
+  const list = document.querySelector<HTMLUListElement>("[data-search-results]")!;
 
-    function render() {
-      cur = search(input!.value);
-      list!.innerHTML = "";
-      if (cur.length === 0) {
-        const li = document.createElement("li");
-        li.className = "empty";
-        li.textContent = "No matches. Try a different word.";
-        list!.appendChild(li);
-        return;
-      }
-      cur.forEach((e, i) => {
-        const li = document.createElement("li");
-        if (i === sel) li.classList.add("sel");
-        const q = input!.value;
-        li.innerHTML = `
-          <div class="row">
-            <span class="title">${highlight(e.title, q)}</span>
-            <span class="pill">${e.kind === "lesson" ? (e.track ?? "Lesson") : "Page"}</span>
-          </div>
-          <div class="blurb">${highlight(e.blurb, q)}</div>
-        `;
-        li.addEventListener("click", () => navigate(e));
-        li.addEventListener("mouseenter", () => {
-          sel = i;
-          list!.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
-        });
-        list!.appendChild(li);
+  let cur: Entry[] = [];
+  let sel = 0;
+
+  function paintSel() {
+    list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+  }
+
+  function render() {
+    cur = search(input.value);
+    list.innerHTML = "";
+    if (cur.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = "No matches. Try a different word.";
+      list.appendChild(li);
+      return;
+    }
+    cur.forEach((e, i) => {
+      const li = document.createElement("li");
+      if (i === sel) li.classList.add("sel");
+      const q = input.value;
+      li.innerHTML = `
+        <div class="row">
+          <span class="title">${highlight(e.title, q)}</span>
+          <span class="pill">${e.kind === "lesson" ? (e.track ?? "Lesson") : "Page"}</span>
+        </div>
+        <div class="blurb">${highlight(e.blurb, q)}</div>
+      `;
+      li.addEventListener("click", () => navigate(e));
+      li.addEventListener("mouseenter", () => {
+        sel = i;
+        paintSel();
       });
-    }
-
-    function navigate(e: Entry) {
-      dialog!.close();
-      window.location.href = e.href;
-    }
-
-    // Listen for dialog state changes to reset selection + populate results.
-    dialog.addEventListener("close", () => {
-      // Restore scroll lock that ui.ts may have set
-      document.documentElement.style.overflow = "";
-    });
-
-    // Expose render so ui.ts can call it after opening.
-    (window as Window & { __searchRender?: () => void }).__searchRender = () => {
-      sel = 0;
-      input!.value = "";
-      render();
-      setTimeout(() => input!.focus(), 0);
-    };
-
-    input.addEventListener("input", () => {
-      sel = 0;
-      render();
-    });
-
-    // Result-list keyboard navigation. Dialog handles Esc natively.
-    dialog.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        sel = Math.min(cur.length - 1, sel + 1);
-        list!.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
-        list!.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        sel = Math.max(0, sel - 1);
-        list!.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
-        list!.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        if (cur[sel]) navigate(cur[sel]);
-      }
+      list.appendChild(li);
     });
   }
+
+  function navigate(e: Entry) {
+    dialog.close();
+    window.location.href = e.href;
+  }
+
+  // Hook ui.ts's openSearch() into our render reset.
+  (window as Window & { __searchRender?: () => void }).__searchRender = () => {
+    sel = 0;
+    input.value = "";
+    render();
+    setTimeout(() => input.focus(), 0);
+  };
+
+  input.addEventListener("input", () => {
+    sel = 0;
+    render();
+  });
+
+  // Result-list keyboard nav. Dialog handles Esc natively; ui.ts handles ⌘K.
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      sel = Math.min(cur.length - 1, sel + 1);
+      paintSel();
+      list.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      sel = Math.max(0, sel - 1);
+      paintSel();
+      list.querySelector("li.sel")?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (cur[sel]) navigate(cur[sel]);
+    }
+  });
 </script>

@@ -83,35 +83,11 @@ For any UI-state bug (theme, modal, sidebar, focus, hidden visibility):
 **verify in a real browser, not happy-dom**. happy-dom and jsdom do not
 faithfully apply the UA stylesheet or run native element behaviors.
 
-Quick verification harness:
-
-```bash
-# macOS already has Chrome. Start it with CDP.
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-  --headless=new --disable-gpu --no-startup-window \
-  --remote-debugging-port=9333 --user-data-dir=/tmp/chrome-prof &
-sleep 2
-
-npm i -D puppeteer-core
-# Then in a script:
-node -e '
-  import("puppeteer-core").then(async ({ default: p }) => {
-    const b = await p.connect({ browserURL: "http://localhost:9333" });
-    const page = await b.newPage();
-    await page.goto("http://localhost:4321/");
-    // Critical for click-occlusion bugs:
-    const at = await page.evaluate(() => {
-      const r = document.querySelector("[data-ui-action=toggle-theme]").getBoundingClientRect();
-      return document.elementFromPoint(r.x + r.width/2, r.y + r.height/2).tagName;
-    });
-    console.log(at);
-    await b.disconnect();
-  });
-'
-```
-
-`document.elementFromPoint()` is the secret weapon — it finds elements
-that are absorbing clicks they shouldn't be.
+`scripts/verify-ui.mjs` is the canonical harness — connect to a Chrome
+running with `--remote-debugging-port=9333`, drive the actual buttons,
+assert post-state. `document.elementFromPoint()` inside that script
+catches click-occlusion bugs that `[hidden]` rules can't express. Run
+with `npm run smoke` after `npm run preview &`.
 
 ## CI
 
