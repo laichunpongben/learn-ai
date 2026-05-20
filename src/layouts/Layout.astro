@@ -98,15 +98,8 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
           }
         });
 
-        // 5. Document-level click delegation as a third belt-and-braces fallback,
-        //    in case onclick attributes are blocked by a CSP or browser extension.
-        document.addEventListener("click", function (e) {
-          var t = e.target;
-          if (!t || typeof t.closest !== "function") return;
-          if (t.closest("[data-theme-toggle]")) { window.__toggleTheme(); return; }
-          if (t.closest("[data-search-open]"))  { window.__openSearch();  return; }
-          if (t.closest("[data-search-close]")) { window.__closeSearch(); return; }
-        });
+        // Buttons rely on their inline `onclick` attributes to call window.__* —
+        // simple, bulletproof, no double-firing.
       })();
     </script>
   </head>

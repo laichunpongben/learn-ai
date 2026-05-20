@@ -92,6 +92,12 @@ const indexJSON: string = JSON.stringify(entries);
     border-color: var(--line);
   }
 
+  /* CRITICAL: only display the overlay when it's NOT hidden. Without this,
+     `display: flex` overrides the UA stylesheet's `[hidden] { display: none }`
+     and the invisible overlay still absorbs every click in the header area. */
+  .search-overlay[hidden] {
+    display: none !important;
+  }
   .search-overlay {
     position: fixed;
     inset: 0;
