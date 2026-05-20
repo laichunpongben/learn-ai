@@ -6,77 +6,56 @@ import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "ship-it")!;
 
-const writingPrompt = `You are my writing partner. When I paste rough notes, produce:
-1. A clean version in my voice — direct, no jargon.
-2. A one-sentence subject line.
-3. Two alternatives — shorter and more formal.
-Ask one clarifying question if context is missing.`;
-
-const webPrompt = `Build a single-page website. Self-contained HTML, no external files.
-
-Purpose: a one-page "what I'm working on" portfolio.
-Sections: short intro, three projects, a contact link.
-Style: warm, minimal, generous whitespace, serif headings.`;
-
-const cliPrompt = `Write a Python script rename.py that:
-- Takes one argument: a folder path.
-- Finds all .jpg/.jpeg/.png files.
-- Reads EXIF date (fallback to mtime).
-- Renames to YYYY-MM-DD__NNN.ext.
-- Prints what it'll do and asks before renaming.
-
-Then create samples/ with two fake .jpg files and run as a sanity check.`;
+const paths = [
+  {
+    kind: "chat" as const,
+    href: "/lessons/build-writing",
+    title: "A · Writing assistant",
+    desc: "Build a saved Project / Custom GPT / Gem you'll use whenever you need to draft writing.",
+    time: "~10 min · no install",
+  },
+  {
+    kind: "design" as const,
+    href: "/lessons/build-webpage",
+    title: "B · Live webpage",
+    desc: "A working one-page website (portfolio, event invite, calculator) you can share.",
+    time: "~15 min · no install",
+  },
+  {
+    kind: "code" as const,
+    href: "/lessons/build-script",
+    title: "C · Personal script",
+    desc: "A tiny CLI tool on your machine — rename photos by EXIF date — via a coding CLI.",
+    time: "~20 min · coding CLI required",
+  },
+];
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} currentId="ship-it">
   <main>
     <LessonShell lesson={lesson} hero="ship">
-      <p>Pick one. Build it. Keep it. Any chat assistant works for A and B; any coding CLI works for C.</p>
+      <p>
+        Three paths, all ending with a tool you actually keep. Each is a step-by-step walkthrough
+        you'll follow in the real product while reading. Pick the closest to what you do.
+      </p>
 
       <div class="paths">
-        <article>
-          <div class="ph"><ProductIcon kind="chat" size={36} /><span class="time">~5 min · no install</span></div>
-          <h3>A · Writing assistant</h3>
-          <p>A saved custom assistant (Project / GPT / Gem) that turns rough notes into polished prose in your voice.</p>
-          <ol class="mini">
-            <li>Open any chat app (ChatGPT, Claude.ai, Gemini) → create a Project / GPT / Gem</li>
-            <li>Paste the prompt below into <strong>Custom instructions</strong></li>
-            <li>(Optional) Drop in 2–3 writing samples as knowledge</li>
-            <li>Start a chat. Paste rough notes. Done.</li>
-          </ol>
-          <pre>{writingPrompt}</pre>
-        </article>
-
-        <article>
-          <div class="ph"><ProductIcon kind="design" size={36} /><span class="time">~10 min · no install</span></div>
-          <h3>B · Tiny live webpage</h3>
-          <p>A working page you can share — portfolio, event invite, calculator.</p>
-          <ol class="mini">
-            <li>Open a chat app with artifacts/canvas (Claude.ai, ChatGPT) <em>or</em> a UI generator (v0, Lovable, Bolt)</li>
-            <li>Paste the prompt</li>
-            <li>Watch the artifact panel render live</li>
-            <li>Iterate ("darker background", "add hover animation"), download HTML</li>
-          </ol>
-          <pre>{webPrompt}</pre>
-        </article>
-
-        <article>
-          <div class="ph"><ProductIcon kind="code" size={36} /><span class="time">~15 min · coding CLI</span></div>
-          <h3>C · Personal script</h3>
-          <p>Rename a folder of photos by their EXIF dates.</p>
-          <ol class="mini">
-            <li><code class="inline">mkdir photo-renamer &amp;&amp; cd photo-renamer</code></li>
-            <li>Open your CLI: <code class="inline">claude</code> / <code class="inline">codex</code> / <code class="inline">aider</code> / <code class="inline">cursor .</code></li>
-            <li>Paste the prompt</li>
-            <li>Approve the actions it asks about</li>
-          </ol>
-          <pre>{cliPrompt}</pre>
-        </article>
+        {paths.map((p) => (
+          <a class="path-card" href={p.href}>
+            <div class="ph">
+              <ProductIcon kind={p.kind} size={36} />
+              <span class="time">{p.time}</span>
+            </div>
+            <h3>{p.title}</h3>
+            <p>{p.desc}</p>
+            <span class="go">Start build →</span>
+          </a>
+        ))}
       </div>
 
       <div class="callout">
         <strong>The pattern that always works.</strong> Goal → constraints → success criteria → ask one clarifying question.
-        Iteration is the unit of progress.
+        Iteration is the unit of progress. Every step is yours to skip or revisit — your progress is saved.
       </div>
     </LessonShell>
   </main>
@@ -86,31 +65,45 @@ Then create samples/ with two fake .jpg files and run as a sanity check.`;
   .paths {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.8rem;
     margin: 1.2rem 0;
   }
-  .paths article {
+  @media (min-width: 800px) { .paths { grid-template-columns: 1fr 1fr 1fr; } }
+  .path-card {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 1rem 1.1rem;
+    padding: 1.05rem 1.1rem 1.1rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
   }
-  .paths .ph {
+  .path-card:hover {
+    border-color: var(--ink);
+    text-decoration: none;
+  }
+  .path-card .ph {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.5rem;
+    gap: 0.7rem;
+    margin-bottom: 0.2rem;
   }
-  .paths .time {
-    font-size: 0.72rem;
+  .path-card .time {
+    font-size: 0.7rem;
     color: var(--ink-faint);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 500;
   }
-  .paths h3 { margin: 0 0 0.3rem; font-size: 1rem; }
-  .paths p { margin: 0 0 0.5rem; color: var(--ink-soft); font-size: 0.9rem; }
-  .paths .mini { padding-left: 1.1rem; font-size: 0.88rem; margin: 0.4rem 0 0.6rem; }
-  .paths .mini li { margin: 0.1rem 0; }
-  .paths pre { font-size: 0.78rem; }
+  .path-card h3 { margin: 0 0 0.2rem; font-size: 1rem; }
+  .path-card p { margin: 0; color: var(--ink-soft); font-size: 0.88rem; flex: 1; }
+  .path-card .go {
+    margin-top: 0.7rem;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .path-card:hover .go { color: #a64500; }
 </style>

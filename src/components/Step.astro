@@ -1,0 +1,103 @@
+---
+interface Props {
+  n: number;
+  title: string;
+  id?: string;
+  optional?: boolean;
+}
+const { n, title, id, optional } = Astro.props;
+const stepId = id ?? `s${n}`;
+---
+
+<section class="step" data-step-id={stepId}>
+  <header class="step-head">
+    <span class="step-num">{n}</span>
+    <h3 class="step-title">{title}{optional ? <span class="opt">optional</span> : null}</h3>
+    <span class="step-check" aria-hidden="true">✓</span>
+  </header>
+  <div class="step-body">
+    <slot />
+    <div class="step-foot">
+      <button class="accent" data-step-toggle>Mark step done</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .step {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+    transition: opacity 0.2s ease, border-color 0.15s ease;
+  }
+  .step.done {
+    border-color: var(--good);
+    opacity: 0.85;
+  }
+  .step-head {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.85rem 1.05rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .step.done .step-head { background: #eef5ef; border-bottom-color: #cfe3d2; }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .step.done .step-num { background: var(--good); }
+  .step-title {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .step-title .opt {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .step-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-size: 0.8rem;
+  }
+  .step.done .step-check {
+    background: var(--good);
+    border-color: var(--good);
+    color: #fff;
+  }
+  .step-body {
+    padding: 1rem 1.1rem 1.05rem;
+    font-size: 0.93rem;
+  }
+  .step-body > p:first-child { margin-top: 0; }
+  .step-foot {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+</style>

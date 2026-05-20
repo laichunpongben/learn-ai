@@ -1,0 +1,31 @@
+---
+/**
+ * Small "expected result" note — sits inside a step to anchor verification.
+ */
+---
+
+<div class="expect">
+  <span class="expect-label">You should see</span>
+  <div class="expect-body"><slot /></div>
+</div>
+
+<style>
+  .expect {
+    margin: 0.7rem 0 0;
+    padding: 0.6rem 0.85rem;
+    border-left: 2px solid var(--good);
+    background: #f1f7f2;
+    border-radius: var(--radius-sm);
+  }
+  .expect-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #2f5236;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .expect-body { font-size: 0.88rem; color: #345c3c; }
+  .expect-body p { margin: 0.2rem 0; }
+</style>

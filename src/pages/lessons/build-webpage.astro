@@ -1,0 +1,139 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import BuildStepper from "../../components/BuildStepper.astro";
+import Step from "../../components/Step.astro";
+import OpenIn from "../../components/OpenIn.astro";
+import PromptCopy from "../../components/PromptCopy.astro";
+import Expect from "../../components/Expect.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "build-webpage")!;
+
+const buildPrompt = `Build a one-page website for me as a single self-contained HTML file (style and JS inline, no external dependencies, no CDN imports).
+
+Purpose: a "what I'm working on" portfolio page.
+Sections:
+1. Header with my name and a one-line bio.
+2. Three project cards — each with a title, a one-line description, and a fake link.
+3. Footer with a contact email and a small "made with AI" note.
+
+Style: warm but modern. Generous whitespace. Serif headings (Iowan/Georgia/system serif), sans-serif body. Soft cream background (#fbf6ef). Single accent color #cc5500.
+
+Constraints:
+- Works fully offline. No external assets.
+- Mobile responsive — sections stack on small screens.
+- Plain semantic HTML, accessible.
+
+Ask one clarifying question if you need my name or bio. Otherwise use placeholders and I'll edit after.`;
+
+const iterations = [
+  "Use a dark background instead — near-black (#0d0d0d) with cream text. Keep the same accent.",
+  "Make the three project cards equal height and add a subtle hover effect.",
+  "Add a small 'now' section above the projects — a single line about what I'm focused on this week.",
+];
+
+const deployPrompt = `I have a working one-page HTML file. Walk me through deploying it for free in 3 minutes. I want a public URL I can share. Options I've heard of: Cloudflare Pages, Netlify, GitHub Pages, Vercel. Recommend one and give me literal step-by-step instructions for that one.`;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="build-webpage">
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        You'll generate a real working webpage inside a chat app's artifact/canvas panel,
+        iterate on it visually, then save the HTML to your machine.
+        Optional last step: deploy it to a free host with a public URL.
+      </p>
+
+      <BuildStepper id="build-webpage" total={9}>
+        <Step n={1} title="Open a chat app with artifacts">
+          <p>Claude.ai and ChatGPT both have a side-panel artifact / canvas feature. Either works.</p>
+          <OpenIn items={[
+            { label: "Claude.ai", url: "https://claude.ai", hint: "Artifacts panel" },
+            { label: "ChatGPT", url: "https://chat.openai.com", hint: "Canvas" },
+          ]} />
+          <Expect>
+            <p>Signed in, looking at the new-chat screen.</p>
+          </Expect>
+        </Step>
+
+        <Step n={2} title="Start a fresh chat">
+          <p>Click <em>New chat</em>. Make sure it's a regular chat (not inside a project that has unrelated instructions).</p>
+        </Step>
+
+        <Step n={3} title="Paste the build prompt">
+          <p>Copy and paste this exactly. Hit Enter.</p>
+          <PromptCopy label="Build prompt" prompt={buildPrompt} />
+          <Expect>
+            <p>
+              Within a few seconds the right side of the screen opens an <strong>artifact</strong> /
+              <strong>canvas</strong> panel and starts rendering the webpage live. The chat may also ask
+              for your name and bio.
+            </p>
+          </Expect>
+        </Step>
+
+        <Step n={4} title="Answer the clarifying question">
+          <p>Reply with your name, a one-line bio, and three project ideas. Or use placeholders:</p>
+          <PromptCopy
+            label="Sample reply"
+            prompt={`Name: Jane Doe
+Bio: I build small tools and write short essays.
+Projects:
+1. Sourdough log — a site tracking hydration vs crumb structure
+2. City sounds — field recordings from cities I've lived in
+3. Bookshelf — what I'm reading and why`}
+          />
+          <Expect>
+            <p>The artifact updates in-place with your real content. The page should look reasonable.</p>
+          </Expect>
+        </Step>
+
+        <Step n={5} title="Iterate — one change at a time">
+          <p>Paste each of these as a separate message. Watch the artifact update after each.</p>
+          {iterations.map((it, i) => (
+            <PromptCopy label={`Iteration ${i + 1}`} prompt={it} />
+          ))}
+          <Expect>
+            <p>The page evolves: darker theme → equal-height cards → an extra "now" section. If something looks off, ask for a fix in plain English.</p>
+          </Expect>
+        </Step>
+
+        <Step n={6} title="Open the artifact full-screen and inspect">
+          <p>Most artifact panels have a <em>preview</em> mode (eye icon) and a <em>code</em> mode (&lt;/&gt; icon). Toggle between them. Try the page on your phone (most chats let you preview on mobile, or you can resize the browser).</p>
+        </Step>
+
+        <Step n={7} title="Download the HTML">
+          <p>Click the <em>download</em> button on the artifact (or copy all the code and save to a file named <code class="inline">index.html</code>).</p>
+          <Expect>
+            <p>You have <code class="inline">index.html</code> on your machine. Double-click it — it opens in your browser. <strong>That is a webpage you made.</strong></p>
+          </Expect>
+        </Step>
+
+        <Step n={8} title="Deploy it (optional)" optional>
+          <p>Want a public URL? Free options: Cloudflare Pages, Netlify Drop, GitHub Pages. Cloudflare and Netlify both have a drag-drop deploy that takes 30 seconds.</p>
+          <PromptCopy label="Ask the chat for help" prompt={deployPrompt} />
+          <OpenIn items={[
+            { label: "Cloudflare Pages", url: "https://pages.cloudflare.com", hint: "drag-drop deploy" },
+            { label: "Netlify Drop", url: "https://app.netlify.com/drop", hint: "fastest" },
+            { label: "GitHub Pages", url: "https://pages.github.com", hint: "needs git" },
+          ]} />
+          <Expect>
+            <p>A public URL you can share. Done.</p>
+          </Expect>
+        </Step>
+
+        <Step n={9} title="Save the chat — it's your edit history">
+          <p>The chat thread now contains every version of your page. Bookmark it. To make future changes,
+          come back and ask the chat — it'll see the whole history.</p>
+        </Step>
+      </BuildStepper>
+
+      <div class="callout">
+        <strong>What you just learned.</strong> Chat-with-artifact is a complete dev loop for small things:
+        prompt → preview → iterate → export → ship. For anything bigger than one page, graduate to a UI
+        generator (v0, Lovable, Bolt) or to a coding CLI (next build).
+      </div>
+    </LessonShell>
+  </main>
+</Layout>

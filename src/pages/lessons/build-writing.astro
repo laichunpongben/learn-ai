@@ -1,0 +1,132 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import BuildStepper from "../../components/BuildStepper.astro";
+import Step from "../../components/Step.astro";
+import OpenIn from "../../components/OpenIn.astro";
+import PromptCopy from "../../components/PromptCopy.astro";
+import Expect from "../../components/Expect.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "build-writing")!;
+
+const systemPrompt = `You are my writing partner. When I paste rough notes, produce three things:
+
+1. A clean version in my voice — direct, no jargon, no corporate puffery.
+2. A one-sentence subject line / headline.
+3. Two alternatives — one shorter, one more formal — so I can pick.
+
+Always ask one clarifying question if context is missing (audience, occasion, length, tone).
+Keep names, numbers, and dates exact.`;
+
+const testNotes = `subject: tomorrow's design review prep
+- 3 PMs joining late from Berlin office
+- want them caught up on Q4 roadmap before we get to detail
+- emphasize the migration risk — Karen needs to weigh in
+- ask if Maya can dial in too
+- send by 4pm so they have evening to review`;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="build-writing">
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        You'll build a saved custom assistant in any major chat app — Claude.ai (Projects),
+        ChatGPT (Custom GPTs / Projects), or Gemini (Gems). When you finish, you'll have a
+        bookmark you reach for whenever you need to draft writing in your voice.
+      </p>
+
+      <BuildStepper id="build-writing" total={8}>
+        <Step n={1} title="Open a chat app and sign in">
+          <p>Pick one. All have free tiers; you can sign up in a minute.</p>
+          <OpenIn items={[
+            { label: "Claude.ai", url: "https://claude.ai", hint: "Anthropic · Projects" },
+            { label: "ChatGPT", url: "https://chat.openai.com", hint: "OpenAI · Custom GPTs" },
+            { label: "Gemini", url: "https://gemini.google.com", hint: "Google · Gems" },
+          ]} />
+          <Expect>
+            <p>You're signed in and see a sidebar with past chats (or an empty one if it's new).</p>
+          </Expect>
+        </Step>
+
+        <Step n={2} title="Create a new custom assistant">
+          <p>The button is in a different place in each app:</p>
+          <ul>
+            <li><strong>Claude.ai:</strong> click <em>Projects</em> in the left sidebar → <em>New project</em>.</li>
+            <li><strong>ChatGPT:</strong> sidebar → <em>Explore GPTs</em> → <em>Create</em>. (Or use <em>Projects</em> if you have it.)</li>
+            <li><strong>Gemini:</strong> top-left menu → <em>Gems</em> → <em>+ New Gem</em>.</li>
+          </ul>
+          <Expect>
+            <p>You see a configuration screen with fields for a name, a description, and instructions.</p>
+          </Expect>
+        </Step>
+
+        <Step n={3} title="Name and describe it">
+          <p>Suggested values you can paste straight in:</p>
+          <ul>
+            <li><strong>Name:</strong> <code class="inline">My writing partner</code></li>
+            <li><strong>Description:</strong> <code class="inline">Turns rough notes into polished prose in my voice.</code></li>
+          </ul>
+        </Step>
+
+        <Step n={4} title="Paste the system prompt">
+          <p>This is the brain of the assistant — it gets prepended to every chat. Copy and paste it into the <em>Custom instructions</em> / <em>System prompt</em> / <em>Instructions</em> field:</p>
+          <PromptCopy label="System prompt" prompt={systemPrompt} />
+          <Expect>
+            <p>The instructions field shows the prompt. No errors.</p>
+          </Expect>
+        </Step>
+
+        <Step n={5} title="Upload 1–3 writing samples" optional>
+          <p>
+            Drop in examples of <em>your</em> best writing — a blog post, an old email you're proud of,
+            a memo. The assistant will match your voice much more closely.
+          </p>
+          <ul>
+            <li><strong>Claude.ai:</strong> the <em>Knowledge</em> section on the project page.</li>
+            <li><strong>ChatGPT:</strong> <em>Knowledge</em> section in the GPT editor.</li>
+            <li><strong>Gemini:</strong> <em>Knowledge</em> section in Gem setup.</li>
+          </ul>
+        </Step>
+
+        <Step n={6} title="Save and start a chat">
+          <p>Hit <em>Save</em> / <em>Update</em> / <em>Create</em>. Then start a new chat <em>inside the assistant</em> (not a regular chat).</p>
+          <Expect>
+            <p>You see an empty conversation with your assistant's name at the top.</p>
+          </Expect>
+        </Step>
+
+        <Step n={7} title="Test it with real notes">
+          <p>Paste rough notes for something you actually need to write. Or use this test pack:</p>
+          <PromptCopy label="Test notes" prompt={testNotes} />
+          <Expect>
+            <p>
+              You should get back three things: a polished version, a one-sentence subject/headline,
+              and two alternatives (shorter + more formal). If anything was missing from your notes,
+              it should ask one clarifying question.
+            </p>
+          </Expect>
+        </Step>
+
+        <Step n={8} title="Iterate and ship">
+          <p>If the output isn't quite right, tell it. Real examples that work:</p>
+          <ul>
+            <li><em>"More direct. Half as long. Drop the bullet points."</em></li>
+            <li><em>"This sounds too American — soften the tone, make it warmer."</em></li>
+            <li><em>"Always use my name as the signoff, not 'Best regards'."</em></li>
+          </ul>
+          <p>When the output matches your voice, go back to the assistant's instructions and incorporate the rules you discovered. Bookmark the assistant's URL.</p>
+          <Expect>
+            <p>A bookmarked, reusable writing assistant tuned to you. Use it forever.</p>
+          </Expect>
+        </Step>
+      </BuildStepper>
+
+      <div class="callout">
+        <strong>What you just learned.</strong> A "custom assistant" is just a saved system prompt plus
+        optional knowledge files. You can build one for any recurring task — email triage, meeting summaries,
+        code review style guides, recipe ideas, gym-plan coaching. Same five fields, different prompt.
+      </div>
+    </LessonShell>
+  </main>
+</Layout>

@@ -1,0 +1,180 @@
+---
+/**
+ * Wraps a sequence of <Step> elements. Renders a sticky progress strip at the top
+ * that counts completed steps. State lives in localStorage under a per-build key.
+ */
+interface Props {
+  id: string;       // unique build id (e.g. "build-writing")
+  total: number;    // total step count (used for the progress bar)
+}
+const { id, total } = Astro.props;
+---
+
+<div class="build" data-build={id} data-build-total={total}>
+  <div class="build-bar">
+    <div class="build-pill"><span data-build-done>0</span> of {total} steps</div>
+    <div class="build-track"><span data-build-fill></span></div>
+    <button class="build-reset ghost" data-build-reset>Reset</button>
+  </div>
+  <div class="build-steps">
+    <slot />
+  </div>
+  <div class="build-done" data-build-celebrate hidden>
+    <strong>You shipped it.</strong>
+    <p>Tool is yours to keep. Come back any time — your progress is saved.</p>
+  </div>
+</div>
+
+<style>
+  .build {
+    margin: 1.4rem 0 2rem;
+  }
+  .build-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.6rem 0;
+    position: sticky;
+    top: 56px;
+    background: var(--bg);
+    z-index: 5;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 1.2rem;
+  }
+  .build-pill {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+  .build-pill span { color: var(--ink); font-weight: 600; }
+  .build-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .build-track > span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.35s ease;
+  }
+  .build-reset {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.6rem;
+  }
+  .build-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .build-done {
+    margin-top: 1.4rem;
+    padding: 1.2rem;
+    border: 1px solid var(--good);
+    background: #eaf3eb;
+    border-radius: var(--radius);
+    text-align: center;
+  }
+  .build-done strong { font-size: 1.1rem; color: var(--good); }
+  .build-done p { margin: 0.3rem 0 0; color: #2f5236; font-size: 0.92rem; }
+</style>
+
+<script>
+  const KEY_PREFIX = "claude-tutorial.build.";
+
+  function keyFor(id: string) { return KEY_PREFIX + id + ".v1"; }
+
+  function read(id: string): Record<string, true> {
+    try {
+      const raw = localStorage.getItem(keyFor(id));
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch { return {}; }
+  }
+
+  function write(id: string, state: Record<string, true>) {
+    localStorage.setItem(keyFor(id), JSON.stringify(state));
+    window.dispatchEvent(new CustomEvent("ct:build", { detail: { id } }));
+  }
+
+  function paint(root: HTMLElement) {
+    const id = root.dataset.build!;
+    const total = parseInt(root.dataset.buildTotal || "1", 10);
+    const state = read(id);
+    let done = 0;
+    root.querySelectorAll<HTMLElement>("[data-step-id]").forEach((s) => {
+      const sid = s.dataset.stepId!;
+      const isDone = !!state[sid];
+      s.classList.toggle("done", isDone);
+      const btn = s.querySelector<HTMLButtonElement>("[data-step-toggle]");
+      if (btn) {
+        btn.textContent = isDone ? "Done ✓" : "Mark step done";
+        btn.classList.toggle("accent", !isDone);
+        btn.classList.toggle("ghost", isDone);
+      }
+      if (isDone) done++;
+    });
+    const fill = root.querySelector<HTMLElement>("[data-build-fill]");
+    const counter = root.querySelector<HTMLElement>("[data-build-done]");
+    const celeb = root.querySelector<HTMLElement>("[data-build-celebrate]");
+    if (fill) fill.style.width = `${total ? (done / total) * 100 : 0}%`;
+    if (counter) counter.textContent = String(done);
+    if (celeb) celeb.hidden = done < total;
+  }
+
+  document.querySelectorAll<HTMLElement>(".build").forEach((root) => {
+    const id = root.dataset.build!;
+
+    root.querySelectorAll<HTMLButtonElement>("[data-step-toggle]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const step = btn.closest<HTMLElement>("[data-step-id]");
+        if (!step) return;
+        const sid = step.dataset.stepId!;
+        const state = read(id);
+        if (state[sid]) delete state[sid];
+        else state[sid] = true;
+        write(id, state);
+        paint(root);
+        // scroll to next undone step
+        if (state[sid]) {
+          const next = step.nextElementSibling as HTMLElement | null;
+          if (next && next.matches("[data-step-id]")) {
+            setTimeout(() => next.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+          }
+        }
+      });
+    });
+
+    root.querySelector<HTMLButtonElement>("[data-build-reset]")?.addEventListener("click", () => {
+      if (!confirm("Reset all step progress for this build?")) return;
+      localStorage.removeItem(keyFor(id));
+      paint(root);
+    });
+
+    paint(root);
+  });
+
+  // Wire copy-prompt buttons within the build.
+  document.querySelectorAll<HTMLButtonElement>(".copy-prompt").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const pre = btn.parentElement?.querySelector<HTMLElement>("pre, [data-prompt-body]");
+      const text = pre?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        const old = btn.textContent;
+        btn.textContent = "Copied ✓";
+        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
+      } catch {
+        btn.textContent = "Press Ctrl/⌘+C";
+      }
+    });
+  });
+</script>

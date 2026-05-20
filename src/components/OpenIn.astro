@@ -1,0 +1,74 @@
+---
+interface Item {
+  label: string;
+  url: string;
+  hint?: string;
+}
+interface Props {
+  items: Item[];
+  intro?: string;
+}
+const { items, intro } = Astro.props;
+---
+
+<div class="open-in">
+  {intro ? <p class="open-intro">{intro}</p> : null}
+  <div class="open-grid">
+    {items.map((it) => (
+      <a class="open-card" href={it.url} target="_blank" rel="noopener">
+        <div class="open-label">{it.label}<span aria-hidden="true">↗</span></div>
+        <div class="open-url">{it.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</div>
+        {it.hint ? <div class="open-hint">{it.hint}</div> : null}
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .open-in { margin: 0.6rem 0; }
+  .open-intro {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0 0 0.5rem;
+  }
+  .open-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.4rem;
+  }
+  .open-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.75rem;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+  .open-card:hover {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .open-label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: -0.005em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .open-url {
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+  .open-card:hover .open-url { color: #b6ad9b; }
+  .open-hint {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+  }
+  .open-card:hover .open-hint { color: #9a907e; }
+</style>

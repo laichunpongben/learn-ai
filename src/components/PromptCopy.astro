@@ -1,0 +1,82 @@
+---
+interface Props {
+  label?: string;
+  prompt: string;
+}
+const { label = "Paste this prompt", prompt } = Astro.props;
+---
+
+<div class="pc">
+  <div class="pc-head">
+    <span class="pc-label">{label}</span>
+    <button class="copy-prompt" data-copy-prompt>Copy</button>
+  </div>
+  <pre data-prompt-body>{prompt}</pre>
+</div>
+
+<style>
+  .pc {
+    border: 1px solid #1f1f1f;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 0.5rem 0;
+    background: #0d0d0d;
+  }
+  .pc-head {
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #1f1f1f;
+    background: #1a1a1a;
+  }
+  .pc-label {
+    flex: 1;
+    color: #b6ad9b;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .copy-prompt {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+    color: #e5e5e5;
+    font-weight: 500;
+  }
+  .copy-prompt:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .pc pre {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: #0d0d0d;
+    color: #e5e5e5;
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-prompt]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const pre = btn.parentElement?.parentElement?.querySelector<HTMLElement>("[data-prompt-body]");
+      const text = pre?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        const old = btn.textContent;
+        btn.textContent = "Copied ✓";
+        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
+      } catch {
+        btn.textContent = "Press Ctrl/⌘+C";
+      }
+    });
+  });
+</script>

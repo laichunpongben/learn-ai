@@ -1,0 +1,180 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import BuildStepper from "../../components/BuildStepper.astro";
+import Step from "../../components/Step.astro";
+import OpenIn from "../../components/OpenIn.astro";
+import PromptCopy from "../../components/PromptCopy.astro";
+import Expect from "../../components/Expect.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "build-script")!;
+
+const buildPrompt = `Write a Python script called rename.py that I'll run as:
+
+    python rename.py <folder>
+
+Behavior:
+- Find every .jpg, .jpeg, .png file (case-insensitive) in <folder>.
+- For each, read the EXIF DateTimeOriginal. If missing, fall back to the file's mtime.
+- Sort all files by that date, ascending.
+- Build a new filename: YYYY-MM-DD__NNN.ext (NNN is a zero-padded 3-digit counter per day, restarting at 001 each new date).
+- Before renaming anything, print a clear plan: "old → new" for every file, then ask "Proceed? [y/N]" and read one line of stdin.
+- If the answer isn't 'y' or 'Y', exit without changes.
+- After renaming, print a one-line summary: "Renamed N files."
+
+Implementation notes:
+- Single .py file. Use Pillow for EXIF (or piexif if Pillow isn't available); install via pip.
+- No external dependencies beyond Pillow.
+- No destructive operations other than the renames the user just approved.
+- Handle the case where two files would get the same target name (don't overwrite — print an error and abort).
+
+After writing the script, create a samples/ folder with two empty .jpg files (use touch), then run the script against samples/ as a smoke test. Answer 'n' to the proceed prompt so nothing is renamed — we just want to see the plan.`;
+
+const dryRunPrompt = `Add a --dry-run flag. When set, do everything you'd do up to the "Proceed?" prompt but never actually rename — just print the plan and exit. Update the README block at the top of the file to document the flag.`;
+
+const thumbsPrompt = `Add a --thumbs flag. When set, after a successful rename, generate a 200x200 thumbnail of each renamed image into a thumbs/ subfolder of the input folder, preserving the new filename (so 2026-05-21__001.jpg becomes thumbs/2026-05-21__001.jpg). Skip thumbnails for non-image files. Use Pillow.`;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} currentId="build-script">
+  <main>
+    <LessonShell lesson={lesson}>
+      <p>
+        You'll build a real Python CLI on your machine via a coding CLI. The assistant will read files,
+        run commands, and write the script — asking for your approval each time. Finished result: a tool
+        that organises a folder of photos by date.
+      </p>
+
+      <BuildStepper id="build-script" total={10}>
+        <Step n={1} title="Install a coding CLI (one of)">
+          <p>Pick the one you'd use day-to-day. All work similarly.</p>
+          <OpenIn items={[
+            { label: "Claude Code", url: "https://docs.anthropic.com/en/docs/claude-code", hint: "npm install -g" },
+            { label: "Codex CLI", url: "https://github.com/openai/codex", hint: "OpenAI" },
+            { label: "aider", url: "https://aider.chat", hint: "pip install" },
+            { label: "Cursor", url: "https://cursor.com", hint: "editor download" },
+          ]} />
+          <PromptCopy
+            label="Quick install commands"
+            prompt={`# Claude Code:
+npm install -g @anthropic-ai/claude-code
+
+# Codex CLI:
+npm install -g @openai/codex
+
+# aider:
+pip install aider-chat`}
+          />
+          <Expect>
+            <p>Running the CLI prints help (e.g. <code class="inline">claude --version</code> works). If install fails, ask the CLI itself for help once it's running — they're great at fixing their own setup issues.</p>
+          </Expect>
+        </Step>
+
+        <Step n={2} title="Sign in / set your API key">
+          <p>Claude Code and Codex open a browser for OAuth on first run. aider reads an env var.</p>
+          <PromptCopy
+            label="If using aider"
+            prompt={`export ANTHROPIC_API_KEY=sk-ant-…   # or OPENAI_API_KEY for GPT models`}
+          />
+          <Expect>
+            <p>The CLI shows a prompt waiting for you to type. No auth errors.</p>
+          </Expect>
+        </Step>
+
+        <Step n={3} title="Make a fresh project folder">
+          <p>In your terminal:</p>
+          <PromptCopy
+            label="Shell"
+            prompt={`mkdir ~/photo-renamer && cd ~/photo-renamer`}
+          />
+          <Expect>
+            <p>You're in an empty directory. <code class="inline">ls</code> returns nothing.</p>
+          </Expect>
+        </Step>
+
+        <Step n={4} title="Start the CLI in this folder">
+          <p>Run whichever you installed. The CLI now sees only this folder.</p>
+          <PromptCopy label="Pick one" prompt={`claude\n# or\ncodex\n# or\naider`} />
+          <Expect>
+            <p>An interactive prompt — <code class="inline">›</code> or similar — ready for your first instruction.</p>
+          </Expect>
+        </Step>
+
+        <Step n={5} title="Paste the build prompt">
+          <p>Copy and paste this whole block. Hit Enter.</p>
+          <PromptCopy label="Build prompt" prompt={buildPrompt} />
+        </Step>
+
+        <Step n={6} title="Approve tool actions as they come up">
+          <p>The CLI will ask for permission before each side-effect:</p>
+          <ul>
+            <li><strong>Write rename.py</strong> — allow</li>
+            <li><strong>Run pip install Pillow</strong> — allow (or run yourself)</li>
+            <li><strong>Run mkdir samples / touch samples/*.jpg</strong> — allow</li>
+            <li><strong>Run python rename.py samples</strong> — allow</li>
+          </ul>
+          <p>Read each prompt before saying yes. This is the whole safety model — never click through blindly.</p>
+          <Expect>
+            <p>
+              You see the CLI write the file, install Pillow, create samples/, run the script,
+              and print a "would rename" plan. You answer 'n' to its proceed prompt; nothing actually changed.
+            </p>
+          </Expect>
+        </Step>
+
+        <Step n={7} title="Run it on real photos">
+          <p>Open a separate terminal (or exit the CLI with <kbd>Ctrl</kbd>+<kbd>C</kbd> twice). Then:</p>
+          <PromptCopy
+            label="Real test"
+            prompt={`cd ~/photo-renamer
+python rename.py ~/Pictures/SomeFolder`}
+          />
+          <Expect>
+            <p>The plan shows old → new for every photo. Answer 'y' if you want to commit; 'n' to bail.</p>
+          </Expect>
+        </Step>
+
+        <Step n={8} title="Add --dry-run">
+          <p>Go back into the CLI (it's still in the same folder). Ask for an enhancement:</p>
+          <PromptCopy label="Iteration 1" prompt={dryRunPrompt} />
+          <Expect>
+            <p>The CLI edits <code class="inline">rename.py</code> in place. Test it: <code class="inline">python rename.py samples --dry-run</code> — should print the plan and exit without prompting.</p>
+          </Expect>
+        </Step>
+
+        <Step n={9} title="Add thumbnails (optional)" optional>
+          <p>One more, for fun:</p>
+          <PromptCopy label="Iteration 2" prompt={thumbsPrompt} />
+          <Expect>
+            <p>After a real rename, a <code class="inline">thumbs/</code> folder appears with 200×200 JPEGs.</p>
+          </Expect>
+        </Step>
+
+        <Step n={10} title="Make it a real tool">
+          <p>Add a one-line shebang and put it on your PATH:</p>
+          <PromptCopy
+            label="Make it runnable"
+            prompt={`# In rename.py, add to the very top:
+#!/usr/bin/env python3
+
+# Then:
+chmod +x rename.py
+mv rename.py ~/.local/bin/photo-renamer
+
+# Now from anywhere:
+photo-renamer ~/Pictures/SomeFolder --dry-run`}
+          />
+          <Expect>
+            <p>You typed <code class="inline">photo-renamer …</code> from any folder and it just worked. You shipped a CLI tool.</p>
+          </Expect>
+        </Step>
+      </BuildStepper>
+
+      <div class="callout">
+        <strong>What you just learned.</strong> Building real tools with a coding CLI follows the same loop:
+        prompt → review the plan → approve actions → test → iterate. The tools you build are yours forever
+        — no subscription, no platform lock-in. Commit them to git the moment they're useful.
+      </div>
+    </LessonShell>
+  </main>
+</Layout>
