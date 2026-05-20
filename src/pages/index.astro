@@ -22,19 +22,23 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     </div>
 
     {
-      TRACKS.map((t) => (
-        <section class="track-section" id={`track-${t.id}`}>
-          <div class="track-header">
-            <h2>{t.title}</h2>
-            <span class="tagline">{t.tagline}</span>
-          </div>
-          <div class="lesson-grid">
-            {lessonsInTrack(t.id).map((l) => (
-              <LessonCard lesson={l} />
-            ))}
-          </div>
-        </section>
-      ))
+      TRACKS.map((t) => {
+        const lessons = lessonsInTrack(t.id);
+        return (
+          <section class="track-section" id={`track-${t.id}`}>
+            <div class="track-header">
+              <h2>{t.title}</h2>
+              <span class="tagline">{t.tagline}</span>
+              <span class="track-count" data-track-count={t.id}>0 / {lessons.length}</span>
+            </div>
+            <div class="lesson-grid">
+              {lessons.map((l) => (
+                <LessonCard lesson={l} />
+              ))}
+            </div>
+          </section>
+        );
+      })
     }
   </main>
 </Layout>
@@ -56,11 +60,23 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
   }
 
   function paintCards() {
-    const cur = read();
+    const doneSet = new Set(read().done);
+    const doneByTrack: Record<string, number> = {};
+    const totalByTrack: Record<string, number> = {};
     document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
       const id = el.dataset.lessonId!;
-      if (cur.done.includes(id)) el.classList.add("done");
-      else el.classList.remove("done");
+      const track = el.dataset.lessonTrack ?? "";
+      totalByTrack[track] = (totalByTrack[track] ?? 0) + 1;
+      const done = doneSet.has(id);
+      el.classList.toggle("done", done);
+      if (done) doneByTrack[track] = (doneByTrack[track] ?? 0) + 1;
+    });
+    document.querySelectorAll<HTMLElement>("[data-track-count]").forEach((el) => {
+      const track = el.dataset.trackCount!;
+      const d = doneByTrack[track] ?? 0;
+      const t = totalByTrack[track] ?? 0;
+      el.textContent = `${d} / ${t}`;
+      el.classList.toggle("track-count-done", t > 0 && d === t);
     });
   }
 
