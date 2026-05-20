@@ -31,13 +31,82 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <script is:inline>
+      // Runs before any <body> markup parses. Sets initial theme (no flash) and
+      // exposes globally-callable functions so HTML onclick handlers always work,
+      // regardless of any module-script load timing.
       (function () {
-        try {
-          var stored = localStorage.getItem("learn-ai.theme.v1");
-          if (stored === "light" || stored === "dark") {
-            document.documentElement.setAttribute("data-theme", stored);
+        var KEY = "learn-ai.theme.v1";
+
+        function readTheme() {
+          try {
+            var s = localStorage.getItem(KEY);
+            if (s === "light" || s === "dark") return s;
+          } catch (_e) {}
+          try {
+            if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+          } catch (_e) {}
+          return "light";
+        }
+
+        function writeTheme(t) {
+          document.documentElement.setAttribute("data-theme", t);
+          try { localStorage.setItem(KEY, t); } catch (_e) {}
+        }
+
+        // 1. Apply stored / preferred theme NOW, before paint.
+        var stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (_e) {}
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+
+        // 2. Expose a globally-callable toggle. Buttons reference this via onclick.
+        window.__toggleTheme = function () {
+          var cur = readTheme();
+          writeTheme(cur === "dark" ? "light" : "dark");
+        };
+
+        // 3. Expose search open/close globally (overlay is added in body).
+        window.__openSearch = function () {
+          var o = document.querySelector("[data-search-overlay]");
+          if (!o) return;
+          o.removeAttribute("hidden");
+          document.documentElement.style.overflow = "hidden";
+          var i = document.querySelector("[data-search-input]");
+          if (i) { i.value = ""; setTimeout(function () { i.focus(); }, 0); }
+          // Trigger initial render if the palette script attached one
+          if (typeof window.__searchRender === "function") window.__searchRender();
+        };
+        window.__closeSearch = function () {
+          var o = document.querySelector("[data-search-overlay]");
+          if (!o) return;
+          o.setAttribute("hidden", "");
+          document.documentElement.style.overflow = "";
+        };
+
+        // 4. ⌘K / Ctrl+K open/close from any focus state.
+        document.addEventListener("keydown", function (e) {
+          if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+            e.preventDefault();
+            var o = document.querySelector("[data-search-overlay]");
+            if (!o) return;
+            if (o.hasAttribute("hidden")) window.__openSearch();
+            else window.__closeSearch();
+          } else if (e.key === "Escape") {
+            var o2 = document.querySelector("[data-search-overlay]");
+            if (o2 && !o2.hasAttribute("hidden")) window.__closeSearch();
           }
-        } catch (_e) {}
+        });
+
+        // 5. Document-level click delegation as a third belt-and-braces fallback,
+        //    in case onclick attributes are blocked by a CSP or browser extension.
+        document.addEventListener("click", function (e) {
+          var t = e.target;
+          if (!t || typeof t.closest !== "function") return;
+          if (t.closest("[data-theme-toggle]")) { window.__toggleTheme(); return; }
+          if (t.closest("[data-search-open]"))  { window.__openSearch();  return; }
+          if (t.closest("[data-search-close]")) { window.__closeSearch(); return; }
+        });
       })();
     </script>
   </head>
