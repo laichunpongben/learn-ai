@@ -142,6 +142,15 @@ export const LESSONS: Lesson[] = [
     track: "concepts",
   },
   {
+    id: "concept-rag",
+    slug: "concept-rag",
+    title: "RAG — giving AI access to your data",
+    blurb:
+      "How retrieval-augmented generation works, when to use it, and the simpler alternatives most people overlook.",
+    minutes: 6,
+    track: "concepts",
+  },
+  {
     id: "chat-first",
     slug: "chat-first",
     title: "Drive a chat assistant",
