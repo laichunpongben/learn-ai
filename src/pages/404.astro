@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { LESSONS, TRACKS } from "../data/curriculum";
+
+// Suggest a few good landing spots: the welcome lesson, the capstone, the cookbook.
+const suggestions = [
+  { title: "Start here", blurb: "What AI assistants are, in 3 minutes.", href: "/lessons/welcome" },
+  { title: "What can you build?", blurb: "A capability map.", href: "/lessons/capabilities" },
+  { title: "Ship your first tool", blurb: "Three guided paths.", href: "/lessons/ship-it" },
+  { title: "Cookbook", blurb: "Copy-paste starter prompts.", href: "/cookbook" },
+];
+
+const totalLessons = LESSONS.length;
+const trackCount = TRACKS.length;
+---
+
+<Layout title="Not found · Learn AI" description="The page you were looking for doesn't exist.">
+  <main>
+    <p><span class="track-pill">404</span></p>
+    <h1>Page not found</h1>
+    <p class="lede">
+      The URL you followed doesn't lead anywhere. Maybe a typo, maybe a lesson was renamed.
+      You can search ({trackCount} tracks · {totalLessons} lessons), or pick one of these:
+    </p>
+
+    <div class="four04-grid">
+      {
+        suggestions.map((s) => (
+          <a class="four04-card" href={s.href}>
+            <h3>{s.title}</h3>
+            <p>{s.blurb}</p>
+            <span class="go">Open →</span>
+          </a>
+        ))
+      }
+    </div>
+
+    <p style="color: var(--ink-soft); font-size: 0.92rem; margin-top: 1.5rem;">
+      Or hit <kbd>⌘</kbd><kbd>K</kbd> to search, or
+      <a href="/">go back to the curriculum</a>.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .four04-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1.4rem 0 0;
+  }
+  @media (max-width: 600px) {
+    .four04-grid { grid-template-columns: 1fr; }
+  }
+  .four04-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.95rem 1.05rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .four04-card:hover {
+    border-color: var(--ink);
+    text-decoration: none;
+  }
+  .four04-card h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+  .four04-card p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; flex: 1; }
+  .four04-card .go { margin-top: 0.4rem; font-size: 0.84rem; color: var(--accent); font-weight: 500; }
+</style>
