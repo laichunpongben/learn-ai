@@ -312,7 +312,7 @@ const indexJSON: string = JSON.stringify(entries);
   }
 
   function open() {
-    overlay.hidden = false;
+    overlay.removeAttribute("hidden");
     document.documentElement.style.overflow = "hidden";
     setTimeout(() => {
       input.value = "";
@@ -323,7 +323,7 @@ const indexJSON: string = JSON.stringify(entries);
   }
 
   function close() {
-    overlay.hidden = true;
+    overlay.setAttribute("hidden", "");
     document.documentElement.style.overflow = "";
   }
 
@@ -339,11 +339,11 @@ const indexJSON: string = JSON.stringify(entries);
   window.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
-      if (overlay.hidden) open();
+      if (overlay.hasAttribute("hidden")) open();
       else close();
       return;
     }
-    if (!overlay.hidden) {
+    if (!overlay.hasAttribute("hidden")) {
       if (e.key === "Escape") { e.preventDefault(); close(); }
       else if (e.key === "ArrowDown") {
         e.preventDefault();
