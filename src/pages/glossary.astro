@@ -200,6 +200,9 @@ const SECTIONS: Section[] = [
     ],
   },
 ];
+
+const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+const sectionsWithIds = SECTIONS.map((s) => ({ ...s, id: slug(s.group) }));
 ---
 
 <Layout title="Glossary · Learn AI" description="The AI terms every tutorial uses without explaining." currentId="glossary">
@@ -211,30 +214,27 @@ const SECTIONS: Section[] = [
     </p>
 
     <nav class="g-toc" aria-label="Sections">
-      {SECTIONS.map((s) => (
-        <a href={`#${s.group.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "")}`}>{s.group}</a>
+      {sectionsWithIds.map((s) => (
+        <a href={`#${s.id}`}>{s.group}</a>
       ))}
     </nav>
 
-    {SECTIONS.map((s) => {
-      const id = s.group.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
-      return (
-        <section class="g-section" id={id}>
-          <h2>{s.group}</h2>
-          <dl class="g-list">
-            {s.terms.map((t) => (
-              <div class="g-row">
-                <dt>{t.word}</dt>
-                <dd>
-                  {t.def}
-                  {t.see ? <a class="g-see" href={t.see}>read more →</a> : null}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      );
-    })}
+    {sectionsWithIds.map((s) => (
+      <section class="g-section" id={s.id}>
+        <h2>{s.group}</h2>
+        <dl class="g-list">
+          {s.terms.map((t) => (
+            <div class="g-row">
+              <dt>{t.word}</dt>
+              <dd>
+                {t.def}
+                {t.see ? <a class="g-see" href={t.see}>read more →</a> : null}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    ))}
   </main>
 </Layout>
 
