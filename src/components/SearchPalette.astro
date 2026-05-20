@@ -327,12 +327,13 @@ const indexJSON: string = JSON.stringify(entries);
     document.documentElement.style.overflow = "";
   }
 
-  document.querySelectorAll<HTMLButtonElement>("[data-search-open]").forEach((b) =>
-    b.addEventListener("click", open),
-  );
-  document.querySelectorAll<HTMLElement>("[data-search-close]").forEach((b) =>
-    b.addEventListener("click", close),
-  );
+  // Event delegation — robust to any timing/scoping issues with per-element binding.
+  document.addEventListener("click", (e) => {
+    const t = e.target instanceof Element ? e.target : null;
+    if (!t) return;
+    if (t.closest("[data-search-open]")) { e.preventDefault(); open(); return; }
+    if (t.closest("[data-search-close]")) { e.preventDefault(); close(); return; }
+  });
 
   // Keyboard: Cmd+K / Ctrl+K to open. "/" is intentionally NOT bound — too easy to trigger by accident.
   window.addEventListener("keydown", (e) => {

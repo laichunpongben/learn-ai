@@ -2,6 +2,8 @@
 /**
  * Sun/moon toggle. Stores user choice in localStorage; respects system preference
  * until a manual choice is made. Inline script in <head> applies theme before paint.
+ *
+ * Uses event delegation at document level (more robust than per-element binding).
  */
 ---
 
@@ -42,17 +44,8 @@
     color: var(--ink);
     border-color: var(--ink);
   }
-  /* Visible feedback on click — scale tick so the user sees it fire. */
   .theme-toggle:active { transform: scale(0.92); }
-  .theme-toggle svg {
-    transition: transform 0.18s ease;
-  }
-  .theme-toggle.flip svg {
-    transform: rotate(180deg);
-  }
   .theme-toggle .i-moon { display: none; }
-  /* :global() opts the parent selector out of Astro's CSS scoping.
-     Without it, [data-theme="dark"] gets the scope marker appended and never matches the html element. */
   :global([data-theme="dark"]) .theme-toggle .i-sun { display: none; }
   :global([data-theme="dark"]) .theme-toggle .i-moon { display: inline-block; }
   @media (prefers-color-scheme: dark) {
@@ -62,24 +55,29 @@
 </style>
 
 <script>
-  function getEffectiveTheme(): "light" | "dark" {
-    const stored = localStorage.getItem("learn-ai.theme.v1");
-    if (stored === "light" || stored === "dark") return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
+  // Document-level delegation: clicks anywhere on the page bubble up and hit this listener.
+  // Robust to re-renders, race conditions, and shadow DOM ordering.
+  document.addEventListener("click", (e) => {
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
+    const btn = target.closest<HTMLElement>("[data-theme-toggle]");
+    if (!btn) return;
 
-  function apply(theme: "light" | "dark", persist: boolean): void {
-    document.documentElement.setAttribute("data-theme", theme);
-    if (persist) localStorage.setItem("learn-ai.theme.v1", theme);
-  }
-
-  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const next = getEffectiveTheme() === "dark" ? "light" : "dark";
-      apply(next, true);
-      // Briefly flash a class so the user sees the click fired (in case the theme
-      // change itself is subtle due to system pref already matching).
-      btn.classList.toggle("flip");
-    });
+    const KEY = "learn-ai.theme.v1";
+    let current: "light" | "dark";
+    try {
+      const stored = localStorage.getItem(KEY);
+      if (stored === "light" || stored === "dark") current = stored;
+      else current = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    } catch {
+      current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    }
+    const next: "light" | "dark" = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem(KEY, next);
+    } catch {
+      // ignore storage failures (private mode, etc.)
+    }
   });
 </script>
