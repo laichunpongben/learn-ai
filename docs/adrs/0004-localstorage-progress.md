@@ -18,7 +18,7 @@ Options considered:
 
 ## Decision
 
-**Store progress in `localStorage` under a single key (`claude-tutorial.progress.v1`).** Shape:
+**Store progress in `localStorage` under a single key (`learn-ai.progress.v1`).** Shape:
 
 ```ts
 { done: string[]; lastVisited?: string; startedAt?: string }

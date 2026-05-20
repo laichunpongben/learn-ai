@@ -4,7 +4,7 @@
  * Resumable: returning learners see what they've already done.
  */
 
-const KEY = "claude-tutorial.progress.v1";
+const KEY = "learn-ai.progress.v1";
 
 interface Progress {
   done: string[];

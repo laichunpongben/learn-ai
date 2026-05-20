@@ -32,7 +32,7 @@ const { prev, next } = neighbors(lesson.id);
 
 <script is:inline define:vars={{ id: lesson.id }}>
   try {
-    const KEY = "claude-tutorial.progress.v1";
+    const KEY = "learn-ai.progress.v1";
     const raw = localStorage.getItem(KEY);
     const cur = raw ? JSON.parse(raw) : { done: [] };
     cur.lastVisited = id;
