@@ -3,6 +3,7 @@ import { neighbors, trackById, type Lesson } from "../data/curriculum";
 import NextPrev from "./NextPrev.astro";
 import MarkDone from "./MarkDone.astro";
 import LessonHero from "./LessonHero.astro";
+import TocRail from "./TocRail.astro";
 
 interface Props {
   lesson: Lesson;
@@ -14,21 +15,39 @@ const track = trackById(lesson.track);
 const { prev, next } = neighbors(lesson.id);
 ---
 
-<article>
-  <p>
-    <span class="track-pill">{track.title}</span>
-    <span class="tiny-link" style="margin-left: 0.5rem;">{lesson.minutes} min</span>
-  </p>
-  <h1>{lesson.title}</h1>
-  <p class="lede">{lesson.blurb}</p>
+<div class="lesson-layout">
+  <article>
+    <p>
+      <span class="track-pill">{track.title}</span>
+      <span class="tiny-link" style="margin-left: 0.5rem;">{lesson.minutes} min</span>
+    </p>
+    <h1>{lesson.title}</h1>
+    <p class="lede">{lesson.blurb}</p>
 
-  {hero ? <LessonHero kind={hero} /> : null}
+    {hero ? <LessonHero kind={hero} /> : null}
 
-  <slot />
+    <slot />
 
-  <MarkDone id={lesson.id} />
-  <NextPrev prev={prev} next={next} />
-</article>
+    <MarkDone id={lesson.id} />
+    <NextPrev prev={prev} next={next} />
+  </article>
+  <TocRail />
+</div>
+
+<style>
+  .lesson-layout {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .lesson-layout article {
+    flex: 1;
+    min-width: 0;
+  }
+  @media (max-width: 1279px) {
+    .lesson-layout { display: block; }
+  }
+</style>
 
 <script is:inline define:vars={{ id: lesson.id }}>
   try {

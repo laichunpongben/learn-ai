@@ -1,0 +1,174 @@
+---
+/**
+ * Sticky right-rail table of contents for lesson pages.
+ * After the page loads, scans <main> for h2/h3 elements, slugifies any without an id,
+ * and builds a nested navigation. IntersectionObserver highlights the current section.
+ *
+ * Only renders the rail visibly on screens >= 1280px and when 3+ headings are found.
+ */
+---
+
+<aside class="toc" data-toc aria-label="On this page" hidden>
+  <div class="toc-label">On this page</div>
+  <ol class="toc-list" data-toc-list></ol>
+</aside>
+
+<style>
+  .toc {
+    display: none;
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    width: 200px;
+    flex-shrink: 0;
+    padding-left: 1.4rem;
+    border-left: 1px solid var(--line);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  @media (min-width: 1280px) {
+    .toc { display: block; }
+  }
+  .toc-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--ink-faint);
+    margin-bottom: 0.45rem;
+  }
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+  .toc-list li {
+    margin: 0;
+  }
+  .toc-list a {
+    display: block;
+    padding: 0.22rem 0.5rem;
+    border-left: 2px solid transparent;
+    margin-left: -0.5rem;
+    color: var(--ink-soft);
+    border-bottom: none;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+  .toc-list a:hover {
+    color: var(--ink);
+    border-bottom: none;
+  }
+  .toc-list a.active {
+    color: var(--ink);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  .toc-list .h3 a {
+    padding-left: 1.2rem;
+    color: var(--ink-faint);
+  }
+  .toc-list .h3 a.active { color: var(--ink-soft); }
+</style>
+
+<script>
+  type Heading = { id: string; text: string; level: 2 | 3 };
+
+  function slugify(text: string): string {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 64);
+  }
+
+  function collectHeadings(): Heading[] {
+    // Scan the lesson article specifically — skip widgets and the toc itself.
+    const article = document.querySelector<HTMLElement>("main article");
+    if (!article) return [];
+    const els = Array.from(article.querySelectorAll<HTMLHeadingElement>("h2, h3"));
+    const seen = new Set<string>();
+    const out: Heading[] = [];
+    for (const el of els) {
+      // Skip headings inside the four product simulators (they have their own labels)
+      if (el.closest("[data-chatapp], [data-term], [data-cowork], [data-dsim], .step, .build")) continue;
+      const text = el.textContent?.trim() ?? "";
+      if (!text) continue;
+      let id = el.id || slugify(text);
+      // ensure uniqueness
+      let i = 1;
+      while (seen.has(id)) id = slugify(text) + "-" + ++i;
+      seen.add(id);
+      el.id = id;
+      out.push({ id, text, level: el.tagName === "H2" ? 2 : 3 });
+    }
+    return out;
+  }
+
+  function render(headings: Heading[]): void {
+    const toc = document.querySelector<HTMLElement>("[data-toc]");
+    const list = document.querySelector<HTMLOListElement>("[data-toc-list]");
+    if (!toc || !list) return;
+    if (headings.length < 3) {
+      toc.hidden = true;
+      return;
+    }
+    toc.hidden = false;
+    list.innerHTML = "";
+    for (const h of headings) {
+      const li = document.createElement("li");
+      li.className = h.level === 3 ? "h3" : "h2";
+      const a = document.createElement("a");
+      a.href = `#${h.id}`;
+      a.textContent = h.text;
+      a.dataset.tocLink = h.id;
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = document.getElementById(h.id);
+        if (!target) return;
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 70, behavior: "smooth" });
+        history.replaceState(null, "", `#${h.id}`);
+      });
+      li.appendChild(a);
+      list.appendChild(li);
+    }
+  }
+
+  function observeActive(headings: Heading[]): void {
+    if (headings.length === 0) return;
+    const links = new Map<string, HTMLAnchorElement>();
+    document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]").forEach((a) => {
+      links.set(a.dataset.tocLink!, a);
+    });
+
+    let activeId: string | null = null;
+    const setActive = (id: string | null) => {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((a) => a.classList.toggle("active", a.dataset.tocLink === id));
+    };
+
+    // Pick the heading whose top is just above the viewport's top (with a small offset).
+    function update() {
+      const offset = 100;
+      let current: string | null = null;
+      for (const h of headings) {
+        const el = document.getElementById(h.id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= offset) current = h.id;
+        else break;
+      }
+      setActive(current ?? headings[0]?.id ?? null);
+    }
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+  }
+
+  const headings = collectHeadings();
+  render(headings);
+  observeActive(headings);
+</script>

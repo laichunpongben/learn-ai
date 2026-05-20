@@ -1,0 +1,141 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import Reveal from "../../components/Reveal.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "concept-cost")!;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-cost">
+  <main>
+    <LessonShell lesson={lesson} hero="claude">
+      <p>
+        AI assistants are not free. Chat apps come with monthly subscriptions; APIs and agents
+        charge per use. Three concepts let you predict and control your bill.
+      </p>
+
+      <h2>Tokens — what you're actually paying for</h2>
+      <p>
+        Models don't think in words; they think in <strong>tokens</strong>. A token is roughly a
+        word or a chunk of one. <em>"Hello"</em> is one token. <em>"Onomatopoeia"</em> is four.
+        English text is ~0.75 words per token. Code averages ~3 characters per token.
+      </p>
+      <p>Every request charges you for two things:</p>
+      <ul>
+        <li><strong>Input tokens.</strong> Your prompt + any history + system prompt + files.</li>
+        <li><strong>Output tokens.</strong> The reply the model writes back.</li>
+      </ul>
+      <p>Output is usually 4–5× more expensive than input per token.</p>
+
+      <h2>The three pricing tiers</h2>
+      <table>
+        <thead>
+          <tr><th>Tier</th><th>Use for</th><th>Rough cost per 1M tokens (in / out)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cheap & fast</strong><br/><span style="color:var(--ink-faint); font-size:0.8rem;">Haiku, GPT-mini, Gemini Flash</span></td>
+            <td>Routine work, classification, simple lookups, summarisation</td>
+            <td>$0.25–1 / $1–4</td>
+          </tr>
+          <tr>
+            <td><strong>Balanced</strong><br/><span style="color:var(--ink-faint); font-size:0.8rem;">Sonnet, GPT, Gemini Pro</span></td>
+            <td>Default for coding CLIs, agents, writing</td>
+            <td>$3–5 / $15–20</td>
+          </tr>
+          <tr>
+            <td><strong>Heavy reasoning</strong><br/><span style="color:var(--ink-faint); font-size:0.8rem;">Opus, GPT-large, Gemini Ultra</span></td>
+            <td>Architecture, research, gnarly debugging</td>
+            <td>$15 / $75</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        Pricing moves fast — these are 2026 ballparks. Check each provider's pricing page for current numbers.
+      </p>
+
+      <h2>What workflows actually cost</h2>
+      <div class="cost-grid">
+        <article>
+          <h4>One chat reply</h4>
+          <p>~500 tokens in, ~500 out</p>
+          <p class="cost">≈ <strong>$0.001–0.01</strong></p>
+        </article>
+        <article>
+          <h4>A coding-CLI session</h4>
+          <p>30 min, lots of file reads</p>
+          <p class="cost">≈ <strong>$0.50–3</strong></p>
+        </article>
+        <article>
+          <h4>Cloud agent (one PR)</h4>
+          <p>Reads repo, edits files, runs tests</p>
+          <p class="cost">≈ <strong>$1–10</strong></p>
+        </article>
+        <article>
+          <h4>Background daemon (1 day)</h4>
+          <p>Scheduled tasks every hour</p>
+          <p class="cost">≈ <strong>$5–50</strong></p>
+        </article>
+      </div>
+
+      <h2>Three ways to spend less</h2>
+      <ol class="steps">
+        <li><strong>Prompt caching.</strong> If you send the same context (system prompt, project files) repeatedly, modern APIs cache it — sometimes 80%+ off on repeated input. Coding CLIs do this automatically; verify by checking your usage dashboard.</li>
+        <li><strong>Model routing.</strong> Use the cheap tier for routine work, escalate to balanced for hard problems, reserve heavy reasoning for the rare gnarly thing. A good tool routes for you; otherwise pick deliberately.</li>
+        <li><strong>Hard spend caps.</strong> Every provider's dashboard lets you set a monthly limit. Set one before you start. Treat it as a smoke alarm.</li>
+      </ol>
+
+      <h2>Where to check your spend</h2>
+      <table>
+        <thead>
+          <tr><th>Provider</th><th>Where</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Anthropic</td><td><a href="https://console.anthropic.com/settings/usage" target="_blank" rel="noopener">console.anthropic.com → Usage</a></td></tr>
+          <tr><td>OpenAI</td><td><a href="https://platform.openai.com/usage" target="_blank" rel="noopener">platform.openai.com → Usage</a></td></tr>
+          <tr><td>Google</td><td><a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com → Billing</a></td></tr>
+          <tr><td>OpenRouter</td><td><a href="https://openrouter.ai/activity" target="_blank" rel="noopener">openrouter.ai/activity</a> — per model, per request</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>The math you actually need.</strong> Chat: pennies per message. Coding CLI: dollars per session.
+        Always-on agent: tens of dollars per day. Set a monthly cap that's <em>uncomfortable</em> if hit — so an
+        accidental runaway never costs you more than that.
+      </div>
+
+      <Reveal q="Why is output so much more expensive than input?">
+        Inputs can be batched and processed in parallel; outputs are generated one token at a time and require
+        the model's full attention. The economics of GPU compute reflect that asymmetry.
+      </Reveal>
+      <Reveal q="What about flat-rate subscriptions (Claude.ai Pro, ChatGPT Plus)?">
+        Different model. You pay a fixed monthly fee for human-scale chat usage; you don't see token counts.
+        Cheaper if you're a heavy individual user; the API is cheaper for programmatic / agent use.
+      </Reveal>
+      <Reveal q="What about local / open models?">
+        Free per token after you pay for hardware. Llama, Mistral, Qwen, DeepSeek all have downloadable weights.
+        Quality is closing the gap but still lags the frontier closed models on hard tasks. Privacy and zero-marginal-cost are the wins.
+      </Reveal>
+    </LessonShell>
+  </main>
+</Layout>
+
+<style>
+  .cost-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .cost-grid article {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0.85rem 0.95rem;
+  }
+  .cost-grid h4 { margin: 0 0 0.25rem; font-size: 0.92rem; }
+  .cost-grid p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+  .cost-grid .cost { margin-top: 0.35rem; font-family: var(--mono); color: var(--ink); font-size: 0.95rem; }
+  @media (max-width: 600px) { .cost-grid { grid-template-columns: 1fr; } }
+</style>

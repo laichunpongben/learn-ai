@@ -106,6 +106,8 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Subtle transition makes the theme switch feel intentional, not jarring. */
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 a {
@@ -670,3 +672,79 @@ pre code { font-family: inherit; }
 ::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ─── Print stylesheet ─────────────────────────────────────────────
+   Goal: make a lesson read cleanly on paper. Hide chrome, drop
+   colored backgrounds, keep typography legible.
+*/
+@media print {
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #ffffff;
+    --ink: #000000;
+    --ink-soft: #333333;
+    --ink-faint: #666666;
+    --line: #cccccc;
+    --line-strong: #999999;
+    --accent: #000000;
+  }
+  html, body { background: #fff !important; color: #000 !important; }
+  header.site,
+  footer,
+  .sidebar,
+  .sidebar-backdrop,
+  .hamburger,
+  .search-trigger,
+  .search-overlay,
+  .theme-toggle,
+  .toc,
+  .lesson-card .check,
+  .mark-done,
+  .next-prev,
+  .build-bar,
+  .build-reset,
+  .step-foot,
+  .composer,
+  .chips,
+  .chat-app .chat-side,
+  .term-app .prompt-row,
+  .cw-side,
+  .ds-left {
+    display: none !important;
+  }
+  .shell { display: block !important; max-width: none !important; }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  main * {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    color: #000 !important;
+  }
+  a { color: #000 !important; text-decoration: underline; border-bottom: none !important; }
+  /* Show full URL after external links */
+  a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555 !important; }
+  /* Don't expand internal links — too noisy */
+  a[href^="/"]:after, a[href^="#"]:after { content: ""; }
+  /* Code blocks remain monospace with light gray bg replaced by an outline */
+  pre {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    border: 1px solid #999 !important;
+    page-break-inside: avoid;
+  }
+  table { page-break-inside: avoid; }
+  h1, h2, h3, h4 { color: #000 !important; page-break-after: avoid; }
+  /* Reveal: force open and show the body */
+  .reveal { border-top: 1px solid #ccc !important; }
+  .reveal[open], .reveal:not([open]) { /* both */ }
+  .reveal summary::before { content: "" !important; }
+  .reveal .body { display: block !important; margin-top: 0.4rem; }
+  details:not([open]) > *:not(summary) { display: block !important; }
+  /* Hide animated/streamed widgets — they don't print meaningfully */
+  .chat-app, .term-app, .cowork, .dsim { display: none !important; }
+}

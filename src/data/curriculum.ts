@@ -125,6 +125,14 @@ export const LESSONS: Lesson[] = [
     track: "concepts",
   },
   {
+    id: "concept-cost",
+    slug: "concept-cost",
+    title: "Tokens, models, and what it actually costs",
+    blurb: "How AI is priced, where your money goes, and how to cap your spend before it surprises you.",
+    minutes: 5,
+    track: "concepts",
+  },
+  {
     id: "chat-first",
     slug: "chat-first",
     title: "Drive a chat assistant",
