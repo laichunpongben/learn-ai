@@ -60,25 +60,23 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
   }
 
   function paintCards() {
-    const cur = read();
+    const doneSet = new Set(read().done);
     const doneByTrack: Record<string, number> = {};
     const totalByTrack: Record<string, number> = {};
     document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
       const id = el.dataset.lessonId!;
       const track = el.dataset.lessonTrack ?? "";
       totalByTrack[track] = (totalByTrack[track] ?? 0) + 1;
-      const done = cur.done.includes(id);
-      if (done) {
-        el.classList.add("done");
-        doneByTrack[track] = (doneByTrack[track] ?? 0) + 1;
-      } else {
-        el.classList.remove("done");
-      }
+      const done = doneSet.has(id);
+      el.classList.toggle("done", done);
+      if (done) doneByTrack[track] = (doneByTrack[track] ?? 0) + 1;
     });
     document.querySelectorAll<HTMLElement>("[data-track-count]").forEach((el) => {
       const track = el.dataset.trackCount!;
-      el.textContent = `${doneByTrack[track] ?? 0} / ${totalByTrack[track] ?? 0}`;
-      el.classList.toggle("track-count-done", (doneByTrack[track] ?? 0) === (totalByTrack[track] ?? 0) && (totalByTrack[track] ?? 0) > 0);
+      const d = doneByTrack[track] ?? 0;
+      const t = totalByTrack[track] ?? 0;
+      el.textContent = `${d} / ${t}`;
+      el.classList.toggle("track-count-done", t > 0 && d === t);
     });
   }
 
