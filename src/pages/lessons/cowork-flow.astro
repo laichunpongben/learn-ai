@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "cowork-flow")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="cowork-flow">
-  <main>
+  <main id="main">
     <LessonShell lesson={lesson}>
       <p>
         Every cloud-agent platform has roughly the same flow. The imitation below shows the pattern.

@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="design-first">
-  <main>
+  <main id="main">
     <LessonShell lesson={lesson}>
       <p>
         <strong>UI generators</strong> turn a sentence into a working piece of interface — real HTML/React,

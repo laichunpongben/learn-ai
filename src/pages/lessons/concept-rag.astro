@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-rag")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-rag">
-  <main>
+  <main id="main">
     <LessonShell lesson={lesson} hero="agents">
       <p>
         A trained model knows what it read during training. It doesn't know your company's wiki,

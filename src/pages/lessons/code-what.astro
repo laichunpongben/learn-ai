@@ -7,7 +7,7 @@ const lesson = LESSONS.find((l) => l.id === "code-what")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="code-what">
-  <main>
+  <main id="main">
     <LessonShell lesson={lesson} hero="code">
       <p>
         A <strong>coding assistant</strong> lives where your code does — your terminal, your editor —

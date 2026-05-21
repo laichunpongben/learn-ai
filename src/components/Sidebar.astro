@@ -7,8 +7,8 @@ interface Props {
 const { currentId } = Astro.props;
 ---
 
-<aside class="sidebar" data-sidebar>
-  <nav>
+<aside class="sidebar" data-sidebar aria-label="Curriculum">
+  <nav aria-label="All lessons">
     <a href="/" class={`side-home ${currentId ? "" : "active"}`}>Curriculum</a>
     {TRACKS.map((t) => (
       <div class="side-group">
