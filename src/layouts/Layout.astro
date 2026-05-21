@@ -8,9 +8,15 @@ interface Props {
   title: string;
   description?: string;
   currentId?: string;
+  noindex?: boolean;
 }
 
-const { title, description = "A hands-on tour of modern AI assistants and agents.", currentId } = Astro.props;
+const {
+  title,
+  description = "A hands-on tour of modern AI assistants and agents.",
+  currentId,
+  noindex = false,
+} = Astro.props;
 const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
 ---
 
@@ -20,6 +26,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
