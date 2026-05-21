@@ -20,6 +20,7 @@ const {
 } = Astro.props;
 const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const ogImage = new URL("/og.png", Astro.site ?? Astro.url.origin).toString();
 ---
 
 <!doctype html>
@@ -35,9 +36,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).to
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="Learn AI" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="Learn AI · Lessons" href="/rss.xml" />
     <title>{title}</title>
