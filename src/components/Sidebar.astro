@@ -152,7 +152,6 @@ const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.trac
     .sidebar {
       position: fixed;
       top: 56px;
-      bottom: 0;
       left: 0;
       width: 280px;
       max-width: 86vw;
@@ -162,8 +161,14 @@ const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.trac
       transform: translateX(-100%);
       transition: transform 0.22s ease;
       padding: 1.2rem 0.6rem 2rem 0;
+      /* Explicit height; `dvh` shrinks with the mobile URL bar so the
+         drawer never extends past the visible viewport. The vh fallback
+         keeps older Safari working. */
+      height: calc(100vh - 56px);
+      height: calc(100dvh - 56px);
       max-height: none;
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
     :global(html.sidebar-open) .sidebar {
       transform: translateX(0);
