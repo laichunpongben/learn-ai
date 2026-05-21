@@ -41,13 +41,24 @@ const { height = "200px" } = Astro.props;
 
   <section class="moment" data-hold="3500">
     <div class="copy">
-      <h2 class="fu">Agents in parallel.</h2>
+      <h2 class="fu">Cloud agents, in parallel.</h2>
       <p class="fu d1">Many tasks at once, in the background.</p>
     </div>
     <div class="vis vis-agents">
       <span class="dot fu d2"></span>
       <span class="dot fu d3"></span>
       <span class="dot fu d4"></span>
+    </div>
+  </section>
+
+  <section class="moment" data-hold="3500">
+    <div class="copy">
+      <h2 class="fu">Run your own agent.</h2>
+      <p class="fu d1">Open-source. On your machine. No subscription.</p>
+    </div>
+    <div class="vis vis-auto">
+      <pre class="term fu d2"><span class="prompt">$</span> hermes serve<span class="caret">▌</span></pre>
+      <div class="loop-pill fu d3"><span class="loop-dot"></span>tools · plan · act · observe</div>
     </div>
   </section>
 
@@ -129,6 +140,24 @@ const { height = "200px" } = Astro.props;
   .moment.is-active .vis-agents .dot { animation: pulse 1.4s ease-in-out infinite; }
   .moment.is-active .vis-agents .dot:nth-child(2) { animation-delay: 0.2s; }
   .moment.is-active .vis-agents .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  .vis-auto { flex-direction: column; align-items: center; gap: 0.55rem; }
+  .loop-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font: 0.74rem var(--mono);
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+  }
+  .loop-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .moment.is-active .vis-auto .loop-dot { animation: pulse 1.4s ease-in-out infinite; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .moment.is-active .fu { animation: fadeUp 500ms ease both; }
