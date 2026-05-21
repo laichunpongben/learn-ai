@@ -15,7 +15,7 @@ const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.trac
       <details
         class="side-group"
         data-track-id={t.id}
-        open={t.id === currentTrackId || (!currentTrackId && t.id === "start")}
+        open={t.id === currentTrackId || !currentTrackId}
       >
         <summary class="side-group-title">{t.title}</summary>
         <ul>
@@ -209,9 +209,8 @@ const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.trac
     if (state[id] === "open") d.open = true;
     else if (state[id] === "closed") d.open = false;
     d.addEventListener("toggle", () => {
-      const cur = readState();
-      cur[id] = d.open ? "open" : "closed";
-      writeState(cur);
+      state[id] = d.open ? "open" : "closed";
+      writeState(state);
     });
   }
 </script>
