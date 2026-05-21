@@ -307,7 +307,8 @@ export const LESSONS: Lesson[] = [
     id: "build-watcher",
     slug: "build-watcher",
     title: "Build · A scheduled watcher",
-    blurb: "A Claude Cowork agent that scans a feed on a schedule and pings you when something matters. ~30 min.",
+    blurb:
+      "A Claude Cowork agent that scans a feed on a schedule and pings you when something matters. ~30 min.",
     minutes: 30,
     track: "ship",
   },
