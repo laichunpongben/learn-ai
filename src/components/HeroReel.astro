@@ -161,6 +161,9 @@ const heroAgents = getVideoSlot("hero-agents");
     width: 100%;
     height: 100%;
     max-height: 100%;
+    /* Explicit aspect-ratio so the slot reserves space before the
+       video metadata or poster has loaded. Avoids a paint shift. */
+    aspect-ratio: 16 / 10;
     object-fit: cover;
     border-radius: 6px;
     background: var(--surface-2);
@@ -278,18 +281,33 @@ const heroAgents = getVideoSlot("hero-agents");
     let timer: number | null = null;
     let active: HTMLElement | null = null;
 
+    // play() returns a promise. Calling pause() before it resolves
+    // throws AbortError on some browsers and is a no-op on others —
+    // either way the next play/pause cycle is racy. We track the
+    // pending promise per <video> and chain pause off of it.
+    type Pending = HTMLVideoElement & { __playPromise?: Promise<void> };
     function playVideoIn(el: HTMLElement) {
       if (reducedMotion) return;
-      const v = el.querySelector<HTMLVideoElement>("[data-hero-video]");
+      const v = el.querySelector<Pending>("[data-hero-video]");
       if (!v) return;
       v.currentTime = 0;
-      v.play().catch(() => {
-        /* autoplay can be blocked; poster stays visible. */
-      });
+      const p = v.play();
+      if (p) {
+        v.__playPromise = p.catch(() => {
+          /* autoplay can be blocked; poster stays visible. */
+        });
+      }
     }
     function pauseVideoIn(el: HTMLElement) {
-      const v = el.querySelector<HTMLVideoElement>("[data-hero-video]");
-      if (v) v.pause();
+      const v = el.querySelector<Pending>("[data-hero-video]");
+      if (!v) return;
+      const pending = v.__playPromise;
+      if (pending) {
+        pending.then(() => v.pause());
+        v.__playPromise = undefined;
+      } else {
+        v.pause();
+      }
     }
 
     function show(i: number) {
