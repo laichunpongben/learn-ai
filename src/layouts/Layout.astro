@@ -28,6 +28,8 @@ const ogImage = new URL("/og.png", Astro.site ?? Astro.url.origin).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0e10" media="(prefers-color-scheme: dark)" />
     <!-- Open DNS + TLS to the font CDN in parallel with the main CSS download,
          instead of waiting for a chained @import inside global.css. -->
     <link rel="preconnect" href="https://rsms.me" crossorigin />
