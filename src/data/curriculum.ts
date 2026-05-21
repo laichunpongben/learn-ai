@@ -1,4 +1,13 @@
-export type TrackId = "start" | "concepts" | "chat" | "code" | "cloud" | "design" | "agents" | "ship";
+export type TrackId =
+  | "start"
+  | "concepts"
+  | "going-deeper"
+  | "chat"
+  | "code"
+  | "cloud"
+  | "design"
+  | "agents"
+  | "ship";
 
 export interface Lesson {
   id: string;
@@ -26,8 +35,14 @@ export const TRACKS: Track[] = [
   {
     id: "concepts",
     title: "Foundations",
-    tagline: "CLI, git, MCP — the three things every AI tutorial assumes you know.",
+    tagline: "What every AI tutorial assumes you know — prompt, CLI, git, safety.",
     accent: "#b07a3a",
+  },
+  {
+    id: "going-deeper",
+    title: "Going deeper",
+    tagline: "MCP, cost, multimodal, RAG, evals — theory you'll want once you've used the tools.",
+    accent: "#a08855",
   },
   {
     id: "chat",
@@ -114,7 +129,7 @@ export const LESSONS: Lesson[] = [
     title: "MCP — how AI plugs into your tools",
     blurb: "The standard that lets agents talk to your filesystem, Slack, GitHub, Postgres, etc.",
     minutes: 4,
-    track: "concepts",
+    track: "going-deeper",
   },
   {
     id: "concept-safety",
@@ -130,7 +145,7 @@ export const LESSONS: Lesson[] = [
     title: "Tokens, models, and what it actually costs",
     blurb: "How AI is priced, where your money goes, and how to cap your spend before it surprises you.",
     minutes: 5,
-    track: "concepts",
+    track: "going-deeper",
   },
   {
     id: "concept-multimodal",
@@ -139,7 +154,7 @@ export const LESSONS: Lesson[] = [
     blurb:
       "Modern assistants take more than text. What to feed them, what to ask for, and which tool for which medium.",
     minutes: 5,
-    track: "concepts",
+    track: "going-deeper",
   },
   {
     id: "concept-rag",
@@ -148,7 +163,7 @@ export const LESSONS: Lesson[] = [
     blurb:
       "How retrieval-augmented generation works, when to use it, and the simpler alternatives most people overlook.",
     minutes: 6,
-    track: "concepts",
+    track: "going-deeper",
   },
   {
     id: "concept-evals",
@@ -157,7 +172,7 @@ export const LESSONS: Lesson[] = [
     blurb:
       "How to test AI output beyond 'looks fine to me'. The boring practice that separates hobby from production.",
     minutes: 5,
-    track: "concepts",
+    track: "going-deeper",
   },
   {
     id: "chat-first",
