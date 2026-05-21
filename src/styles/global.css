@@ -183,6 +183,26 @@ main article > .next-prev {
 }
 .skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent); }
 
+.read-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: transparent;
+}
+.read-progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .read-progress > span { transition: width 0.08s linear; }
+}
+
 header.site {
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);

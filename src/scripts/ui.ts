@@ -149,3 +149,22 @@ document.addEventListener("keydown", (e) => {
 function pointInside(x: number, y: number, r: DOMRect): boolean {
   return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
 }
+
+const progressFill = document.querySelector<HTMLElement>("[data-read-progress] > span");
+if (progressFill) {
+  let raf = 0;
+  function paintProgress(): void {
+    raf = 0;
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const pct = max > 0 ? Math.min(100, (doc.scrollTop / max) * 100) : 0;
+    progressFill!.style.width = `${pct}%`;
+  }
+  function schedule(): void {
+    if (raf) return;
+    raf = requestAnimationFrame(paintProgress);
+  }
+  document.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  paintProgress();
+}
