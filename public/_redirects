@@ -1,0 +1,6 @@
+# Cloudflare Pages redirects. One rule per line: <source> <destination> [status]
+
+# Crawlers and Search Console nudges try /sitemap.xml first; we publish
+# /sitemap-index.xml (the @astrojs/sitemap integration's name). Forward
+# the canonical path so neither side has to know about the rename.
+/sitemap.xml  /sitemap-index.xml  301
