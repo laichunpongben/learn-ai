@@ -348,26 +348,30 @@ html:not([data-theme]) .theme-toggle .i-auto { display: inline-block; }
 .tiny-link:hover { color: var(--ink); border: none; }
 
 /* Typography */
+/* Modular scale ratio ≈ 1.2 (minor third). Anchored on 1rem body.
+   See docs/adrs/0006-typography-reading-experience.md. */
 h1 {
-  font-size: 2rem;
+  font-size: 1.875rem;
   line-height: 1.15;
   letter-spacing: -0.025em;
   font-weight: 600;
   margin: 0.6rem 0 0.4rem;
 }
 h2 {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.015em;
   margin: 2.5rem 0 0.6rem;
 }
 h3 {
-  font-size: 1rem;
+  font-size: 1.25rem;
+  line-height: 1.3;
   font-weight: 600;
   margin: 1.6rem 0 0.4rem;
   letter-spacing: -0.01em;
 }
-h4 { font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0.4rem; }
+h4 { font-size: 1.0625rem; font-weight: 600; margin: 1rem 0 0.4rem; }
 p { margin: 0.6rem 0; }
 ul, ol { padding-left: 1.25rem; }
 li { margin: 0.2rem 0; }
