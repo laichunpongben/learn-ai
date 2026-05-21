@@ -105,3 +105,36 @@ jobs:
         env:
           SMOKE_URL: http://localhost:4321
           CDP_URL: http://localhost:9333
+
+  a11y:
+    name: Accessibility (axe-core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Start preview server
+        run: npm run preview &
+        env:
+          CI: "true"
+      - name: Start Chrome with CDP
+        run: |
+          google-chrome --headless=new --disable-gpu --no-sandbox \
+            --remote-debugging-port=9333 \
+            --user-data-dir=/tmp/chrome-prof about:blank &
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            sleep 1
+            ok_srv=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/ || echo 000)
+            ok_cdp=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9333/json/version || echo 000)
+            echo "wait $i: server=$ok_srv cdp=$ok_cdp"
+            if [ "$ok_srv" = "200" ] && [ "$ok_cdp" = "200" ]; then break; fi
+          done
+      - name: Run a11y scan
+        run: npm run a11y
+        env:
+          SMOKE_URL: http://localhost:4321
+          CDP_URL: http://localhost:9333
