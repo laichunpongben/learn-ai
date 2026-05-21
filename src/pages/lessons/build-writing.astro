@@ -6,6 +6,7 @@ import Step from "../../components/Step.astro";
 import OpenIn from "../../components/OpenIn.astro";
 import PromptCopy from "../../components/PromptCopy.astro";
 import Expect from "../../components/Expect.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "build-writing")!;
@@ -34,6 +35,8 @@ const testNotes = `subject: tomorrow's design review prep
         ChatGPT (Custom GPTs / Projects), or Gemini (Gems). When you finish, you'll have a
         bookmark you reach for whenever you need to draft writing in your voice.
       </p>
+
+      <Screencast slot="build-writing-walkthrough" />
 
       <BuildStepper id="build-writing" total={8}>
         <Step n={1} title="Open a chat app and sign in">

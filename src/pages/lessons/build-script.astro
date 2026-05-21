@@ -6,6 +6,7 @@ import Step from "../../components/Step.astro";
 import OpenIn from "../../components/OpenIn.astro";
 import PromptCopy from "../../components/PromptCopy.astro";
 import Expect from "../../components/Expect.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "build-script")!;
@@ -43,6 +44,8 @@ const thumbsPrompt = `Add a --thumbs flag. When set, after a successful rename, 
         run commands, and write the script — asking for your approval each time. Finished result: a tool
         that organises a folder of photos by date.
       </p>
+
+      <Screencast slot="build-script-walkthrough" />
 
       <BuildStepper id="build-script" total={10}>
         <Step n={1} title="Install a coding CLI (one of)">

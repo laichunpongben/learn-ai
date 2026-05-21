@@ -6,6 +6,7 @@ import Step from "../../components/Step.astro";
 import OpenIn from "../../components/OpenIn.astro";
 import PromptCopy from "../../components/PromptCopy.astro";
 import Expect from "../../components/Expect.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "build-watcher")!;
@@ -62,6 +63,8 @@ The agent fires on the schedule, runs your script, and shows you what it saw.`;
         works for trade alerts, job postings, GitHub releases, RSS reading lists, your own server logs.
         Once you know how to build one, every <em>"I should be checking X"</em> becomes a 30-minute project.
       </div>
+
+      <Screencast slot="build-watcher-walkthrough" />
 
       <BuildStepper id="build-watcher" total={9}>
         <Step n={1} title="Install Claude Desktop with Cowork">
