@@ -1,43 +1,17 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
-import ProductIcon from "../../components/ProductIcon.astro";
+import CapabilityReel from "../../components/CapabilityReel.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "capabilities")!;
-
-const tiers = [
-  {
-    kind: "chat" as const,
-    title: "Ship today, in chat",
-    items: ["Writing & email", "Analyze PDFs / CSVs", "Plans & itineraries", "One-page mini-apps", "Diagrams"],
-  },
-  {
-    kind: "code" as const,
-    title: "Build this week",
-    items: ["A personal CLI", "Small websites", "Chrome extensions", "Slack / Discord bots", "Internal dashboards"],
-  },
-  {
-    kind: "agents" as const,
-    title: "Ship in production",
-    items: ["Customer-facing apps", "Agent workflows", "Document pipelines", "Embedded copilots"],
-  },
-];
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="capabilities">
     <LessonShell lesson={lesson} hero="claude">
       <p>Three ambition levels. Pick the row that matches what you want.</p>
 
-      <div class="cap-grid">
-        {tiers.map((t) => (
-          <div class="cap-card">
-            <ProductIcon kind={t.kind} size={40} />
-            <h3>{t.title}</h3>
-            <ul>{t.items.map((i) => <li>{i}</li>)}</ul>
-          </div>
-        ))}
-      </div>
+      <CapabilityReel />
 
       <h2>Which kind of tool, when?</h2>
       <table>
@@ -64,26 +38,3 @@ const tiers = [
     </LessonShell>
 </Layout>
 
-<style>
-  .cap-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0.6rem;
-    margin: 1rem 0 1.6rem;
-  }
-  .cap-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 1rem 0.95rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .cap-card h3 { margin: 0.2rem 0 0.15rem; font-size: 0.95rem; }
-  .cap-card ul { margin: 0; padding-left: 1rem; font-size: 0.85rem; color: var(--ink-soft); }
-  .cap-card li { margin: 0.1rem 0; }
-  @media (max-width: 720px) {
-    .cap-grid { grid-template-columns: 1fr; }
-  }
-</style>

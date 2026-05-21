@@ -839,5 +839,5 @@ pre code { font-family: inherit; }
   .reveal .body { display: block !important; margin-top: 0.4rem; }
   details:not([open]) > *:not(summary) { display: block !important; }
   /* Hide animated/streamed widgets — they don't print meaningfully */
-  .chat-app, .term-app, .cowork, .dsim { display: none !important; }
+  .chat-app, .term-app, .cowork, .dsim, .reel, .cap-reel { display: none !important; }
 }

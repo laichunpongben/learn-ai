@@ -1,0 +1,108 @@
+---
+// Pacing model: IntersectionObserver-driven stagger. See ~/.claude/skills/webreel.
+import ProductIcon from "./ProductIcon.astro";
+
+const tiers = [
+  {
+    kind: "chat" as const,
+    title: "Ship today, in chat",
+    when: "Minutes",
+    items: ["Writing & email", "Analyze PDFs / CSVs", "Plans & itineraries", "One-page mini-apps", "Diagrams"],
+  },
+  {
+    kind: "code" as const,
+    title: "Build this week",
+    when: "Hours",
+    items: ["A personal CLI", "Small websites", "Chrome extensions", "Slack / Discord bots", "Internal dashboards"],
+  },
+  {
+    kind: "agents" as const,
+    title: "Ship in production",
+    when: "Days",
+    items: ["Customer-facing apps", "Agent workflows", "Document pipelines", "Embedded copilots"],
+  },
+];
+---
+
+<div class="cap-reel" data-cap-reel>
+  {tiers.map((t, i) => (
+    <article class="cap-card" data-cap-card style={`--delay: ${i * 120}ms;`}>
+      <header class="cap-head">
+        <ProductIcon kind={t.kind} size={36} />
+        <span class="when">{t.when}</span>
+      </header>
+      <h3>{t.title}</h3>
+      <ul>{t.items.map((it) => <li>{it}</li>)}</ul>
+    </article>
+  ))}
+</div>
+
+<style>
+  .cap-reel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.6rem;
+    margin: 1rem 0 1.6rem;
+  }
+  .cap-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 600ms ease, transform 600ms ease;
+    transition-delay: var(--delay);
+  }
+  .cap-card.is-active { opacity: 1; transform: translateY(0); }
+  .cap-head { display: flex; align-items: center; gap: 0.6rem; }
+  .when {
+    margin-left: auto;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+  .cap-card h3 { margin: 0.2rem 0 0.15rem; font-size: 0.95rem; }
+  .cap-card ul { margin: 0; padding-left: 1rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .cap-card li { margin: 0.1rem 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cap-card { opacity: 1; transform: none; transition: none; }
+  }
+  @media (max-width: 720px) {
+    .cap-reel { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll<HTMLElement>("[data-cap-reel]").forEach((reel) => {
+    const cards = reel.querySelectorAll<HTMLElement>("[data-cap-card]");
+    if (reducedMotion) {
+      cards.forEach((c) => c.classList.add("is-active"));
+      return;
+    }
+    let remaining = cards.length;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add("is-active");
+          io.unobserve(e.target);
+          if (--remaining === 0) io.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    cards.forEach((c) => io.observe(c));
+  });
+</script>
