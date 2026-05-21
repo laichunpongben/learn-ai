@@ -155,7 +155,7 @@ main {
   padding: 2.4rem 2rem 5rem;
   width: 100%;
   /* Constrain pure-prose width for readability while letting widgets go wide. */
-  --read-w: 760px;
+  --read-w: 640px;
 }
 main > p,
 main > h1,
