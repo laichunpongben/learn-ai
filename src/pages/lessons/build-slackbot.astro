@@ -6,6 +6,7 @@ import Step from "../../components/Step.astro";
 import OpenIn from "../../components/OpenIn.astro";
 import PromptCopy from "../../components/PromptCopy.astro";
 import Expect from "../../components/Expect.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "build-slackbot")!;
@@ -42,6 +43,8 @@ For each, show the exact file or command I'd run.`;
         existing builds: this one uses two API tokens (Slack + an LLM), reads real channel data, and
         gets scheduled.
       </p>
+
+      <Screencast slot="build-slackbot-walkthrough" />
 
       <BuildStepper id="build-slackbot" total={9}>
         <Step n={1} title="Create a Slack app + bot user">

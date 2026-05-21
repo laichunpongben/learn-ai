@@ -6,6 +6,7 @@ import Step from "../../components/Step.astro";
 import OpenIn from "../../components/OpenIn.astro";
 import PromptCopy from "../../components/PromptCopy.astro";
 import Expect from "../../components/Expect.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "build-webpage")!;
@@ -43,6 +44,8 @@ const deployPrompt = `I have a working one-page HTML file. Walk me through deplo
         iterate on it visually, then save the HTML to your machine.
         Optional last step: deploy it to a free host with a public URL.
       </p>
+
+      <Screencast slot="build-webpage-walkthrough" />
 
       <BuildStepper id="build-webpage" total={9}>
         <Step n={1} title="Open a chat app with artifacts">
