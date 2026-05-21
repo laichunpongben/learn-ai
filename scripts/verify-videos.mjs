@@ -35,9 +35,17 @@ function warn(slotId, msg) {
   warnings.push(`! ${slotId}: ${msg}`);
 }
 
-async function fileSize(rel) {
+async function fileSize(slotId, field, rel) {
+  // Resolve against PUBLIC and reject paths that escape it. The registry
+  // is source-controlled, but stat'ing /etc/anything from CI on a typo
+  // is worth blocking by construction.
+  const abs = resolve(PUBLIC, rel.replace(/^\//, ""));
+  if (abs !== PUBLIC && !abs.startsWith(PUBLIC + "/")) {
+    err(slotId, `${field} path escapes public/: ${rel}`);
+    return null;
+  }
   try {
-    const s = await stat(join(PUBLIC, rel.replace(/^\//, "")));
+    const s = await stat(abs);
     return s.size;
   } catch {
     return null;
@@ -50,7 +58,7 @@ async function checkLoop(slot) {
       err(slot.id, `present loop missing field "${field}"`);
       continue;
     }
-    const size = await fileSize(slot[field]);
+    const size = await fileSize(slot.id, field, slot[field]);
     if (size === null) {
       err(slot.id, `${field} file not found: ${slot[field]}`);
       continue;
@@ -96,7 +104,17 @@ async function main() {
   for (const slot of present) {
     if (slot.mode === "loop") await checkLoop(slot);
     else if (slot.mode === "walkthrough") checkWalkthrough(slot);
+    else err(slot.id, `unknown mode: ${slot.mode}`);
     checkStaleness(slot);
+  }
+
+  // recordedAt can be set on a missing slot (e.g. preparing for a future
+  // re-record). Validate the format even when the slot isn't live yet —
+  // catches typos before they're hidden behind a flip-to-present.
+  for (const slot of missing) {
+    if (slot.recordedAt && Number.isNaN(Date.parse(slot.recordedAt))) {
+      err(slot.id, `recordedAt is not a valid ISO date: ${slot.recordedAt}`);
+    }
   }
 
   console.log(
