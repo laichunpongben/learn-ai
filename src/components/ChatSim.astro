@@ -275,6 +275,10 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
     display: flex;
     flex-direction: column;
   }
+  /* Pin precedence so the [hidden] attribute actually hides the element.
+     Without this, `.artifact { display: flex }` wins over the UA
+     `[hidden] { display: none }` rule (CLAUDE.md "modal anti-pattern"). */
+  .artifact[hidden] { display: none; }
   .artifact header {
     display: flex;
     align-items: center;
