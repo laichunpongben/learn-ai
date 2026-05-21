@@ -168,6 +168,10 @@ const renderWalkthrough =
   // Walkthrough: replace the facade button with an iframe on first click.
   // No YouTube network requests fire until that click — verified by the
   // empty network panel on initial page load.
+  //
+  // YouTube IDs are an exact 11-char [A-Za-z0-9_-] string. Anything else
+  // is either a typo or an injection attempt; refuse the click.
+  const YOUTUBE_ID = /^[\w-]{11}$/;
   for (const btn of document.querySelectorAll<HTMLButtonElement>(
     "[data-screencast-youtube]",
   )) {
@@ -175,18 +179,27 @@ const renderWalkthrough =
       "click",
       () => {
         const id = btn.getAttribute("data-screencast-youtube");
-        if (!id) return;
+        if (!id || !YOUTUBE_ID.test(id)) return;
         const iframe = document.createElement("iframe");
         iframe.className = "screencast-iframe";
-        iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
-          id,
-        )}?autoplay=1&rel=0`;
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
         iframe.title = btn.getAttribute("aria-label") ?? "Video walkthrough";
         iframe.allow =
           "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
         iframe.allowFullscreen = true;
+        // Restrict the embedded origin's capabilities — YouTube needs
+        // scripts + same-origin (for postMessage), presentation (for
+        // fullscreen), and popup permission (for the "Watch on YouTube"
+        // link). Nothing else.
+        iframe.setAttribute(
+          "sandbox",
+          "allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox",
+        );
         btn.replaceWith(iframe);
-        iframe.focus();
+        // Move focus to the iframe *after* its document has loaded —
+        // focusing a not-yet-ready browsing context silently fails
+        // (WCAG 2.4.3 focus-order regression).
+        iframe.addEventListener("load", () => iframe.focus(), { once: true });
       },
       { once: true },
     );
