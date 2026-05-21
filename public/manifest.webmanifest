@@ -1,0 +1,17 @@
+{
+  "name": "Learn AI",
+  "short_name": "Learn AI",
+  "description": "A hands-on tour of modern AI assistants and agents.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfbfa",
+  "theme_color": "#fbfbfa",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
