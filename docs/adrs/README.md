@@ -22,3 +22,6 @@ Each ADR is a short Markdown file with:
 | 0005 | [Repurposed to generic AI/agent scope](./0005-generic-ai-scope.md) | Accepted (supersedes Claude-only framing of 0001–0003) |
 | 0006 | [Typography & reading experience](./0006-typography-reading-experience.md) | Accepted |
 | 0007 | [Learning curve & critical path](./0007-learning-curve-critical-path.md) | Accepted |
+| 0008 | [Lesson hero banner — remove, do not redesign](./0008-lesson-hero-banner.md) | Accepted |
+| 0009 | [Screencasts complement simulators](./0009-screencast-strategy.md) | Accepted |
+| 0010 | [Video production: loops + YouTube facade](./0010-video-production-workflow.md) | Accepted |
