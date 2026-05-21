@@ -25,6 +25,9 @@ export interface Track {
   accent: string;
 }
 
+// Tracks are ordered to ease the learner up the difficulty curve:
+// easy interactive tracks (chat → code → design) come before the more
+// theoretical "going-deeper" and advanced agent tracks. See ADR-0007.
 export const TRACKS: Track[] = [
   {
     id: "start",
@@ -39,12 +42,6 @@ export const TRACKS: Track[] = [
     accent: "#b07a3a",
   },
   {
-    id: "going-deeper",
-    title: "Going deeper",
-    tagline: "MCP, cost, multimodal, RAG, evals — theory you'll want once you've used the tools.",
-    accent: "#a08855",
-  },
-  {
     id: "chat",
     title: "Chat assistants",
     tagline: "ChatGPT, Claude.ai, Gemini, Perplexity, Mistral Le Chat.",
@@ -57,16 +54,22 @@ export const TRACKS: Track[] = [
     accent: "#7a9eaf",
   },
   {
-    id: "cloud",
-    title: "Cloud agents (parallel)",
-    tagline: "Devin, Claude Cowork, Copilot Workspace, Codex Cloud.",
-    accent: "#9e8aac",
-  },
-  {
     id: "design",
     title: "Visual UI generators",
     tagline: "v0.dev, Lovable, Bolt, Claude Design, Galileo.",
     accent: "#c97b8a",
+  },
+  {
+    id: "going-deeper",
+    title: "Going deeper",
+    tagline: "MCP, cost, multimodal, RAG, evals — theory you'll want once you've used the tools.",
+    accent: "#a08855",
+  },
+  {
+    id: "cloud",
+    title: "Cloud agents (parallel)",
+    tagline: "Devin, Claude Cowork, Copilot Workspace, Codex Cloud.",
+    accent: "#9e8aac",
   },
   {
     id: "agents",
