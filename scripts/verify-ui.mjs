@@ -128,6 +128,23 @@ try {
   });
   assert("404 page heading is 'Page not found'", has404.h1.includes("not found"), has404);
   assert("404 page lists ≥3 suggested links", has404.suggestions >= 3, has404);
+
+  // 9. Read-progress bar grows as the page scrolls.
+  await page.goto(`${BASE}/lessons/concept-mcp/`, { waitUntil: "domcontentloaded" });
+  await new Promise((r) => setTimeout(r, 400));
+  const widthAtTop = await page.evaluate(() => {
+    const el = document.querySelector("[data-read-progress] > span");
+    return el ? Number.parseFloat(el.style.width) || 0 : -1;
+  });
+  await page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  });
+  await new Promise((r) => setTimeout(r, 300));
+  const widthAtBottom = await page.evaluate(() => {
+    const el = document.querySelector("[data-read-progress] > span");
+    return el ? Number.parseFloat(el.style.width) || 0 : -1;
+  });
+  assert("read-progress bar grows from top to bottom", widthAtBottom > widthAtTop && widthAtBottom >= 80, { widthAtTop, widthAtBottom });
 } finally {
   await browser.disconnect();
 }
