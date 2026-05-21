@@ -21,7 +21,7 @@
   <span>Install</span>
 </button>
 
-<div class="install-ios-hint" data-install-ios-hint hidden role="status">
+<div class="install-ios-hint" data-install-ios-hint hidden role="status" aria-live="polite">
   <span>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to install.</span>
   <button type="button" data-install-ios-dismiss aria-label="Dismiss install hint">×</button>
 </div>
@@ -100,8 +100,10 @@
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (!isIosDevice) return false;
     // Exclude Chrome iOS (CriOS), Firefox iOS (FxiOS), Edge iOS (EdgiOS),
-    // and embedded browsers (no /Safari/).
-    return /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|FBAN|FBAV|Instagram/.test(ua);
+    // DuckDuckGo iOS (DuckDuckGo/) — these all set Safari in the UA but
+    // don't expose Safari's Add-to-Home-Screen flow. Also exclude
+    // common in-app web views (FBAN, FBAV, Instagram).
+    return /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|DuckDuckGo|FBAN|FBAV|Instagram/.test(ua);
   }
 
   function safeGet(key: string) {
@@ -129,13 +131,23 @@
       });
       chip.addEventListener("click", async () => {
         if (!deferred) return;
-        deferred.prompt();
-        const { outcome } = await deferred.userChoice;
-        deferred = null;
+        const e = deferred;
+        deferred = null; // single-use; calling prompt() twice rejects
+        try {
+          // Per spec, prompt() must resolve before userChoice settles.
+          // Awaiting prompt() catches the rejection if the prompt was
+          // already shown or the event was invalidated.
+          await e.prompt();
+          const { outcome } = await e.userChoice;
+          if (outcome === "accepted") safeSet(SUPPRESS_KEY, "1");
+          // On dismissed, leave the suppress key clear — Chrome may
+          // re-fire the event in a later session.
+        } catch {
+          /* prompt rejected; restore the deferred so a later click can retry */
+          deferred = e;
+          return;
+        }
         chip.hidden = true;
-        if (outcome === "accepted") safeSet(SUPPRESS_KEY, "1");
-        // On dismissed, leave the suppress key clear — Chrome may
-        // re-fire the event in a later session.
       });
       // The browser also fires `appinstalled` if the user installs via
       // the address bar menu (no chip click). Treat that as installed.
@@ -150,7 +162,14 @@
       const hint = document.querySelector<HTMLElement>("[data-install-ios-hint]");
       const dismiss = document.querySelector<HTMLButtonElement>("[data-install-ios-dismiss]");
       if (hint && dismiss) {
-        hint.hidden = false;
+        // Reveal in the next frame so the assistive-tech tree has time
+        // to register the aria-live region before content arrives —
+        // VoiceOver on iOS Safari otherwise sometimes misses the
+        // announcement when content appears on the same tick the
+        // hidden attribute is removed.
+        requestAnimationFrame(() => {
+          hint.hidden = false;
+        });
         dismiss.addEventListener("click", () => {
           hint.hidden = true;
           safeSet(IOS_HINT_KEY, "1");
