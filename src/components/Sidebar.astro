@@ -1,18 +1,23 @@
 ---
-import { TRACKS, lessonsInTrack } from "../data/curriculum";
+import { LESSONS, TRACKS, lessonsInTrack } from "../data/curriculum";
 
 interface Props {
   currentId?: string;
 }
 const { currentId } = Astro.props;
+const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.track : undefined;
 ---
 
 <aside class="sidebar" data-sidebar aria-label="Curriculum">
   <nav aria-label="All lessons">
     <a href="/" class={`side-home ${currentId ? "" : "active"}`}>Curriculum</a>
     {TRACKS.map((t) => (
-      <div class="side-group">
-        <div class="side-group-title">{t.title}</div>
+      <details
+        class="side-group"
+        data-track-id={t.id}
+        open={t.id === currentTrackId || !currentTrackId}
+      >
+        <summary class="side-group-title">{t.title}</summary>
         <ul>
           {lessonsInTrack(t.id).map((l) => (
             <li>
@@ -28,10 +33,10 @@ const { currentId } = Astro.props;
             </li>
           ))}
         </ul>
-      </div>
+      </details>
     ))}
-    <div class="side-group">
-      <div class="side-group-title">Reference</div>
+    <details class="side-group" data-track-id="reference" open>
+      <summary class="side-group-title">Reference</summary>
       <ul>
         <li>
           <a href="/cookbook" class={`side-link ${currentId === "cookbook" ? "active" : ""}`}>
@@ -46,7 +51,7 @@ const { currentId } = Astro.props;
           </a>
         </li>
       </ul>
-    </div>
+    </details>
   </nav>
 </aside>
 
@@ -85,7 +90,25 @@ const { currentId } = Astro.props;
     letter-spacing: 0.06em;
     padding: 0.15rem 0.7rem;
     margin-top: 0.4rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    user-select: none;
   }
+  .side-group-title::-webkit-details-marker { display: none; }
+  .side-group-title::before {
+    content: "▸";
+    font-size: 0.6rem;
+    line-height: 1;
+    transition: transform 0.15s ease;
+    color: var(--ink-faint);
+  }
+  .side-group[open] > .side-group-title::before {
+    transform: rotate(90deg);
+  }
+  .side-group-title:hover { color: var(--ink-soft); }
   .side-group ul { list-style: none; padding: 0; margin: 0; }
   .side-group li { margin: 0; }
   .side-link {
@@ -159,4 +182,35 @@ const { currentId } = Astro.props;
   }
   window.addEventListener("ct:progress", paint);
   paint();
+
+  // Persist per-track open/closed state. SSR provides a sensible default
+  // (current track open); user overrides win and survive navigation.
+  const STATE_KEY = "learn-ai.sidebar.v1";
+  type State = Record<string, "open" | "closed">;
+  function readState(): State {
+    try {
+      const raw = localStorage.getItem(STATE_KEY);
+      return raw ? (JSON.parse(raw) as State) : {};
+    } catch {
+      return {};
+    }
+  }
+  function writeState(s: State): void {
+    try {
+      localStorage.setItem(STATE_KEY, JSON.stringify(s));
+    } catch {
+      /* private mode */
+    }
+  }
+
+  const state = readState();
+  for (const d of document.querySelectorAll<HTMLDetailsElement>(".side-group[data-track-id]")) {
+    const id = d.dataset.trackId!;
+    if (state[id] === "open") d.open = true;
+    else if (state[id] === "closed") d.open = false;
+    d.addEventListener("toggle", () => {
+      state[id] = d.open ? "open" : "closed";
+      writeState(state);
+    });
+  }
 </script>
