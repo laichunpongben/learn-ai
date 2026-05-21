@@ -97,6 +97,18 @@ try {
   await new Promise((r) => setTimeout(r, 500));
   const after = page.url();
   assert("'n' navigates forward in the curriculum", before !== after, { before, after });
+
+  // 7. From the homepage, `n` should hop to the continue/start button target.
+  await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
+  await new Promise((r) => setTimeout(r, 300));
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await new Promise((r) => setTimeout(r, 400));
+  const homeBefore = page.url();
+  await page.keyboard.press("n");
+  await new Promise((r) => setTimeout(r, 500));
+  const homeAfter = page.url();
+  assert("'n' from homepage hops to a lesson", homeBefore !== homeAfter && homeAfter.includes("/lessons/"), { homeBefore, homeAfter });
 } finally {
   await browser.disconnect();
 }
