@@ -1,4 +1,13 @@
-export type TrackId = "start" | "concepts" | "going-deeper" | "chat" | "code" | "cloud" | "design" | "agents" | "ship";
+export type TrackId =
+  | "start"
+  | "concepts"
+  | "going-deeper"
+  | "chat"
+  | "code"
+  | "cloud"
+  | "design"
+  | "agents"
+  | "ship";
 
 export interface Lesson {
   id: string;
