@@ -1,0 +1,161 @@
+---
+/**
+ * "Install" affordance for the PWA. See ADR-0011 piece 4.
+ *
+ * - Chrome / Edge / Brave / Samsung Internet → BeforeInstallPromptEvent
+ *   path. We stash the event, show the chip, and fire prompt() on click.
+ * - iOS Safari → no event fires. We UA-sniff, then show a one-line
+ *   "Tap Share → Add to Home Screen" hint once per device.
+ * - Already installed (display-mode: standalone) → nothing renders.
+ *
+ * Two localStorage keys:
+ *   learn-ai.pwa.installed-or-dismissed.v1  → permanent suppress (chip)
+ *   learn-ai.pwa.ios-hint-seen.v1           → one-time iOS hint
+ */
+---
+
+<button type="button" class="install-chip" data-install-chip hidden aria-label="Install Learn AI">
+  <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+    <path d="M10 3 v9 m0 0 l-3-3 m3 3 l3-3 M4 15 h12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span>Install</span>
+</button>
+
+<div class="install-ios-hint" data-install-ios-hint hidden role="status">
+  <span>Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to install.</span>
+  <button type="button" data-install-ios-dismiss aria-label="Dismiss install hint">×</button>
+</div>
+
+<style>
+  .install-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 30px;
+    padding: 0 0.6rem;
+    margin-left: 0.4rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .install-chip:hover,
+  .install-chip:focus-visible {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .install-chip[hidden] { display: none; }
+
+  .install-ios-hint {
+    position: fixed;
+    left: 50%;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-size: 0.88rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    max-width: calc(100vw - 2rem);
+  }
+  .install-ios-hint[hidden] { display: none; }
+  .install-ios-hint button {
+    background: none;
+    border: 0;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+  }
+  .install-ios-hint button:hover { color: var(--ink); }
+</style>
+
+<script>
+  const SUPPRESS_KEY = "learn-ai.pwa.installed-or-dismissed.v1";
+  const IOS_HINT_KEY = "learn-ai.pwa.ios-hint-seen.v1";
+
+  function isStandalone() {
+    return (
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      // iOS-specific: navigator.standalone is true inside Add-to-Home-Screen.
+      (navigator as Navigator & { standalone?: boolean }).standalone === true
+    );
+  }
+
+  function isIosSafari() {
+    const ua = navigator.userAgent;
+    const isIosDevice = /iPad|iPhone|iPod/.test(ua) ||
+      // iPadOS 13+ reports MacIntel with touch support.
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (!isIosDevice) return false;
+    // Exclude Chrome iOS (CriOS), Firefox iOS (FxiOS), Edge iOS (EdgiOS),
+    // and embedded browsers (no /Safari/).
+    return /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|FBAN|FBAV|Instagram/.test(ua);
+  }
+
+  function safeGet(key: string) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+  function safeSet(key: string, value: string) {
+    try { localStorage.setItem(key, value); } catch {}
+  }
+
+  // BeforeInstallPromptEvent shape — TS doesn't ship the type yet.
+  interface BIPE extends Event {
+    prompt(): Promise<void>;
+    userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  }
+
+  if (!isStandalone()) {
+    const chip = document.querySelector<HTMLButtonElement>("[data-install-chip]");
+    let deferred: BIPE | null = null;
+
+    if (chip && !safeGet(SUPPRESS_KEY)) {
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferred = e as BIPE;
+        chip.hidden = false;
+      });
+      chip.addEventListener("click", async () => {
+        if (!deferred) return;
+        deferred.prompt();
+        const { outcome } = await deferred.userChoice;
+        deferred = null;
+        chip.hidden = true;
+        if (outcome === "accepted") safeSet(SUPPRESS_KEY, "1");
+        // On dismissed, leave the suppress key clear — Chrome may
+        // re-fire the event in a later session.
+      });
+      // The browser also fires `appinstalled` if the user installs via
+      // the address bar menu (no chip click). Treat that as installed.
+      window.addEventListener("appinstalled", () => {
+        safeSet(SUPPRESS_KEY, "1");
+        chip.hidden = true;
+      });
+    }
+
+    // iOS Safari hint: one-time per device.
+    if (isIosSafari() && !safeGet(IOS_HINT_KEY)) {
+      const hint = document.querySelector<HTMLElement>("[data-install-ios-hint]");
+      const dismiss = document.querySelector<HTMLButtonElement>("[data-install-ios-dismiss]");
+      if (hint && dismiss) {
+        hint.hidden = false;
+        dismiss.addEventListener("click", () => {
+          hint.hidden = true;
+          safeSet(IOS_HINT_KEY, "1");
+        });
+      }
+    }
+  }
+</script>
