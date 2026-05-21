@@ -13,13 +13,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "ci": "npm run check && npm run lint && npm run test && npm run build",
-    "smoke": "node scripts/verify-ui.mjs"
+    "smoke": "node scripts/verify-ui.mjs",
+    "a11y": "node scripts/verify-a11y.mjs"
   },
   "dependencies": {
     "astro": "^5.14.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/puppeteer": "^4.11.3",
     "@biomejs/biome": "^2.4.15",
     "@vitest/coverage-v8": "^4.1.7",
     "happy-dom": "^20.9.0",
