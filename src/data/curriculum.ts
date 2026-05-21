@@ -354,3 +354,23 @@ export function trackById(id: TrackId): Track {
 export function lessonsInTrack(id: TrackId): Lesson[] {
   return LESSONS.filter((l) => l.track === id);
 }
+
+/**
+ * Critical path — the shortest route from "what is AI?" to "I shipped a small thing".
+ * Roughly 30 minutes including the final build. See ADR-0007.
+ */
+export const CRITICAL_PATH: string[] = [
+  "welcome",
+  "capabilities",
+  "concept-prompt",
+  "concept-safety",
+  "chat-first",
+  "ship-it",
+  "build-writing",
+];
+
+export function criticalPathLessons(): Lesson[] {
+  return CRITICAL_PATH.map((id) => LESSONS.find((l) => l.id === id)).filter(
+    (l): l is Lesson => l !== undefined,
+  );
+}

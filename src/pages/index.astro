@@ -4,6 +4,7 @@ import ProgressBar from "../components/ProgressBar.astro";
 import LessonCard from "../components/LessonCard.astro";
 import ProductRow from "../components/ProductRow.astro";
 import HeroReel from "../components/HeroReel.astro";
+import CriticalPath from "../components/CriticalPath.astro";
 import CourseSchema from "../components/CourseSchema.astro";
 import { TRACKS, lessonsInTrack } from "../data/curriculum";
 ---
@@ -24,6 +25,8 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
       <ProgressBar />
       <div id="continue" style="margin-top: 0.7rem;"></div>
     </div>
+
+    <CriticalPath />
 
     {
       TRACKS.map((t) => {
