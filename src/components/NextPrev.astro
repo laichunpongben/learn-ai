@@ -9,25 +9,25 @@ interface Props {
 const { prev, next } = Astro.props;
 ---
 
-<nav class="next-prev">
+<nav class="next-prev" aria-label="Lesson navigation">
   {
     prev ? (
-      <a href={`/lessons/${prev.slug}`}>
+      <a href={`/lessons/${prev.slug}`} data-nav-prev>
         <small>← Previous</small>
         {prev.title}
       </a>
     ) : (
-      <a href="/"><small>← Back</small>Curriculum home</a>
+      <a href="/" data-nav-prev><small>← Back</small>Curriculum home</a>
     )
   }
   {
     next ? (
-      <a href={`/lessons/${next.slug}`} class="right">
+      <a href={`/lessons/${next.slug}`} class="right" data-nav-next>
         <small>Next →</small>
         {next.title}
       </a>
     ) : (
-      <a href="/" class="right">
+      <a href="/" class="right" data-nav-next>
         <small>You finished →</small>
         Back to curriculum
       </a>

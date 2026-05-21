@@ -82,6 +82,15 @@ try {
   await new Promise((r) => setTimeout(r, 200));
   const k = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("Cmd+K opens the dialog", k === true, k);
+
+  // 6. `n` navigates to the next lesson (close dialog first).
+  await page.keyboard.press("Escape");
+  await new Promise((r) => setTimeout(r, 200));
+  const before = page.url();
+  await page.keyboard.press("n");
+  await new Promise((r) => setTimeout(r, 500));
+  const after = page.url();
+  assert("'n' navigates forward in the curriculum", before !== after, { before, after });
 } finally {
   await browser.disconnect();
 }
