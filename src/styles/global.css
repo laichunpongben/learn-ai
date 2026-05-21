@@ -138,6 +138,7 @@ a:hover { border-bottom-color: var(--ink); }
 .shell {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
+  width: 100%;
   max-width: clamp(1100px, 92vw, 1680px);
   margin: 0 auto;
   gap: 0;
