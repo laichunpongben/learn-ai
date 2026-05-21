@@ -1,0 +1,37 @@
+---
+/**
+ * JSON-LD LearningResource schema for a lesson page.
+ *
+ * Helps search engines surface lessons in education-related results and
+ * lets aggregators pick up the title, blurb, time-required, and curriculum.
+ * Output is a single inline <script type="application/ld+json">.
+ */
+import type { Lesson } from "../data/curriculum";
+
+interface Props {
+  lesson: Lesson;
+  url: string;
+}
+
+const { lesson, url } = Astro.props;
+
+const data = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  name: lesson.title,
+  description: lesson.blurb,
+  url,
+  inLanguage: "en",
+  learningResourceType: "Tutorial",
+  isAccessibleForFree: true,
+  timeRequired: `PT${lesson.minutes}M`,
+  educationalLevel: "Beginner",
+  isPartOf: {
+    "@type": "Course",
+    name: "Learn AI",
+    description: "A hands-on tour of modern AI assistants and agents.",
+  },
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(data)}></script>
