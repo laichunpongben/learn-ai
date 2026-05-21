@@ -2,12 +2,19 @@
 /**
  * Renders a screencast slot from src/data/videos.ts. See ADR-0009.
  *
- * mode="loop"        — silent autoplay loop. Posters render on
- *                      prefers-reduced-motion. Implemented now.
+ * mode="loop"        — silent autoplay loop. On prefers-reduced-motion
+ *                      the poster is shown instead (no playback at all).
+ *                      Implemented now.
  * mode="walkthrough" — YouTube facade. Lazy-loads iframe on click.
  *                      Implemented in #104.
  *
  * Slots with status:"missing" render nothing.
+ *
+ * Reduced-motion correctness: we deliberately omit the HTML `autoplay`
+ * attribute. A small inline script calls `.play()` only when
+ * prefers-reduced-motion is *not* reduce. This avoids the race where
+ * removing `autoplay` after the browser has already started playback
+ * does nothing.
  */
 import { getVideoSlot } from "../data/videos";
 
@@ -25,13 +32,13 @@ const renderLoop =
     <figure class="screencast" style={`--aspect: ${v.aspect ?? "16 / 9"};`}>
       <video
         class="screencast-video"
-        autoplay
         muted
         loop
         playsinline
         preload="metadata"
         poster={v.poster}
         aria-label={v.posterAlt}
+        data-screencast-loop
       >
         <source src={v.webm} type="video/webm" />
         <source src={v.mp4} type="video/mp4" />
@@ -55,25 +62,20 @@ const renderLoop =
     height: 100%;
     object-fit: cover;
   }
-  /* Reduced-motion users get the poster frame only — no autoplay. */
-  @media (prefers-reduced-motion: reduce) {
-    .screencast-video {
-      animation: none;
-    }
-  }
 </style>
 
 <script>
-  // Per ADR-0009: stop the autoplay loop for reduced-motion users.
-  // We still render the poster (the `poster` attribute), but the
-  // <video> would otherwise start playing on its own. Pause it.
-  if (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
-    for (const v of document.querySelectorAll<HTMLVideoElement>(".screencast-video")) {
-      v.removeAttribute("autoplay");
-      v.pause();
+  // No `autoplay` attribute is rendered. We start playback here, only
+  // for users who haven't opted out of motion. Reduced-motion users
+  // see the poster frame (the video's default before .play() is called).
+  if (typeof window !== "undefined") {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) {
+      for (const v of document.querySelectorAll<HTMLVideoElement>("[data-screencast-loop]")) {
+        v.play().catch(() => {
+          /* autoplay can be blocked; poster stays visible. */
+        });
+      }
     }
   }
 </script>

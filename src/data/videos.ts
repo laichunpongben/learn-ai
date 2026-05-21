@@ -9,7 +9,8 @@ export interface VideoSlot {
   id: string;
   mode: VideoMode;
   status: VideoStatus;
-  posterAlt: string;
+  lesson: string; // lesson slug or "home" for hero-reel slots
+  posterAlt: string; // required: aria-label / alt text for the loop
   // loop-only
   webm?: string;
   mp4?: string;
