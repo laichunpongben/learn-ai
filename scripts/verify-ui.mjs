@@ -117,6 +117,17 @@ try {
   await new Promise((r) => setTimeout(r, 500));
   const homeAfter = page.url();
   assert("'n' from homepage hops to a lesson", homeBefore !== homeAfter && homeAfter.includes("/lessons/"), { homeBefore, homeAfter });
+
+  // 8. 404 page renders with curriculum suggestions.
+  await page.goto(`${BASE}/404.html`, { waitUntil: "domcontentloaded" });
+  await new Promise((r) => setTimeout(r, 200));
+  const has404 = await page.evaluate(() => {
+    const h1 = document.querySelector("h1");
+    const suggestions = document.querySelectorAll(".suggestions-grid a").length;
+    return { h1: h1?.textContent ?? "", suggestions };
+  });
+  assert("404 page heading is 'Page not found'", has404.h1.includes("not found"), has404);
+  assert("404 page lists ≥3 suggested links", has404.suggestions >= 3, has404);
 } finally {
   await browser.disconnect();
 }
