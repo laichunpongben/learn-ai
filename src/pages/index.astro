@@ -3,10 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import ProgressBar from "../components/ProgressBar.astro";
 import LessonCard from "../components/LessonCard.astro";
 import ProductRow from "../components/ProductRow.astro";
+import CourseSchema from "../components/CourseSchema.astro";
 import { TRACKS, lessonsInTrack } from "../data/curriculum";
 ---
 
 <Layout title="Learn AI">
+    <CourseSchema />
     <h1>A hands-on tour of AI assistants</h1>
     <p class="lede">
       Drive imitations of every kind of modern AI tool — chat, coding CLI, cloud agent, UI generator,
