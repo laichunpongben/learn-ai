@@ -144,6 +144,10 @@ document.addEventListener("keydown", (e) => {
 
   if (e.key === "n") navigateTo("[data-nav-next]");
   else if (e.key === "p") navigateTo("[data-nav-prev]");
+  else if (e.key === "/" && dialog) {
+    e.preventDefault();
+    openSearch();
+  }
 });
 
 function pointInside(x: number, y: number, r: DOMRect): boolean {

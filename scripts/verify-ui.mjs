@@ -89,6 +89,14 @@ try {
   );
   assert("empty-query palette renders ≥3 track group headers", groups >= 3, groups);
 
+  // 5c. `/` opens the dialog (close first).
+  await page.keyboard.press("Escape");
+  await new Promise((r) => setTimeout(r, 200));
+  await page.keyboard.press("/");
+  await new Promise((r) => setTimeout(r, 200));
+  const slash = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
+  assert("'/' opens the dialog", slash === true, slash);
+
   // 6. `n` navigates to the next lesson (close dialog first).
   await page.keyboard.press("Escape");
   await new Promise((r) => setTimeout(r, 200));
