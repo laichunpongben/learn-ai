@@ -76,6 +76,28 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// The update-available toast (UpdateToast.astro) sends this from the
+// page when the user clicks Reload. self.skipWaiting() activates the
+// waiting SW immediately; controllerchange then fires on every
+// controlled tab, and pwa.ts reloads.
+//
+// Validate event.source origin so a cross-origin iframe can't post
+// the message and force an unintended SW swap. Only same-origin
+// WindowClients are trusted.
+self.addEventListener("message", (event) => {
+  if (!event.data || event.data.type !== "SKIP_WAITING") return;
+  const source = event.source;
+  if (!source) return;
+  const sourceUrl = "url" in source ? source.url : "";
+  if (!sourceUrl) return;
+  try {
+    if (new URL(sourceUrl).origin !== self.location.origin) return;
+  } catch {
+    return;
+  }
+  self.skipWaiting();
+});
+
 // -----------------------------------------------------------------------
 // Routing
 // -----------------------------------------------------------------------
