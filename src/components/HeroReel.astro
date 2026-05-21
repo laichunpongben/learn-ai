@@ -1,0 +1,208 @@
+---
+/**
+ * Autoplay reel for the home page hero — four looping moments that
+ * telegraph the breadth of modern AI assistants. Self-contained, theme-
+ * aware (uses CSS custom properties), respects prefers-reduced-motion.
+ *
+ * Pacing model: timer-driven, loops, hover-pause. See ~/.claude/skills/webreel.
+ */
+interface Props { height?: string; }
+const { height = "200px" } = Astro.props;
+---
+
+<div class="reel" data-hero-reel style={`min-height: ${height};`}>
+  <section class="moment" data-hold="3500">
+    <div class="copy">
+      <h2 class="fu">Chat for ideas.</h2>
+      <p class="fu d1">Draft, plan, summarise, brainstorm.</p>
+    </div>
+    <div class="vis vis-chat">
+      <div class="bubble user fu d2">Plan a 3-day Tokyo trip</div>
+      <div class="bubble bot fu d3">Day 1 · Shibuya. Day 2 · Asakusa…</div>
+    </div>
+  </section>
+
+  <section class="moment" data-hold="3500">
+    <div class="copy">
+      <h2 class="fu">Code in your terminal.</h2>
+      <p class="fu d1">A coding CLI that lives where your code does.</p>
+    </div>
+    <div class="vis vis-term">
+      <pre class="term fu d2"><span class="prompt">$</span> claude code<span class="caret">▌</span></pre>
+    </div>
+  </section>
+
+  <section class="moment" data-hold="3500">
+    <div class="copy">
+      <h2 class="fu">UI from a sentence.</h2>
+      <p class="fu d1">Describe it; ship a page.</p>
+    </div>
+    <div class="vis vis-ui">
+      <div class="wf fu d2">
+        <span class="wf-bar"></span>
+        <span class="wf-box"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="moment" data-hold="3500">
+    <div class="copy">
+      <h2 class="fu">Agents in parallel.</h2>
+      <p class="fu d1">Many tasks at once, in the background.</p>
+    </div>
+    <div class="vis vis-agents">
+      <span class="dot fu d2"></span>
+      <span class="dot fu d3"></span>
+      <span class="dot fu d4"></span>
+    </div>
+  </section>
+
+  <div class="bar" aria-hidden="true"></div>
+</div>
+
+<style>
+  .reel {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+    margin: 1rem 0 1.5rem;
+  }
+  .moment {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 1.3rem 1.6rem;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 350ms ease;
+  }
+  .moment.is-active { opacity: 1; visibility: visible; }
+  .moment h2 {
+    margin: 0;
+    font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  .moment p { margin: 0.3rem 0 0; color: var(--ink-soft); font-size: 0.92rem; }
+  .vis { display: flex; gap: 0.4rem; align-items: center; justify-content: center; flex-wrap: wrap; }
+
+  .bubble {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 10px;
+    max-width: 160px;
+    line-height: 1.3;
+  }
+  .bubble.user { background: var(--ink); color: var(--surface); align-self: flex-end; }
+  .bubble.bot  { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+  .vis-chat { flex-direction: column; align-items: flex-end; }
+
+  .term {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+    font: 0.85rem var(--mono);
+    color: var(--ink);
+    margin: 0;
+  }
+  .term .prompt { color: var(--accent); margin-right: 0.4rem; }
+  .term .caret { animation: blink 0.9s steps(2) infinite; margin-left: 0.1rem; color: var(--accent); }
+
+  .wf {
+    width: 140px; height: 80px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    position: relative;
+    padding: 10px;
+  }
+  .wf-bar, .wf-box { display: block; background: var(--ink-faint); border-radius: 2px; opacity: 0.4; }
+  .wf-bar { height: 8px; width: 70%; margin-bottom: 8px; }
+  .wf-box { height: 32px; width: 90%; background: var(--accent-soft); border: 1px solid var(--accent); opacity: 0.7; }
+
+  .dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent-soft);
+  }
+  .moment.is-active .vis-agents .dot { animation: pulse 1.4s ease-in-out infinite; }
+  .moment.is-active .vis-agents .dot:nth-child(2) { animation-delay: 0.2s; }
+  .moment.is-active .vis-agents .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .moment.is-active .fu { animation: fadeUp 500ms ease both; }
+  .moment.is-active .fu.d1 { animation-delay: 90ms; }
+  .moment.is-active .fu.d2 { animation-delay: 180ms; }
+  .moment.is-active .fu.d3 { animation-delay: 270ms; }
+  .moment.is-active .fu.d4 { animation-delay: 360ms; }
+
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); transform: scale(1); }
+    50% { box-shadow: 0 0 0 6px transparent; transform: scale(1.15); }
+  }
+
+  .bar {
+    position: absolute; bottom: 0; left: 0; height: 2px;
+    background: var(--accent);
+    width: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moment, .moment * { animation: none !important; transition: none !important; }
+    .bar { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .moment { grid-template-columns: 1fr; padding: 1rem 1.2rem; gap: 0.4rem; }
+    .vis { display: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-hero-reel]").forEach((reel) => {
+    const moments = [...reel.querySelectorAll<HTMLElement>(".moment")];
+    const bar = reel.querySelector<HTMLElement>(".bar");
+    if (!bar || moments.length === 0) return;
+
+    let idx = 0;
+    let paused = false;
+    let timer: number | null = null;
+
+    function show(i: number) {
+      moments.forEach((m, k) => m.classList.toggle("is-active", k === i));
+      const hold = Number(moments[i].dataset.hold) || 3500;
+      bar!.style.transition = "none";
+      bar!.style.width = "0%";
+      requestAnimationFrame(() => {
+        bar!.style.transition = `width ${hold}ms linear`;
+        bar!.style.width = "100%";
+      });
+      if (timer !== null) window.clearTimeout(timer);
+      if (!paused) {
+        timer = window.setTimeout(() => {
+          idx = (idx + 1) % moments.length;
+          show(idx);
+        }, hold);
+      }
+    }
+
+    reel.addEventListener("mouseenter", () => {
+      paused = true;
+      if (timer !== null) window.clearTimeout(timer);
+      bar.style.transition = "none";
+    });
+    reel.addEventListener("mouseleave", () => {
+      paused = false;
+      show(idx);
+    });
+
+    show(0);
+  });
+</script>
