@@ -1,4 +1,6 @@
-@import url("https://rsms.me/inter/inter.css");
+/* Inter is loaded via <link rel="preconnect" + stylesheet> in Layout.astro
+   so its CSS+font fetch can parallelize with this stylesheet, rather than
+   being chained behind a CSS @import. */
 
 :root {
   --bg: #fbfbfa;
