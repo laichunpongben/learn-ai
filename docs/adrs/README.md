@@ -25,3 +25,4 @@ Each ADR is a short Markdown file with:
 | 0008 | [Lesson hero banner — remove, do not redesign](./0008-lesson-hero-banner.md) | Accepted |
 | 0009 | [Screencasts complement simulators](./0009-screencast-strategy.md) | Accepted |
 | 0010 | [Video production: loops + YouTube facade](./0010-video-production-workflow.md) | Accepted |
+| 0011 | [Installable, offline-first PWA](./0011-pwa-offline-first.md) | Accepted |
