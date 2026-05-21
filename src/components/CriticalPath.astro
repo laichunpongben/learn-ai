@@ -6,17 +6,16 @@ import { criticalPathLessons } from "../data/curriculum";
 
 const lessons = criticalPathLessons();
 const totalMinutes = lessons.reduce((a, l) => a + l.minutes, 0);
-const firstSlug = lessons[0]?.slug ?? "welcome";
 ---
 
-<aside class="cp" data-critical-path>
+<aside class="callout cp" data-critical-path>
   <header>
     <span class="cp-label">Beginner path · ~{totalMinutes} min</span>
-    <a class="button" href={`/lessons/${firstSlug}`} data-cp-cta>Take this path →</a>
+    <a class="button" href={`/lessons/${lessons[0].slug}`} data-cp-cta>Take this path →</a>
   </header>
   <ol class="cp-list">
     {lessons.map((l, i) => (
-      <li class="cp-step" data-cp-step data-lesson-id={l.id}>
+      <li class="cp-step" data-cp-step data-lesson-id={l.id} data-cp-href={`/lessons/${l.slug}`}>
         <span class="cp-num">{i + 1}</span>
         <a href={`/lessons/${l.slug}`} class="cp-link">{l.title}</a>
         <span class="cp-min">{l.minutes} min</span>
@@ -26,14 +25,9 @@ const firstSlug = lessons[0]?.slug ?? "welcome";
 </aside>
 
 <style>
-  .cp {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-left: 2px solid var(--accent);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    margin: 1rem 0 1.5rem;
-  }
+  /* Layout-specific overrides. Visual chrome (background/border/radius/
+     padding) comes from .callout in global.css. */
+  .cp { border-left-color: var(--accent); margin: 1rem 0 1.5rem; }
   .cp header {
     display: flex;
     align-items: center;
@@ -52,14 +46,7 @@ const firstSlug = lessons[0]?.slug ?? "welcome";
     font-size: 0.82rem;
     padding: 0.35rem 0.75rem;
   }
-  .cp-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
+  .cp-list { list-style: none; padding: 0; margin: 0; }
   .cp-step {
     display: flex;
     align-items: baseline;
@@ -77,12 +64,7 @@ const firstSlug = lessons[0]?.slug ?? "welcome";
     width: 1.1rem;
     flex-shrink: 0;
   }
-  .cp-link {
-    color: var(--ink);
-    border-bottom: none;
-    flex: 1;
-    min-width: 0;
-  }
+  .cp-link { color: var(--ink); border-bottom: none; flex: 1; min-width: 0; }
   .cp-link:hover { border-bottom: none; color: var(--ink-soft); }
   .cp-step.done .cp-link { color: var(--ink-faint); text-decoration: line-through; }
   .cp-step.done .cp-num::before { content: "✓ "; color: var(--good); }
@@ -95,33 +77,39 @@ const firstSlug = lessons[0]?.slug ?? "welcome";
 </style>
 
 <script>
-  import { getProgress } from "../scripts/progress";
+  import { getDone } from "../scripts/progress";
 
-  function paint() {
-    const done = new Set(getProgress().done);
-    const steps = document.querySelectorAll<HTMLElement>("[data-cp-step]");
+  type ProgressDetail = { done?: string[] };
+
+  const steps = [...document.querySelectorAll<HTMLElement>("[data-cp-step]")];
+  const cta = document.querySelector<HTMLAnchorElement>("[data-cp-cta]");
+
+  function paint(ev?: Event) {
+    if (!cta || steps.length === 0) return;
+    // ct:progress dispatches the fresh Progress as detail — use it to
+    // avoid a localStorage read + JSON.parse on every toggle.
+    const detail = (ev as CustomEvent<ProgressDetail> | undefined)?.detail;
+    const done = new Set(detail?.done ?? getDone());
+
     let firstUndone: HTMLElement | null = null;
+    let pathDone = 0;
     for (const step of steps) {
       const id = step.dataset.lessonId;
       if (!id) continue;
       const isDone = done.has(id);
       step.classList.toggle("done", isDone);
-      if (!isDone && !firstUndone) firstUndone = step;
+      if (isDone) pathDone += 1;
+      else if (!firstUndone) firstUndone = step;
     }
-    // Point the CTA at the first undone step on the path. If all are done,
-    // the button label and target shift to reflect completion.
-    const cta = document.querySelector<HTMLAnchorElement>("[data-cp-cta]");
-    if (!cta) return;
+
     if (firstUndone) {
-      const link = firstUndone.querySelector<HTMLAnchorElement>(".cp-link");
-      if (link) {
-        cta.href = link.href;
-        cta.textContent = done.size === 0 ? "Take this path →" : "Continue path →";
-      }
+      cta.href = firstUndone.dataset.cpHref ?? cta.href;
+      cta.textContent = pathDone === 0 ? "Take this path →" : "Continue path →";
     } else {
+      cta.href = steps[steps.length - 1].dataset.cpHref ?? cta.href;
       cta.textContent = "Path complete ✓";
-      cta.classList.add("ghost");
     }
+    cta.classList.toggle("ghost", !firstUndone);
   }
 
   window.addEventListener("ct:progress", paint);

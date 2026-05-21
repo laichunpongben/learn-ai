@@ -359,7 +359,7 @@ export function lessonsInTrack(id: TrackId): Lesson[] {
  * Critical path — the shortest route from "what is AI?" to "I shipped a small thing".
  * Roughly 30 minutes including the final build. See ADR-0007.
  */
-export const CRITICAL_PATH: string[] = [
+export const CRITICAL_PATH = [
   "welcome",
   "capabilities",
   "concept-prompt",
@@ -367,10 +367,14 @@ export const CRITICAL_PATH: string[] = [
   "chat-first",
   "ship-it",
   "build-writing",
-];
+] as const;
 
 export function criticalPathLessons(): Lesson[] {
-  return CRITICAL_PATH.map((id) => LESSONS.find((l) => l.id === id)).filter(
-    (l): l is Lesson => l !== undefined,
-  );
+  return CRITICAL_PATH.map((id) => {
+    const l = LESSONS.find((lesson) => lesson.id === id);
+    // Throw at build time on curriculum drift — silently dropping a step
+    // would leave the home-page callout shorter than the ADR specifies.
+    if (!l) throw new Error(`CRITICAL_PATH references unknown lesson id "${id}"`);
+    return l;
+  });
 }
