@@ -7,7 +7,6 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="cowork-what">
-  <main id="main">
     <LessonShell lesson={lesson} hero="cowork">
       <p>
         <strong>Cloud agents</strong> run tasks in their own sandboxes, in parallel, in the background.
@@ -52,7 +51,6 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
         <li>Architectural debates that need conversation</li>
       </ul>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

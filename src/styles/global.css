@@ -167,7 +167,7 @@ main article > .next-prev {
 }
 
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: 0.5rem;
   top: 0.5rem;
   padding: 0.5rem 0.85rem;
@@ -177,7 +177,9 @@ main article > .next-prev {
   font-weight: 500;
   z-index: 100;
   transform: translateY(-150%);
-  transition: transform 0.15s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skip-link { transition: transform 0.15s ease; }
 }
 .skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent); }
 

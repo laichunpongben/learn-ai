@@ -9,7 +9,6 @@ const lesson = LESSONS.find((l) => l.id === "welcome")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="welcome">
-  <main id="main">
     <LessonShell lesson={lesson} hero="claude">
       <p>
         An <strong>AI assistant</strong> is software that takes a request in plain language and gives you
@@ -33,5 +32,4 @@ const lesson = LESSONS.find((l) => l.id === "welcome")!;
         Treat the output as a first draft, not a final answer — especially for facts, numbers, and code.
       </div>
     </LessonShell>
-  </main>
 </Layout>

@@ -7,7 +7,6 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="agents-setup">
-  <main id="main">
     <LessonShell lesson={lesson} hero="agents">
       <p>
         Most autonomous agents install the same way: one command, an env var with your API key, optional config.
@@ -41,7 +40,7 @@ cd my-project &amp;&amp; aider --model sonnet
 
 # OpenHands (Docker)
 docker run -p 3000:3000 -e LLM_API_KEY=sk-… \\
-  ghcr.io/all-hands-ai/openhands:latest
+    ghcr.io/all-hands-ai/openhands:latest
 
 # OpenClaw
 npm install -g openclaw
@@ -59,5 +58,4 @@ goose session</pre>
         (not your home folder) on first run. Read the diffs. Rotate the key if exposed.
       </div>
     </LessonShell>
-  </main>
 </Layout>

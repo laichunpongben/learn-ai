@@ -7,7 +7,6 @@ const lesson = LESSONS.find((l) => l.id === "code-what")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="code-what">
-  <main id="main">
     <LessonShell lesson={lesson} hero="code">
       <p>
         A <strong>coding assistant</strong> lives where your code does — your terminal, your editor —
@@ -66,7 +65,6 @@ Want me to add a placeholder + a clearer startup error?</pre>
         start with a chat app — come back when you're ready to build something real.
       </div>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="code-slash">
-  <main id="main">
     <LessonShell lesson={lesson}>
       <p>
         Every modern coding CLI has the same three extensibility primitives, with slight name variations.
@@ -51,7 +50,6 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
         <li><strong>aider:</strong> shows diff + asks "Apply edit? (Y/n)"</li>
       </ul>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

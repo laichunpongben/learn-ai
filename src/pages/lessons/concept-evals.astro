@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-evals")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-evals">
-  <main id="main">
     <LessonShell lesson={lesson} hero="claude">
       <p>
         "The model usually gets it right" is fine for a chat with yourself. It's not fine when the
@@ -126,5 +125,4 @@ const lesson = LESSONS.find((l) => l.id === "concept-evals")!;
         still fail your eval if your task is unusual. Build your own.
       </Reveal>
     </LessonShell>
-  </main>
 </Layout>

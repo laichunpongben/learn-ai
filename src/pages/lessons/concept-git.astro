@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-git")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-git">
-  <main id="main">
     <LessonShell lesson={lesson} hero="code">
       <p>
         <strong>Git</strong> is the "undo button" for your entire project. It tracks every change so you can
@@ -87,7 +86,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-git")!;
         You can use git without GitHub forever.
       </Reveal>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

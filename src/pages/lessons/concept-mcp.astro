@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-mcp")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-mcp">
-  <main id="main">
     <LessonShell lesson={lesson} hero="agents">
       <p>
         <strong>MCP</strong> (Model Context Protocol) is a standard for letting an AI assistant <em>reach
@@ -118,7 +117,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-mcp")!;
         See <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">modelcontextprotocol.io</a>.
       </Reveal>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

@@ -7,7 +7,6 @@ const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="chat-projects">
-  <main id="main">
     <LessonShell lesson={lesson} hero="chat">
       <p>
         Every major chat app has a way to <strong>create a custom assistant</strong> — a folder of related
@@ -46,7 +45,6 @@ const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
         Custom assistant = a conversation with someone who already read your briefing pack.
       </div>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "code-install")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="code-install">
-  <main id="main">
     <LessonShell lesson={lesson} hero="code">
       <p>Every coding CLI follows the same three steps. Examples below.</p>
 
@@ -55,7 +54,6 @@ aider           # reads OPENAI_API_KEY / ANTHROPIC_API_KEY env var</pre>
         Most CLIs let you resume the last session — check <code class="inline">--continue</code> or similar.
       </p>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>

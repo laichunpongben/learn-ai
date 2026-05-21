@@ -9,7 +9,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-prompt")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-prompt">
-  <main id="main">
     <LessonShell lesson={lesson} hero="claude">
       <p>
         Every AI tool eats prompts. The same model gives very different results depending on how you
@@ -108,7 +107,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-prompt")!;
         split into two prompts or attach a file instead.
       </Reveal>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>
