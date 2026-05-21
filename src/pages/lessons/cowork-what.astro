@@ -7,7 +7,7 @@ const lesson = LESSONS.find((l) => l.id === "cowork-what")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="cowork-what">
-    <LessonShell lesson={lesson} hero="cowork">
+    <LessonShell lesson={lesson}>
       <p>
         <strong>Cloud agents</strong> run tasks in their own sandboxes, in parallel, in the background.
         You submit, step away, come back to diffs / pull requests.

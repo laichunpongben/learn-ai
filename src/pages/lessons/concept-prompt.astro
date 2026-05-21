@@ -9,7 +9,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-prompt")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-prompt">
-    <LessonShell lesson={lesson} hero="claude">
+    <LessonShell lesson={lesson}>
       <p>
         Every AI tool eats prompts. The same model gives very different results depending on how you
         write the request. This is the one skill that transfers between products and compounds over time.

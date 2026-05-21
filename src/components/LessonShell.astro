@@ -2,16 +2,14 @@
 import { neighbors, trackById, type Lesson } from "../data/curriculum";
 import NextPrev from "./NextPrev.astro";
 import MarkDone from "./MarkDone.astro";
-import LessonHero from "./LessonHero.astro";
 import LessonSchema from "./LessonSchema.astro";
 import TocRail from "./TocRail.astro";
 
 interface Props {
   lesson: Lesson;
-  hero?: "chat" | "code" | "cowork" | "design" | "agents" | "ship" | "claude";
 }
 
-const { lesson, hero } = Astro.props;
+const { lesson } = Astro.props;
 const track = trackById(lesson.track);
 const { prev, next } = neighbors(lesson.id);
 const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
@@ -31,8 +29,6 @@ const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString
     <p class="lesson-meta"><span class="tiny-link">{lesson.minutes} min</span></p>
     <h1>{lesson.title}</h1>
     <p class="lede">{lesson.blurb}</p>
-
-    {hero ? <LessonHero kind={hero} /> : null}
 
     <slot />
 

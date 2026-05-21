@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-git")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-git">
-    <LessonShell lesson={lesson} hero="code">
+    <LessonShell lesson={lesson}>
       <p>
         <strong>Git</strong> is the "undo button" for your entire project. It tracks every change so you can
         review, revert, branch, or merge. When an AI tool is editing your code, git is what keeps you

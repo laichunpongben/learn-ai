@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-safety")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-safety">
-    <LessonShell lesson={lesson} hero="claude">
+    <LessonShell lesson={lesson}>
       <p>
         AI assistants are powerful and useful — and they fail in specific, predictable ways. Knowing
         the failure modes is the difference between a tool that helps you and a tool that quietly

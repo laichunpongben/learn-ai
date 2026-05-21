@@ -7,7 +7,7 @@ const lesson = LESSONS.find((l) => l.id === "chat-projects")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="chat-projects">
-    <LessonShell lesson={lesson} hero="chat">
+    <LessonShell lesson={lesson}>
       <p>
         Every major chat app has a way to <strong>create a custom assistant</strong> — a folder of related
         chats with shared files and instructions. Different names, same idea.
