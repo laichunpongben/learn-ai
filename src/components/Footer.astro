@@ -1,5 +1,7 @@
 ---
-const year = new Date().getFullYear();
+const now = new Date();
+const year = now.getFullYear();
+const builtOn = now.toISOString().slice(0, 10);
 ---
 <footer class="site-footer">
   <nav class="footer-nav" aria-label="Site links">
@@ -11,6 +13,7 @@ const year = new Date().getFullYear();
   </nav>
   <p class="footer-line">
     © {year} Learn AI · part of <a class="ft-home" href="https://databookman.com">databookman.com</a>
+    · <time class="ft-built" datetime={builtOn}>Updated {builtOn}</time>
   </p>
 </footer>
 
@@ -31,4 +34,5 @@ const year = new Date().getFullYear();
   .footer-line { margin: 0; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; }
   .ft-home { text-transform: none; letter-spacing: 0; color: var(--ink-soft); border-bottom: 1px solid var(--line-strong); }
   .ft-home:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .ft-built { text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 </style>
