@@ -35,13 +35,20 @@ const paths = [
     desc: "A bot that posts a daily channel summary. Real API tokens + scheduling.",
     time: "~25 min · coding CLI + Slack workspace",
   },
+  {
+    kind: "cowork" as const,
+    href: "/lessons/build-watcher",
+    title: "E · Scheduled watcher",
+    desc: "A Cowork agent that scans a feed every hour and pings you when something matters. Plan → build → schedule.",
+    time: "~30 min · Claude Cowork (Pro/Max)",
+  },
 ];
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="ship-it">
     <LessonShell lesson={lesson} hero="ship">
       <p>
-        Four paths, all ending with a tool you actually keep. Each is a step-by-step walkthrough
+        Five paths, all ending with a tool you actually keep. Each is a step-by-step walkthrough
         you'll follow in the real product while reading. Pick the closest to what you do.
       </p>
 

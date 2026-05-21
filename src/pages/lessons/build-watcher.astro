@@ -1,0 +1,181 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LessonShell from "../../components/LessonShell.astro";
+import BuildStepper from "../../components/BuildStepper.astro";
+import Step from "../../components/Step.astro";
+import OpenIn from "../../components/OpenIn.astro";
+import PromptCopy from "../../components/PromptCopy.astro";
+import Expect from "../../components/Expect.astro";
+import { LESSONS } from "../../data/curriculum";
+
+const lesson = LESSONS.find((l) => l.id === "build-watcher")!;
+
+const planPrompt = `Build me a watcher I can run on a schedule. It should:
+
+- Scan an RSS feed (the URL goes here: https://hnrss.org/frontpage) every hour.
+- Keep a tiny local store of the IDs it has already seen.
+- For each new item, score it against my interests (keywords I'll give you below).
+- If anything scores above a threshold, send me a notification — start with macOS notification + a written log file. We can switch to Telegram or email later.
+
+My interests, scored higher = better:
+- "agents" / "agent" / "autonomous": 3
+- "claude" / "anthropic" / "openai": 2
+- anything matching one of my hand-typed keywords: 5
+
+Constraints:
+- One Python file. Standard library + feedparser. Nothing else.
+- No external API keys yet — local only.
+- Idempotent: running it twice in the same hour does not double-notify.
+- If anything fails (network, parse, write), log it and exit cleanly. Don't crash.
+
+Before you write any code, hand me a one-page plan: what files you'll create,
+how the dedupe store works, the exact notification command on macOS, and how
+I'll schedule it. Then ask me one clarifying question if anything above is unclear.`;
+
+const iterationPrompt = `Two changes:
+
+1. Add a second source — a GitHub releases feed: https://github.com/anthropics/claude-code/releases.atom
+   (Same scoring rules. Use the source name as a category in the notification.)
+2. The dedupe store keeps growing forever. Trim it to the last 14 days on every run.
+
+Show me the diff before applying it.`;
+
+const scheduleNote = `Cowork has a "Scheduled" tab. New task → name "Hourly watcher" → frequency hourly → prompt:
+
+  Run python ~/watcher/watch.py and report anything new it printed.
+
+Cowork keeps your computer awake (Settings → General → Keep computer awake — turn on).
+The agent fires on the schedule, runs your script, and shows you what it saw.`;
+---
+
+<Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="build-watcher">
+    <LessonShell lesson={lesson} hero="cowork">
+      <p>
+        You'll build a small agent that watches a feed, scores new items, and pings you when one matters.
+        Claude Cowork plans it, writes it, runs it, and schedules itself — you stay in the loop on
+        every step, but you don't write the code. Finished result: a watcher you actually use, on
+        your machine, on your schedule.
+      </p>
+
+      <div class="callout" style="margin-top: 0.6rem;">
+        <strong>Why this one.</strong> The shape — pick a feed, score new items, alert when a threshold trips —
+        works for trade alerts, job postings, GitHub releases, RSS reading lists, your own server logs.
+        Once you know how to build one, every <em>"I should be checking X"</em> becomes a 30-minute project.
+      </div>
+
+      <BuildStepper id="build-watcher" total={9}>
+        <Step n={1} title="Install Claude Desktop with Cowork">
+          <p>Cowork is the desktop-app mode that can run scripts, schedule tasks, and use your computer.
+            Available on Claude.ai Pro and Max plans.</p>
+          <OpenIn items={[
+            { label: "Claude Desktop", url: "https://claude.com/download", hint: "Mac · Windows" },
+          ]} />
+          <Expect>
+            <p>The app opens. The top of the window has three modes — <strong>Chat</strong>, <strong>Cowork</strong>, <strong>Code</strong>.
+              Switch to Cowork.</p>
+          </Expect>
+        </Step>
+
+        <Step n={2} title="Give Cowork permission to use your computer">
+          <p>Settings → Cowork. Turn on <em>Computer use</em> and <em>Keep computer awake</em>.
+            macOS will ask for Accessibility and Screen Recording permissions — grant both.</p>
+          <Expect>
+            <p>The Cowork tab now shows the prompt bar at the top and your task history below.
+              No red "permissions missing" banners.</p>
+          </Expect>
+        </Step>
+
+        <Step n={3} title="Make a project folder">
+          <p>In a terminal, create somewhere for the watcher to live:</p>
+          <PromptCopy
+            label="Shell"
+            prompt={`mkdir ~/watcher && cd ~/watcher`}
+          />
+          <Expect>
+            <p><code class="inline">~/watcher</code> exists and is empty. Cowork will populate it.</p>
+          </Expect>
+        </Step>
+
+        <Step n={4} title="Paste the build prompt into Cowork">
+          <p>Hit <strong>+ New task</strong> in Cowork. Paste the prompt below. The working folder
+            should be <code class="inline">~/watcher</code> — Cowork will ask if it doesn't know.</p>
+          <PromptCopy label="Plan-then-build prompt" prompt={planPrompt} />
+        </Step>
+
+        <Step n={5} title="Review the plan before approving execution">
+          <p>Cowork won't write code immediately — it'll produce a short plan: the file layout,
+            how dedupe works, the exact notification command, how to schedule it. <strong>Read it.</strong>
+            This is your veto point.</p>
+          <ul>
+            <li>If the plan is wrong, reply with the correction. Cowork rewrites it.</li>
+            <li>If the plan is right, reply: <em>"Looks good. Build it."</em></li>
+          </ul>
+          <Expect>
+            <p>A clear "here's what I'll do" message before any file gets written. You see the plan,
+              not just code.</p>
+          </Expect>
+        </Step>
+
+        <Step n={6} title="Approve tool actions as they come up">
+          <p>Cowork now writes <code class="inline">watch.py</code>, creates a dedupe store, and runs a test.
+            Each side-effect asks for approval — read each one:</p>
+          <ul>
+            <li><strong>Write watch.py</strong> — allow</li>
+            <li><strong>Install feedparser via pip</strong> — allow</li>
+            <li><strong>Run watch.py once as a smoke test</strong> — allow</li>
+            <li><strong>Send a macOS notification</strong> — allow (System Settings will ask once for permission)</li>
+          </ul>
+          <Expect>
+            <p>You see a notification banner from the first test run. The terminal shows the items it scored
+              and which crossed the threshold.</p>
+          </Expect>
+        </Step>
+
+        <Step n={7} title="Iterate — add a source, trim the store">
+          <p>One round of changes to make sure you can edit, not just accept:</p>
+          <PromptCopy label="Iteration" prompt={iterationPrompt} />
+          <Expect>
+            <p>Cowork shows the diff first ("here are the lines I'll change"), waits for your OK, then applies.
+              Run again — both feeds show up; the dedupe store stays bounded.</p>
+          </Expect>
+        </Step>
+
+        <Step n={8} title="Schedule it">
+          <p>In Cowork's left sidebar, click <strong>Scheduled</strong>. Hit <strong>+ New scheduled task</strong>.</p>
+          <PromptCopy label="Scheduled task" prompt={scheduleNote} />
+          <Expect>
+            <p>The task shows up with its next-run time. Wait until it fires (or set it to every 5 minutes
+              for the demo). You see Cowork run, the script execute, and a summary of new items.</p>
+          </Expect>
+        </Step>
+
+        <Step n={9} title="Swap the notification channel">
+          <p>Once the local version works, push the notification somewhere durable. Pick one:</p>
+          <ul>
+            <li><strong>Telegram</strong> — make a bot via <a href="https://t.me/botfather" target="_blank" rel="noopener">@BotFather</a>, give Cowork the token, ask it to <em>"replace the macOS notification with a Telegram message to chat ID X."</em></li>
+            <li><strong>Email</strong> — your existing Gmail / SMTP server; Cowork knows the libraries.</li>
+            <li><strong>iMessage</strong> — on macOS, Cowork can use AppleScript to send via the Messages app to your own number.</li>
+          </ul>
+          <Expect>
+            <p>The next scheduled run pings you on the channel you picked. The macOS notification path
+              still works as a fallback.</p>
+          </Expect>
+        </Step>
+      </BuildStepper>
+
+      <div class="callout">
+        <strong>The pattern you just learned.</strong> An agentic build has four moves: <em>state the goal,
+        approve the plan, approve the tools, schedule it.</em> You did all four. The script is yours —
+        commit it to git, swap the feed for whatever you actually want to watch, add scoring keywords
+        that match your life. The same template will let you build a watcher every time you catch
+        yourself manually checking a website.
+      </div>
+
+      <div class="callout" style="background: var(--surface-2);">
+        <strong>What this isn't.</strong> Your watcher is not an oracle — it doesn't know which items are
+        <em>important</em>, only which ones <em>match the rules you gave it</em>. Same rule as everywhere:
+        AI has an edge on automation, scanning, and dedup. It has no edge on judgment. Score for "matches
+        my interests"; never for "should I act on this."
+      </div>
+    </LessonShell>
+</Layout>
