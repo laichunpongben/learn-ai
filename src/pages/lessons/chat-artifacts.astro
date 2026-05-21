@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="chat-artifacts">
-  <main>
     <LessonShell lesson={lesson}>
       <p>
         When the assistant produces something self-contained — a document, code, a webpage — it pops out
@@ -31,5 +30,4 @@ const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
         where you can edit, iterate, copy, or download.
       </p>
     </LessonShell>
-  </main>
 </Layout>

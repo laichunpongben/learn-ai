@@ -166,6 +166,23 @@ main article > .next-prev {
   main { padding: 1.6rem 1.1rem 4rem; }
 }
 
+.skip-link {
+  position: fixed;
+  left: 0.5rem;
+  top: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  z-index: 100;
+  transform: translateY(-150%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skip-link { transition: transform 0.15s ease; }
+}
+.skip-link:focus { transform: translateY(0); outline: 2px solid var(--accent); }
+
 header.site {
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);

@@ -43,6 +43,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
     <header class="site">
       <div class="inner">
         <button
@@ -65,7 +66,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     </header>
     <div class="shell">
       <Sidebar currentId={currentId} />
-      <slot />
+      <main id="main"><slot /></main>
     </div>
     <div class="sidebar-backdrop" data-ui-action="close-sidebar"></div>
     <footer>

@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="design-first">
-  <main>
     <LessonShell lesson={lesson}>
       <p>
         <strong>UI generators</strong> turn a sentence into a working piece of interface — real HTML/React,
@@ -43,5 +42,4 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
         <li><strong>Reference:</strong> "like Linear" · "like a Japanese menu" · "like an old paperback"</li>
       </ul>
     </LessonShell>
-  </main>
 </Layout>

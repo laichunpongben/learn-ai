@@ -8,7 +8,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-cost")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-cost">
-  <main>
     <LessonShell lesson={lesson} hero="claude">
       <p>
         AI assistants are not free. Chat apps come with monthly subscriptions; APIs and agents
@@ -118,7 +117,6 @@ const lesson = LESSONS.find((l) => l.id === "concept-cost")!;
         Quality is closing the gap but still lags the frontier closed models on hard tasks. Privacy and zero-marginal-cost are the wins.
       </Reveal>
     </LessonShell>
-  </main>
 </Layout>
 
 <style>
