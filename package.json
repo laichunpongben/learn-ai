@@ -20,10 +20,10 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^5.14.0"
+    "astro": "^6.3.6"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.9",
     "@axe-core/puppeteer": "^4.11.3",
     "@biomejs/biome": "^2.4.15",
     "@vitest/coverage-v8": "^4.1.7",
