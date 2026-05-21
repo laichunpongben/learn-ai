@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "ci": "npm run check && npm run lint && npm run test && npm run build",
     "smoke": "node scripts/verify-ui.mjs",
-    "a11y": "node scripts/verify-a11y.mjs"
+    "a11y": "node scripts/verify-a11y.mjs",
+    "links": "node scripts/verify-links.mjs"
   },
   "dependencies": {
     "astro": "^5.14.0"
