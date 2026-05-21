@@ -267,7 +267,7 @@ export const LESSONS: Lesson[] = [
     id: "ship-it",
     slug: "ship-it",
     title: "Pick what to build",
-    blurb: "Three guided paths. Pick one and follow it end-to-end in the real tool.",
+    blurb: "Five guided paths. Pick one and follow it end-to-end in the real tool.",
     minutes: 2,
     track: "ship",
   },
@@ -301,6 +301,15 @@ export const LESSONS: Lesson[] = [
     title: "Build · A Slack channel digest bot",
     blurb: "A bot that posts a daily summary to a Slack channel. Real API tokens, real scheduling. ~25 min.",
     minutes: 25,
+    track: "ship",
+  },
+  {
+    id: "build-watcher",
+    slug: "build-watcher",
+    title: "Build · A scheduled watcher",
+    blurb:
+      "A Claude Cowork agent that scans a feed on a schedule and pings you when something matters. ~30 min.",
+    minutes: 30,
     track: "ship",
   },
 ];
