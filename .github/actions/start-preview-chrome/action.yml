@@ -1,0 +1,48 @@
+name: Start preview server + headless Chrome
+description: |
+  Starts `npm run preview` and a headless Chrome with `--remote-debugging-port`,
+  then polls until both are reachable. Shared by the smoke and a11y jobs.
+
+inputs:
+  port:
+    description: CDP port for Chrome
+    required: false
+    default: "9333"
+  preview-port:
+    description: Astro preview server port
+    required: false
+    default: "4321"
+  user-data-dir:
+    description: Chrome --user-data-dir
+    required: false
+    default: /tmp/chrome-prof
+
+runs:
+  using: composite
+  steps:
+    - name: Start preview server
+      shell: bash
+      env:
+        CI: "true"
+      run: npm run preview &
+    - name: Start Chrome with CDP
+      shell: bash
+      env:
+        CDP_PORT: ${{ inputs.port }}
+        PREVIEW_PORT: ${{ inputs.preview-port }}
+        USER_DATA_DIR: ${{ inputs.user-data-dir }}
+      run: |
+        google-chrome --headless=new --disable-gpu --no-sandbox \
+          --remote-debugging-port="$CDP_PORT" \
+          --user-data-dir="$USER_DATA_DIR" about:blank &
+        # Wait up to 30 seconds for both endpoints. CI runners occasionally
+        # take >10s to bring up Chrome on a cold start.
+        for i in $(seq 1 30); do
+          sleep 1
+          ok_srv=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${PREVIEW_PORT}/" || echo 000)
+          ok_cdp=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${CDP_PORT}/json/version" || echo 000)
+          echo "wait $i: server=$ok_srv cdp=$ok_cdp"
+          if [ "$ok_srv" = "200" ] && [ "$ok_cdp" = "200" ]; then exit 0; fi
+        done
+        echo "::error::preview server (port $PREVIEW_PORT) or Chrome CDP (port $CDP_PORT) never became ready"
+        exit 1
