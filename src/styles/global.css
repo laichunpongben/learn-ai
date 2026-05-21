@@ -578,13 +578,32 @@ a.button:hover { background: #2a2a2a; border-color: #2a2a2a; color: #fff; }
   color: #fff;
 }
 
+/* Track sections use <details> so collapsed tracks reduce first-paint
+   scan load. "Start Here" + "Foundations" open by default; the script
+   on the home page opens the user's active track on returning visits. */
 .track-section { margin-top: 2.6rem; }
+.track-section[open] > .track-header { margin-bottom: 0.4rem; }
+.track-section > .lesson-grid { margin-top: 0.4rem; }
 .track-header {
   display: flex;
   align-items: baseline;
   gap: 0.8rem;
-  margin-bottom: 0.4rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  list-style: none;
 }
+.track-header::-webkit-details-marker { display: none; }
+.track-header::before {
+  content: "▸";
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+  margin-right: 0.2rem;
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+.track-section[open] > .track-header::before { transform: rotate(90deg); }
+.track-header:hover h2 { color: var(--ink); }
+.track-header:hover .tagline { color: var(--ink-soft); }
 .track-header h2 {
   margin: 0;
   font-size: 0.95rem;
