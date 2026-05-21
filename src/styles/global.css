@@ -273,6 +273,14 @@ header.site .inner {
   .hamburger { display: inline-flex; }
 }
 
+/* Mobile: hide header text links (sidebar + footer cover navigation), tighten
+   header padding, and grow touch targets to ≥44px so taps are reliable. */
+@media (max-width: 720px) {
+  header.site .tiny-link { display: none; }
+  header.site .inner { padding: 0.55rem 0.9rem; gap: 0.6rem; }
+  .hamburger, .theme-toggle, .search-trigger { min-width: 44px; min-height: 44px; }
+}
+
 .sidebar-backdrop {
   display: none;
   position: fixed;
