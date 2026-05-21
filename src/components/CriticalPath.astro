@@ -1,0 +1,117 @@
+---
+// The "30-minute beginner path" callout. Surfaces the shortest route to
+// "I shipped a small thing" so a zero-knowledge visitor doesn't read
+// 30 lessons as the only on-ramp. See ADR-0007.
+import { criticalPathLessons } from "../data/curriculum";
+
+const lessons = criticalPathLessons();
+const totalMinutes = lessons.reduce((a, l) => a + l.minutes, 0);
+---
+
+<aside class="callout cp" data-critical-path>
+  <header>
+    <span class="cp-label">Beginner path · ~{totalMinutes} min</span>
+    <a class="button" href={`/lessons/${lessons[0].slug}`} data-cp-cta>Take this path →</a>
+  </header>
+  <ol class="cp-list">
+    {lessons.map((l, i) => (
+      <li class="cp-step" data-cp-step data-lesson-id={l.id} data-cp-href={`/lessons/${l.slug}`}>
+        <span class="cp-num">{i + 1}</span>
+        <a href={`/lessons/${l.slug}`} class="cp-link">{l.title}</a>
+        <span class="cp-min">{l.minutes} min</span>
+      </li>
+    ))}
+  </ol>
+</aside>
+
+<style>
+  /* Layout-specific overrides. Visual chrome (background/border/radius/
+     padding) comes from .callout in global.css. */
+  .cp { border-left-color: var(--accent); margin: 1rem 0 1.5rem; }
+  .cp header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
+  .cp-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+  .cp header .button {
+    margin-left: auto;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.75rem;
+  }
+  .cp-list { list-style: none; padding: 0; margin: 0; }
+  .cp-step {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    border-top: 1px solid var(--line);
+    font-size: 0.9rem;
+  }
+  .cp-step:first-child { border-top: none; }
+  .cp-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-faint);
+    font-size: 0.78rem;
+    font-weight: 500;
+    width: 1.1rem;
+    flex-shrink: 0;
+  }
+  .cp-link { color: var(--ink); border-bottom: none; flex: 1; min-width: 0; }
+  .cp-link:hover { border-bottom: none; color: var(--ink-soft); }
+  .cp-step.done .cp-link { color: var(--ink-faint); text-decoration: line-through; }
+  .cp-step.done .cp-num::before { content: "✓ "; color: var(--good); }
+  .cp-min {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+</style>
+
+<script>
+  import { getDone } from "../scripts/progress";
+
+  type ProgressDetail = { done?: string[] };
+
+  const steps = [...document.querySelectorAll<HTMLElement>("[data-cp-step]")];
+  const cta = document.querySelector<HTMLAnchorElement>("[data-cp-cta]");
+
+  function paint(ev?: Event) {
+    if (!cta || steps.length === 0) return;
+    // ct:progress dispatches the fresh Progress as detail — use it to
+    // avoid a localStorage read + JSON.parse on every toggle.
+    const detail = (ev as CustomEvent<ProgressDetail> | undefined)?.detail;
+    const done = new Set(detail?.done ?? getDone());
+
+    let firstUndone: HTMLElement | null = null;
+    let pathDone = 0;
+    for (const step of steps) {
+      const id = step.dataset.lessonId;
+      if (!id) continue;
+      const isDone = done.has(id);
+      step.classList.toggle("done", isDone);
+      if (isDone) pathDone += 1;
+      else if (!firstUndone) firstUndone = step;
+    }
+
+    if (firstUndone) {
+      cta.href = firstUndone.dataset.cpHref ?? cta.href;
+      cta.textContent = pathDone === 0 ? "Take this path →" : "Continue path →";
+    } else {
+      cta.href = steps[steps.length - 1].dataset.cpHref ?? cta.href;
+      cta.textContent = "Path complete ✓";
+    }
+    cta.classList.toggle("ghost", !firstUndone);
+  }
+
+  window.addEventListener("ct:progress", paint);
+  paint();
+</script>

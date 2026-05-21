@@ -5,3 +5,6 @@ dist/
 .env
 .env.local
 *.log
+
+# Claude Code session metadata
+.claude/
