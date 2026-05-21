@@ -6,10 +6,10 @@
   --surface-2: #f4f3f0;
   --ink: #0a0a0a;
   --ink-soft: #525252;
-  --ink-faint: #757575;
+  --ink-faint: #6a6a6a;
   --line: #e7e5e1;
   --line-strong: #d4d2cd;
-  --accent: #cc5500;
+  --accent: #a64500;
   --accent-soft: #f6e7d8;
   --good: #1f7a3a;
   --bad: #b3261e;
@@ -383,8 +383,8 @@ button.accent {
   color: #fff;
 }
 button.accent:hover {
-  background: #a64500;
-  border-color: #a64500;
+  background: #803600;
+  border-color: #803600;
 }
 [data-theme="dark"] button.accent {
   color: #1a0a00;
