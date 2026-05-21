@@ -16,7 +16,7 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import { join, posix } from "node:path";
 
 const DIST = process.env.DIST_DIR ?? "dist";
-const SKIP_PREFIXES = ["/favicon", "/sitemap"];
+const SKIP_PREFIXES = ["/favicon"];
 
 async function walk(dir) {
   const out = [];
@@ -73,11 +73,24 @@ for (const file of htmlFiles) {
   }
 }
 
+const REQUIRED = ["sitemap-index.xml", "sitemap-0.xml", "robots.txt"];
+const missing = [];
+for (const name of REQUIRED) {
+  if (!(await exists(join(DIST, name)))) missing.push(name);
+}
+
 const unique = Array.from(new Set(broken.map((b) => `${b.source} → ${b.url}`)));
-if (unique.length) {
-  console.log(`Broken internal links (${unique.length}):`);
-  for (const line of unique.slice(0, 50)) console.log(`  ✗ ${line}`);
-  if (unique.length > 50) console.log(`  … and ${unique.length - 50} more`);
+if (unique.length || missing.length) {
+  if (unique.length) {
+    console.log(`Broken internal links (${unique.length}):`);
+    for (const line of unique.slice(0, 50)) console.log(`  ✗ ${line}`);
+    if (unique.length > 50) console.log(`  … and ${unique.length - 50} more`);
+  }
+  if (missing.length) {
+    console.log(`Missing required artifacts (${missing.length}):`);
+    for (const name of missing) console.log(`  ✗ dist/${name}`);
+  }
   process.exit(1);
 }
 console.log(`All ${checked} internal links resolved across ${htmlFiles.length} pages.`);
+console.log(`Required artifacts present: ${REQUIRED.join(", ")}.`);
