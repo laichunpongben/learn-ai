@@ -59,18 +59,22 @@ pngquant --quality=70-85 --ext .png --force "public/videos/posters/${NAME}.png"
 ```ts
 // src/data/videos.ts
 export interface VideoSlot {
-  id: string;           // "chat-loop"
+  id: string;             // "chat-loop"
   mode: "loop" | "walkthrough";
-  lesson: string;       // lesson slug
   status: "missing" | "present";
+  lesson: string;         // lesson slug, or "home" for hero-reel slots
+  posterAlt: string;      // required: aria-label / alt text for any poster
   // loop-only
-  posterAlt?: string;
+  webm?: string;
+  mp4?: string;
+  poster?: string;
+  aspect?: string;        // CSS aspect-ratio, e.g. "16 / 9"
   // walkthrough-only
   youtubeId?: string;
   transcript?: string;
   captionsVerified?: boolean;
   // both
-  recordedAt?: string;  // ISO date; flagged stale after 12mo
+  recordedAt?: string;    // ISO date; flagged stale after 12mo
 }
 ```
 
@@ -104,4 +108,4 @@ Runs in CI. Hard-fails when:
 - `CONTRIBUTING.md` (video section, sourced from this ADR)
 - `scripts/verify-videos.mjs`
 - `src/data/videos.ts`
-- `package.json` — adds `"videos:check": "node scripts/verify-videos.mjs"` to scripts
+- `package.json` — adds `"videos:check": "node --disable-warning=ExperimentalWarning scripts/verify-videos.mjs"` to scripts (the flag silences Node's type-stripping notice; safe to drop once Node ships it unflagged)
