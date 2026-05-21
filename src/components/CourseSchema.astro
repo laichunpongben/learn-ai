@@ -8,7 +8,7 @@
  */
 import { LESSONS, TRACKS, lessonsInTrack } from "../data/curriculum";
 
-const url = new URL(Astro.url.pathname, Astro.site ?? "https://example.com").toString();
+const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
 const provider = Astro.site?.host ?? "Learn AI";
 
 const data = {
@@ -31,7 +31,7 @@ const data = {
       "@type": "LearningResource",
       name: l.title,
       description: l.blurb,
-      url: new URL(`/lessons/${l.slug}`, Astro.site ?? "https://example.com").toString(),
+      url: new URL(`/lessons/${l.slug}`, Astro.site ?? Astro.url.origin).toString(),
       timeRequired: `PT${l.minutes}M`,
       learningResourceType: "Tutorial",
     })),
