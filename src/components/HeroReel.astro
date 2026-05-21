@@ -1,11 +1,5 @@
 ---
-/**
- * Autoplay reel for the home page hero — four looping moments that
- * telegraph the breadth of modern AI assistants. Self-contained, theme-
- * aware (uses CSS custom properties), respects prefers-reduced-motion.
- *
- * Pacing model: timer-driven, loops, hover-pause. See ~/.claude/skills/webreel.
- */
+// Pacing model: timer-driven, loops, hover-pause. See ~/.claude/skills/webreel.
 interface Props { height?: string; }
 const { height = "200px" } = Astro.props;
 ---
@@ -112,7 +106,8 @@ const { height = "200px" } = Astro.props;
     margin: 0;
   }
   .term .prompt { color: var(--accent); margin-right: 0.4rem; }
-  .term .caret { animation: blink 0.9s steps(2) infinite; margin-left: 0.1rem; color: var(--accent); }
+  .term .caret { margin-left: 0.1rem; color: var(--accent); }
+  .moment.is-active .term .caret { animation: blink 0.9s steps(2) infinite; }
 
   .wf {
     width: 140px; height: 80px;
@@ -166,26 +161,32 @@ const { height = "200px" } = Astro.props;
 </style>
 
 <script>
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   document.querySelectorAll<HTMLElement>("[data-hero-reel]").forEach((reel) => {
-    const moments = [...reel.querySelectorAll<HTMLElement>(".moment")];
+    const moments = reel.querySelectorAll<HTMLElement>(".moment");
     const bar = reel.querySelector<HTMLElement>(".bar");
     if (!bar || moments.length === 0) return;
 
     let idx = 0;
     let paused = false;
     let timer: number | null = null;
+    let active: HTMLElement | null = null;
 
     function show(i: number) {
-      moments.forEach((m, k) => m.classList.toggle("is-active", k === i));
-      const hold = Number(moments[i].dataset.hold) || 3500;
+      if (active) active.classList.remove("is-active");
+      active = moments[i];
+      active.classList.add("is-active");
+
+      const hold = Number(active.dataset.hold) || 3500;
       bar!.style.transition = "none";
       bar!.style.width = "0%";
       requestAnimationFrame(() => {
         bar!.style.transition = `width ${hold}ms linear`;
         bar!.style.width = "100%";
       });
-      if (timer !== null) window.clearTimeout(timer);
-      if (!paused) {
+      window.clearTimeout(timer ?? 0);
+      if (!paused && !reducedMotion) {
         timer = window.setTimeout(() => {
           idx = (idx + 1) % moments.length;
           show(idx);
@@ -195,12 +196,23 @@ const { height = "200px" } = Astro.props;
 
     reel.addEventListener("mouseenter", () => {
       paused = true;
-      if (timer !== null) window.clearTimeout(timer);
+      window.clearTimeout(timer ?? 0);
       bar.style.transition = "none";
     });
     reel.addEventListener("mouseleave", () => {
       paused = false;
       show(idx);
+    });
+
+    // Pause the timer when the tab is hidden — saves wakeups, and avoids
+    // the bar/progress getting out of sync after a long backgrounded gap.
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.clearTimeout(timer ?? 0);
+        timer = null;
+      } else if (!paused) {
+        show(idx);
+      }
     });
 
     show(0);

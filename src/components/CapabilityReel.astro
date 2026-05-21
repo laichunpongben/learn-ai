@@ -1,11 +1,5 @@
 ---
-/**
- * Scroll-driven reel for the "what can you build" lesson. Three ambition
- * tiers (Minutes / Hours / Days) stagger in as the grid enters the
- * viewport, making the time-horizon difference visible at a glance.
- *
- * Pacing model: IntersectionObserver. See ~/.claude/skills/webreel.
- */
+// Pacing model: IntersectionObserver-driven stagger. See ~/.claude/skills/webreel.
 import ProductIcon from "./ProductIcon.astro";
 
 const tiers = [
@@ -89,17 +83,24 @@ const tiers = [
 </style>
 
 <script>
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   document.querySelectorAll<HTMLElement>("[data-cap-reel]").forEach((reel) => {
     const cards = reel.querySelectorAll<HTMLElement>("[data-cap-card]");
-    if (cards.length === 0) return;
+    if (reducedMotion) {
+      cards.forEach((c) => c.classList.add("is-active"));
+      return;
+    }
+    let remaining = cards.length;
     const io = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("is-active");
-            io.unobserve(e.target);
-          }
-        }),
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add("is-active");
+          io.unobserve(e.target);
+          if (--remaining === 0) io.disconnect();
+        }
+      },
       { threshold: 0.3 }
     );
     cards.forEach((c) => io.observe(c));
