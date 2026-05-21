@@ -15,8 +15,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
-    name: Type check
+  # Cheap source-only checks share one runner and one `npm ci`. Each was its
+  # own job before (type, lint, unit) but they each spent ~13s of the ~20s
+  # wall time in setup, not real work — running them serially in one runner
+  # cuts CPU by ~50s/run with no change in overall wall-clock (a11y stays
+  # the bottleneck at ~44s).
+  static:
+    name: Static checks (type, lint, unit)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,29 +31,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-
-  lint:
-    name: Lint (Biome)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
       - run: npm run lint
-
-  test:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
       - run: npm run test
 
   build:
