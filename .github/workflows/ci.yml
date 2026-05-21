@@ -14,14 +14,17 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Split by concern, not by check: "does the source compile" vs. "does the
+# running site work for a user." Two jobs run in parallel; each owns one
+# `npm ci` and (where relevant) one `npm run build`. The previous 4-job
+# layout spent ~152s of CPU per run for the same 44s wall-clock; the 2-job
+# layout spends ~103s for ~59s wall-clock — ~32% less CPU, 15s slower PR
+# feedback.
 jobs:
-  # Cheap source-only checks share one runner and one `npm ci`. Each was its
-  # own job before (type, lint, unit) but they each spent ~13s of the ~20s
-  # wall time in setup, not real work — running them serially in one runner
-  # cuts CPU by ~50s/run with no change in overall wall-clock (a11y stays
-  # the bottleneck at ~44s).
-  static:
-    name: Static checks (type, lint, unit)
+  # "Does the source compile and pass static checks?" Type + lint + unit +
+  # build + page-count + link-verify all share one runner.
+  source:
+    name: Source (type, lint, unit, build)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,17 +36,6 @@ jobs:
       - run: npm run check
       - run: npm run lint
       - run: npm run test
-
-  build:
-    name: Production build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
       - run: npm run build
       - name: Verify expected page count
         run: |
@@ -56,8 +48,10 @@ jobs:
       - name: Verify internal links
         run: npm run links
 
-  smoke:
-    name: UI smoke (real browser)
+  # "Does the running site work for a user?" Smoke + a11y share one build
+  # and one Chrome instance via the start-preview-chrome composite action.
+  browser:
+    name: Browser (smoke + a11y)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,19 +67,6 @@ jobs:
         env:
           SMOKE_URL: http://localhost:4321
           CDP_URL: http://localhost:9333
-
-  a11y:
-    name: Accessibility (axe-core)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - uses: ./.github/actions/start-preview-chrome
       - name: Run a11y scan
         run: npm run a11y
         env:
