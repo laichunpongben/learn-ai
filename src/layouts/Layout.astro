@@ -51,8 +51,13 @@ const ogImage = new URL("/og.png", Astro.site ?? Astro.url.origin).toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- iOS Safari ignores the manifest; these tell it to treat the
+         site as a standalone web app once "Add to Home Screen"d. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Learn AI" />
     <link rel="alternate" type="application/rss+xml" title="Learn AI · Lessons" href="/rss.xml" />
     <title>{title}</title>
     <!-- No-flash theme apply. Only sets [data-theme] from localStorage before paint;
