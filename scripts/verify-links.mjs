@@ -101,7 +101,10 @@ async function expectType(file, type) {
 }
 await expectType(`${DIST}/index.html`, "Course");
 const lessonFiles = htmlFiles.filter((f) => f.includes("/lessons/") && f.endsWith("/index.html"));
-for (const f of lessonFiles) await expectType(f, "LearningResource");
+for (const f of lessonFiles) {
+  await expectType(f, "LearningResource");
+  await expectType(f, "BreadcrumbList");
+}
 
 const unique = Array.from(new Set(broken.map((b) => `${b.source} → ${b.url}`)));
 if (unique.length || missing.length || jsonldErrors.length) {
@@ -123,4 +126,4 @@ if (unique.length || missing.length || jsonldErrors.length) {
 }
 console.log(`All ${checked} internal links resolved across ${htmlFiles.length} pages.`);
 console.log(`Required artifacts present: ${REQUIRED.join(", ")}.`);
-console.log(`JSON-LD: Course on homepage + LearningResource on ${lessonFiles.length} lesson pages.`);
+console.log(`JSON-LD: Course on homepage + LearningResource + BreadcrumbList on ${lessonFiles.length} lesson pages.`);
