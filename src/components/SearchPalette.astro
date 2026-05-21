@@ -152,6 +152,16 @@ const indexJSON: string = JSON.stringify(entries);
     gap: 0.15rem;
   }
   .search-results li.sel { background: var(--surface-2); }
+  .search-results li.group-header {
+    padding: 0.6rem 0.7rem 0.2rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    cursor: default;
+    background: transparent;
+  }
+  .search-results li.group-header:hover { background: transparent; }
   .search-results .row { display: flex; align-items: baseline; gap: 0.55rem; }
   .search-results .title { font-weight: 500; color: var(--ink); font-size: 0.94rem; }
   .search-results .pill {
@@ -208,7 +218,7 @@ const indexJSON: string = JSON.stringify(entries);
   }
 
   function search(q: string): Entry[] {
-    if (!q.trim()) return INDEX.slice(0, 8);
+    if (!q.trim()) return INDEX;
     return INDEX
       .map((e) => ({ e, s: score(q, e) }))
       .filter((x) => x.s > 0)
@@ -240,7 +250,9 @@ const indexJSON: string = JSON.stringify(entries);
   let sel = 0;
 
   function paintSel() {
-    list.querySelectorAll("li").forEach((l, idx) => l.classList.toggle("sel", idx === sel));
+    for (const l of list.querySelectorAll<HTMLLIElement>("li[data-result-index]")) {
+      l.classList.toggle("sel", Number(l.dataset.resultIndex) === sel);
+    }
   }
 
   function render() {
@@ -253,14 +265,25 @@ const indexJSON: string = JSON.stringify(entries);
       list.appendChild(li);
       return;
     }
+    const q = input.value;
+    const showGroups = !q.trim();
+    let lastGroup = "";
     cur.forEach((e, i) => {
+      const group = e.kind === "lesson" ? (e.track ?? "Lesson") : "Pages";
+      if (showGroups && group !== lastGroup) {
+        const h = document.createElement("li");
+        h.className = "group-header";
+        h.textContent = group;
+        list.appendChild(h);
+        lastGroup = group;
+      }
       const li = document.createElement("li");
+      li.dataset.resultIndex = String(i);
       if (i === sel) li.classList.add("sel");
-      const q = input.value;
       li.innerHTML = `
         <div class="row">
           <span class="title">${highlight(e.title, q)}</span>
-          <span class="pill">${e.kind === "lesson" ? (e.track ?? "Lesson") : "Page"}</span>
+          ${showGroups ? "" : `<span class="pill">${e.kind === "lesson" ? (e.track ?? "Lesson") : "Page"}</span>`}
         </div>
         <div class="blurb">${highlight(e.blurb, q)}</div>
       `;
