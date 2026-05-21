@@ -1,11 +1,33 @@
 ---
 // Pacing model: timer-driven, loops, hover-pause. See ~/.claude/skills/webreel.
+//
+// Each moment can opt into a real screencast loop via its hero-* registry
+// slot. When the slot is status:"present" with all the loop fields filled
+// in, the moment renders an inline <video> on top of the existing CSS
+// animation; the CSS animation is hidden via [data-has-video] on .moment.
+// When the slot is missing, the CSS animation renders unchanged.
+// Reduced-motion users see only the CSS animation (which is itself
+// already neutralised by the prefers-reduced-motion media query).
+import { getVideoSlot, type VideoSlot } from "../data/videos";
+
 interface Props { height?: string; }
 const { height = "200px" } = Astro.props;
+
+function isPresentLoop(v: VideoSlot | undefined): v is VideoSlot {
+  return Boolean(
+    v && v.status === "present" && v.mode === "loop" && v.webm && v.mp4 && v.poster,
+  );
+}
+
+const heroChat   = getVideoSlot("hero-chat");
+const heroTerm   = getVideoSlot("hero-terminal");
+const heroDesign = getVideoSlot("hero-design");
+const heroCloud  = getVideoSlot("hero-cloud");
+const heroAgents = getVideoSlot("hero-agents");
 ---
 
 <div class="reel" data-hero-reel style={`min-height: ${height};`}>
-  <section class="moment" data-hold="3500">
+  <section class="moment" data-hold="3500" data-has-video={isPresentLoop(heroChat) ? "true" : undefined}>
     <div class="copy">
       <h2 class="fu">Chat for ideas.</h2>
       <p class="fu d1">Draft, plan, summarise, brainstorm.</p>
@@ -14,9 +36,16 @@ const { height = "200px" } = Astro.props;
       <div class="bubble user fu d2">Plan a 3-day Tokyo trip</div>
       <div class="bubble bot fu d3">Day 1 · Shibuya. Day 2 · Asakusa…</div>
     </div>
+    {isPresentLoop(heroChat) && (
+      <video class="vis-video" muted loop playsinline preload="metadata"
+        poster={heroChat.poster} aria-label={heroChat.posterAlt} data-hero-video>
+        <source src={heroChat.webm} type="video/webm" />
+        <source src={heroChat.mp4} type="video/mp4" />
+      </video>
+    )}
   </section>
 
-  <section class="moment" data-hold="3500">
+  <section class="moment" data-hold="3500" data-has-video={isPresentLoop(heroTerm) ? "true" : undefined}>
     <div class="copy">
       <h2 class="fu">Code in your terminal.</h2>
       <p class="fu d1">A coding CLI that lives where your code does.</p>
@@ -24,9 +53,16 @@ const { height = "200px" } = Astro.props;
     <div class="vis vis-term">
       <pre class="term fu d2"><span class="prompt">$</span> claude code<span class="caret">▌</span></pre>
     </div>
+    {isPresentLoop(heroTerm) && (
+      <video class="vis-video" muted loop playsinline preload="metadata"
+        poster={heroTerm.poster} aria-label={heroTerm.posterAlt} data-hero-video>
+        <source src={heroTerm.webm} type="video/webm" />
+        <source src={heroTerm.mp4} type="video/mp4" />
+      </video>
+    )}
   </section>
 
-  <section class="moment" data-hold="3500">
+  <section class="moment" data-hold="3500" data-has-video={isPresentLoop(heroDesign) ? "true" : undefined}>
     <div class="copy">
       <h2 class="fu">UI from a sentence.</h2>
       <p class="fu d1">Describe it; ship a page.</p>
@@ -37,9 +73,16 @@ const { height = "200px" } = Astro.props;
         <span class="wf-box"></span>
       </div>
     </div>
+    {isPresentLoop(heroDesign) && (
+      <video class="vis-video" muted loop playsinline preload="metadata"
+        poster={heroDesign.poster} aria-label={heroDesign.posterAlt} data-hero-video>
+        <source src={heroDesign.webm} type="video/webm" />
+        <source src={heroDesign.mp4} type="video/mp4" />
+      </video>
+    )}
   </section>
 
-  <section class="moment" data-hold="3500">
+  <section class="moment" data-hold="3500" data-has-video={isPresentLoop(heroCloud) ? "true" : undefined}>
     <div class="copy">
       <h2 class="fu">Cloud agents, in parallel.</h2>
       <p class="fu d1">Many tasks at once, in the background.</p>
@@ -49,9 +92,16 @@ const { height = "200px" } = Astro.props;
       <span class="dot fu d3"></span>
       <span class="dot fu d4"></span>
     </div>
+    {isPresentLoop(heroCloud) && (
+      <video class="vis-video" muted loop playsinline preload="metadata"
+        poster={heroCloud.poster} aria-label={heroCloud.posterAlt} data-hero-video>
+        <source src={heroCloud.webm} type="video/webm" />
+        <source src={heroCloud.mp4} type="video/mp4" />
+      </video>
+    )}
   </section>
 
-  <section class="moment" data-hold="3500">
+  <section class="moment" data-hold="3500" data-has-video={isPresentLoop(heroAgents) ? "true" : undefined}>
     <div class="copy">
       <h2 class="fu">Run your own agent.</h2>
       <p class="fu d1">Open-source. On your machine. No subscription.</p>
@@ -60,6 +110,13 @@ const { height = "200px" } = Astro.props;
       <pre class="term fu d2"><span class="prompt">$</span> hermes serve<span class="caret">▌</span></pre>
       <div class="loop-pill fu d3"><span class="loop-dot"></span>tools · plan · act · observe</div>
     </div>
+    {isPresentLoop(heroAgents) && (
+      <video class="vis-video" muted loop playsinline preload="metadata"
+        poster={heroAgents.poster} aria-label={heroAgents.posterAlt} data-hero-video>
+        <source src={heroAgents.webm} type="video/webm" />
+        <source src={heroAgents.mp4} type="video/mp4" />
+      </video>
+    )}
   </section>
 
   <div class="bar" aria-hidden="true"></div>
@@ -95,6 +152,28 @@ const { height = "200px" } = Astro.props;
   }
   .moment p { margin: 0.3rem 0 0; color: var(--ink-soft); font-size: 0.92rem; }
   .vis { display: flex; gap: 0.4rem; align-items: center; justify-content: center; flex-wrap: wrap; }
+
+  /* When a hero loop is present, hide the CSS animation in that moment
+     and let the inline <video> own the visual column. */
+  .moment[data-has-video] .vis { display: none; }
+  .vis-video {
+    grid-column: 2;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    /* Explicit aspect-ratio so the slot reserves space before the
+       video metadata or poster has loaded. Avoids a paint shift. */
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 6px;
+    background: var(--surface-2);
+  }
+  /* Reduced motion: drop the autoplaying loops, fall back to the CSS
+     animation (itself already neutralised by the media query below). */
+  @media (prefers-reduced-motion: reduce) {
+    .vis-video { display: none; }
+    .moment[data-has-video] .vis { display: flex; }
+  }
 
   .bubble {
     font-size: 0.78rem;
@@ -185,7 +264,7 @@ const { height = "200px" } = Astro.props;
 
   @media (max-width: 600px) {
     .moment { grid-template-columns: 1fr; padding: 1rem 1.2rem; gap: 0.4rem; }
-    .vis { display: none; }
+    .vis, .vis-video { display: none; }
   }
 </style>
 
@@ -202,10 +281,43 @@ const { height = "200px" } = Astro.props;
     let timer: number | null = null;
     let active: HTMLElement | null = null;
 
+    // play() returns a promise. Calling pause() before it resolves
+    // throws AbortError on some browsers and is a no-op on others —
+    // either way the next play/pause cycle is racy. We track the
+    // pending promise per <video> and chain pause off of it.
+    type Pending = HTMLVideoElement & { __playPromise?: Promise<void> };
+    function playVideoIn(el: HTMLElement) {
+      if (reducedMotion) return;
+      const v = el.querySelector<Pending>("[data-hero-video]");
+      if (!v) return;
+      v.currentTime = 0;
+      const p = v.play();
+      if (p) {
+        v.__playPromise = p.catch(() => {
+          /* autoplay can be blocked; poster stays visible. */
+        });
+      }
+    }
+    function pauseVideoIn(el: HTMLElement) {
+      const v = el.querySelector<Pending>("[data-hero-video]");
+      if (!v) return;
+      const pending = v.__playPromise;
+      if (pending) {
+        pending.then(() => v.pause());
+        v.__playPromise = undefined;
+      } else {
+        v.pause();
+      }
+    }
+
     function show(i: number) {
-      if (active) active.classList.remove("is-active");
+      if (active) {
+        active.classList.remove("is-active");
+        pauseVideoIn(active);
+      }
       active = moments[i];
       active.classList.add("is-active");
+      playVideoIn(active);
 
       const hold = Number(active.dataset.hold) || 3500;
       bar!.style.transition = "none";
@@ -227,6 +339,7 @@ const { height = "200px" } = Astro.props;
       paused = true;
       window.clearTimeout(timer ?? 0);
       bar.style.transition = "none";
+      if (active) pauseVideoIn(active);
     });
     reel.addEventListener("mouseleave", () => {
       paused = false;
@@ -239,6 +352,7 @@ const { height = "200px" } = Astro.props;
       if (document.hidden) {
         window.clearTimeout(timer ?? 0);
         timer = null;
+        if (active) pauseVideoIn(active);
       } else if (!paused) {
         show(idx);
       }
