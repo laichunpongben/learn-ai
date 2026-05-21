@@ -21,3 +21,4 @@ Each ADR is a short Markdown file with:
 | 0004 | [Progress persisted in localStorage only](./0004-localstorage-progress.md) | Accepted |
 | 0005 | [Repurposed to generic AI/agent scope](./0005-generic-ai-scope.md) | Accepted (supersedes Claude-only framing of 0001–0003) |
 | 0006 | [Typography & reading experience](./0006-typography-reading-experience.md) | Accepted |
+| 0007 | [Learning curve & critical path](./0007-learning-curve-critical-path.md) | Accepted |
