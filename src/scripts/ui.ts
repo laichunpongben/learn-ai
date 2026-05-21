@@ -112,6 +112,18 @@ document.addEventListener("click", (e) => {
   }
 });
 
+function isTypingTarget(t: EventTarget | null): boolean {
+  const el = t instanceof Element ? t : null;
+  if (!el) return false;
+  if (el.closest("input, textarea, select, [contenteditable='true']")) return true;
+  return false;
+}
+
+function navigateTo(selector: string): void {
+  const link = document.querySelector<HTMLAnchorElement>(selector);
+  if (link?.href) window.location.assign(link.href);
+}
+
 document.addEventListener("keydown", (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
     if (!dialog) return;
@@ -122,7 +134,16 @@ document.addEventListener("keydown", (e) => {
   }
   if (e.key === "Escape" && html.classList.contains("sidebar-open")) {
     closeSidebar();
+    return;
   }
+
+  // Plain-key shortcuts only fire when the user isn't typing into a field
+  // and no modifiers are held — keeps them out of the way of system bindings.
+  if (e.metaKey || e.ctrlKey || e.altKey || isTypingTarget(e.target)) return;
+  if (dialog?.open) return;
+
+  if (e.key === "n") navigateTo("[data-nav-next]");
+  else if (e.key === "p") navigateTo("[data-nav-prev]");
 });
 
 function pointInside(x: number, y: number, r: DOMRect): boolean {
