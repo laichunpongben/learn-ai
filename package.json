@@ -12,10 +12,11 @@
     "format": "biome check --write",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ci": "npm run check && npm run lint && npm run test && npm run build",
+    "ci": "npm run check && npm run lint && npm run test && npm run videos:check && npm run build",
     "smoke": "node scripts/verify-ui.mjs",
     "a11y": "node scripts/verify-a11y.mjs",
-    "links": "node scripts/verify-links.mjs"
+    "links": "node scripts/verify-links.mjs",
+    "videos:check": "node --disable-warning=ExperimentalWarning scripts/verify-videos.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
