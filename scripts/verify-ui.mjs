@@ -83,6 +83,12 @@ try {
   const k = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("Cmd+K opens the dialog", k === true, k);
 
+  // 5b. Empty-query palette shows track group headers, not a flat list.
+  const groups = await page.evaluate(() =>
+    document.querySelectorAll("[data-search-results] li.group-header").length,
+  );
+  assert("empty-query palette renders ≥3 track group headers", groups >= 3, groups);
+
   // 6. `n` navigates to the next lesson (close dialog first).
   await page.keyboard.press("Escape");
   await new Promise((r) => setTimeout(r, 200));
