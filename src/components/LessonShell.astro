@@ -21,10 +21,14 @@ const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString
 
 <div class="lesson-layout">
   <article data-lesson-id={lesson.id}>
-    <p>
-      <span class="track-pill">{track.title}</span>
-      <span class="tiny-link" style="margin-left: 0.5rem;">{lesson.minutes} min</span>
-    </p>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Curriculum</a></li>
+        <li><a href={`/#track-${track.id}`}>{track.title}</a></li>
+        <li aria-current="page">{lesson.title}</li>
+      </ol>
+    </nav>
+    <p class="lesson-meta"><span class="tiny-link">{lesson.minutes} min</span></p>
     <h1>{lesson.title}</h1>
     <p class="lede">{lesson.blurb}</p>
 
@@ -51,6 +55,29 @@ const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString
   @media (max-width: 1279px) {
     .lesson-layout { display: block; }
   }
+  .breadcrumbs { margin: 0 0 0.4rem; }
+  .breadcrumbs ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+  .breadcrumbs li + li::before {
+    content: "›";
+    margin-right: 0.3rem;
+    color: var(--ink-faint);
+  }
+  .breadcrumbs a {
+    color: var(--ink-soft);
+    border-bottom: none;
+  }
+  .breadcrumbs a:hover { color: var(--ink); }
+  .breadcrumbs li[aria-current="page"] { color: var(--ink); }
+  .lesson-meta { margin: 0 0 1rem; }
 </style>
 
 <script>

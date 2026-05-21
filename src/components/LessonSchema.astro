@@ -1,12 +1,12 @@
 ---
 /**
- * JSON-LD LearningResource schema for a lesson page.
+ * JSON-LD LearningResource + BreadcrumbList schema for a lesson page.
  *
  * Helps search engines surface lessons in education-related results and
  * lets aggregators pick up the title, blurb, time-required, and curriculum.
- * Output is a single inline <script type="application/ld+json">.
+ * Output is two inline <script type="application/ld+json"> blocks.
  */
-import type { Lesson } from "../data/curriculum";
+import { trackById, type Lesson } from "../data/curriculum";
 
 interface Props {
   lesson: Lesson;
@@ -14,8 +14,10 @@ interface Props {
 }
 
 const { lesson, url } = Astro.props;
+const track = trackById(lesson.track);
+const origin = new URL(url).origin;
 
-const data = {
+const learningResource = {
   "@context": "https://schema.org",
   "@type": "LearningResource",
   name: lesson.title,
@@ -32,6 +34,17 @@ const data = {
     description: "A hands-on tour of modern AI assistants and agents.",
   },
 };
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Curriculum", item: `${origin}/` },
+    { "@type": "ListItem", position: 2, name: track.title, item: `${origin}/#track-${track.id}` },
+    { "@type": "ListItem", position: 3, name: lesson.title, item: url },
+  ],
+};
 ---
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(data)}></script>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(learningResource)}></script>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumb)}></script>
