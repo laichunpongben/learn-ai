@@ -73,17 +73,34 @@ const description = "You're offline. learn-ai works without a connection for les
   <script>
     // List the most recently cached lesson pages — best-effort, no
     // failure mode if the SW never registered or cache is empty.
+    //
+    // Note on the retry button: this is one of the few places where we
+    // deliberately diverge from CLAUDE.md's single-handler rule. ui.ts
+    // may itself be uncached when the user lands here, and the offline
+    // page must work standalone.
     (async () => {
       if (typeof caches === "undefined") return;
       const retry = document.querySelector<HTMLButtonElement>("[data-offline-retry]");
       retry?.addEventListener("click", () => location.reload());
 
+      // Decode HTML entities (&amp;, &#39;, …) in cached <title> text.
+      // .textContent of a parsed fragment gives the decoded string;
+      // never touches innerHTML so there's no XSS path.
+      function decodeEntities(s: string): string {
+        const doc = new DOMParser().parseFromString(`<x>${s}</x>`, "text/html");
+        return doc.documentElement.textContent ?? s;
+      }
+
       try {
-        const cache = await caches.open("learn-ai-html-v1");
+        // Find the HTML cache by prefix rather than hard-coding the
+        // version — sw.js bumps the constant and this stays drift-free.
+        const names = await caches.keys();
+        const htmlCacheName = names.find((n) => n.startsWith("learn-ai-html-"));
+        if (!htmlCacheName) return;
+        const cache = await caches.open(htmlCacheName);
         const keys = await cache.keys();
         // Cache.keys() is in LRU-touch order (see sw.js cachePut); reverse
-        // so the most-recently-touched lessons come first. .reverse() is
-        // applied to a shallow copy to avoid mutating the readonly array.
+        // a shallow copy so the most-recently-touched lessons come first.
         const lessons: Array<{ href: string; title: string }> = [];
         for (const req of [...keys].reverse()) {
           const url = new URL(req.url);
@@ -93,10 +110,10 @@ const description = "You're offline. learn-ai works without a connection for les
           let title = url.pathname.replace(/^\/lessons\//, "").replace(/\/$/, "");
           if (resp) {
             const html = await resp.text();
-            const m = html.match(/<title>([^<]*)<\/title>/);
+            const m = html.match(/<title>([\s\S]*?)<\/title>/);
             if (m) {
-              const t = m[1].split(" · ")[0].trim();
-              if (t) title = t;
+              const raw = m[1].split(" · ")[0].trim();
+              if (raw) title = decodeEntities(raw);
             }
           }
           lessons.push({ href: url.pathname, title });
