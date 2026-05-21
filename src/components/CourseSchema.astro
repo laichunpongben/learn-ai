@@ -1,0 +1,42 @@
+---
+/**
+ * Course-level JSON-LD for the homepage.
+ *
+ * Pairs with the per-lesson LearningResource schema — together they let
+ * aggregators discover the curriculum as a single course with N lessons.
+ * Emits one inline <script type="application/ld+json">.
+ */
+import { LESSONS, TRACKS, lessonsInTrack } from "../data/curriculum";
+
+const url = new URL(Astro.url.pathname, Astro.site ?? "https://example.com").toString();
+const provider = Astro.site?.host ?? "Learn AI";
+
+const data = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Learn AI",
+  description: "A hands-on tour of modern AI assistants and agents — chat, coding CLI, cloud agent, UI generator, self-hosted agent. End with a tool you built.",
+  url,
+  inLanguage: "en",
+  educationalLevel: "Beginner",
+  isAccessibleForFree: true,
+  provider: { "@type": "Organization", name: provider },
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "online",
+    courseWorkload: `PT${LESSONS.reduce((a, l) => a + l.minutes, 0)}M`,
+  },
+  hasPart: TRACKS.flatMap((t) =>
+    lessonsInTrack(t.id).map((l) => ({
+      "@type": "LearningResource",
+      name: l.title,
+      description: l.blurb,
+      url: new URL(`/lessons/${l.slug}`, Astro.site ?? "https://example.com").toString(),
+      timeRequired: `PT${l.minutes}M`,
+      learningResourceType: "Tutorial",
+    })),
+  ),
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(data)}></script>
