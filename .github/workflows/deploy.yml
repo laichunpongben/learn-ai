@@ -35,6 +35,8 @@ jobs:
       - run: npm ci
 
       - name: Build
+        env:
+          SITE_URL: https://learnai.databookman.com
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
