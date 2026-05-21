@@ -1,0 +1,123 @@
+---
+/**
+ * Served by the service worker (see public/sw.js) when an HTML
+ * navigation misses cache AND fails network. See ADR-0011 piece 5.
+ *
+ * The static markup is the contract — it must work without JavaScript
+ * so a brand-new visitor offline still sees a useful message. The
+ * inline script that lists cached lessons is a nice-to-have, gated on
+ * `caches` being available.
+ */
+import Layout from "../layouts/Layout.astro";
+const description = "You're offline. learn-ai works without a connection for lessons you've already opened.";
+---
+
+<Layout title="Offline · Learn AI" description={description} noindex={true}>
+  <article class="offline">
+    <h1>You're offline.</h1>
+    <p>
+      learn-ai is designed to work without a connection — any lesson you've
+      previously opened is still available. Pages you've never visited need
+      a brief moment online before they're saved.
+    </p>
+
+    <section data-offline-recent hidden>
+      <h2>Lessons you can still read</h2>
+      <ul data-offline-list></ul>
+    </section>
+
+    <p>
+      <button type="button" data-offline-retry class="retry">Try again</button>
+    </p>
+  </article>
+
+  <style>
+    .offline {
+      max-width: 60ch;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .offline h1 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      letter-spacing: -0.01em;
+      margin: 0 0 1rem;
+    }
+    .offline p {
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+    .offline ul {
+      list-style: none;
+      padding: 0;
+      margin: 0.75rem 0 1.5rem;
+    }
+    .offline li { margin: 0.25rem 0; }
+    .offline li a { color: var(--accent); }
+    .retry {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: var(--surface);
+      font: inherit;
+      cursor: pointer;
+    }
+    .retry:hover, .retry:focus-visible {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+  </style>
+
+  <script>
+    // List the most recently cached lesson pages — best-effort, no
+    // failure mode if the SW never registered or cache is empty.
+    (async () => {
+      if (typeof caches === "undefined") return;
+      const retry = document.querySelector<HTMLButtonElement>("[data-offline-retry]");
+      retry?.addEventListener("click", () => location.reload());
+
+      try {
+        const cache = await caches.open("learn-ai-html-v1");
+        const keys = await cache.keys();
+        // Cache.keys() is in LRU-touch order (see sw.js cachePut); reverse
+        // so the most-recently-touched lessons come first. .reverse() is
+        // applied to a shallow copy to avoid mutating the readonly array.
+        const lessons: Array<{ href: string; title: string }> = [];
+        for (const req of [...keys].reverse()) {
+          const url = new URL(req.url);
+          if (!url.pathname.startsWith("/lessons/")) continue;
+          // Pull <title> out of the cached HTML for nicer link text.
+          const resp = await cache.match(req);
+          let title = url.pathname.replace(/^\/lessons\//, "").replace(/\/$/, "");
+          if (resp) {
+            const html = await resp.text();
+            const m = html.match(/<title>([^<]*)<\/title>/);
+            if (m) {
+              const t = m[1].split(" · ")[0].trim();
+              if (t) title = t;
+            }
+          }
+          lessons.push({ href: url.pathname, title });
+          if (lessons.length >= 10) break;
+        }
+        if (lessons.length === 0) return;
+        const ul = document.querySelector<HTMLUListElement>("[data-offline-list]");
+        const section = document.querySelector<HTMLElement>("[data-offline-recent]");
+        if (!ul || !section) return;
+        for (const l of lessons) {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = l.href;
+          a.textContent = l.title;
+          li.appendChild(a);
+          ul.appendChild(li);
+        }
+        section.hidden = false;
+      } catch {
+        /* cache unreadable; static page is enough */
+      }
+    })();
+  </script>
+</Layout>
