@@ -28,19 +28,23 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     {
       TRACKS.map((t) => {
         const lessons = lessonsInTrack(t.id);
+        // First-time visitor sees "Start Here" + "Foundations" open;
+        // returning visitors get their active track opened by the script
+        // below. Other tracks collapsed to reduce scan load on first paint.
+        const openByDefault = t.id === "start" || t.id === "concepts";
         return (
-          <section class="track-section" id={`track-${t.id}`}>
-            <div class="track-header">
+          <details class="track-section" id={`track-${t.id}`} open={openByDefault}>
+            <summary class="track-header">
               <h2>{t.title}</h2>
               <span class="tagline">{t.tagline}</span>
               <span class="track-count" data-track-count={t.id}>0 / {lessons.length}</span>
-            </div>
+            </summary>
             <div class="lesson-grid">
               {lessons.map((l) => (
                 <LessonCard lesson={l} />
               ))}
             </div>
-          </section>
+          </details>
         );
       })
     }
@@ -91,14 +95,28 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
 
   const LESSONS_IDS: string[] = [];
   const LESSON_SLUGS: Record<string, string> = {};
+  const LESSON_TRACK: Record<string, string> = {};
   document.querySelectorAll<HTMLAnchorElement>("[data-lesson-card]").forEach((el) => {
     const id = el.dataset.lessonId!;
     LESSONS_IDS.push(id);
+    LESSON_TRACK[id] = el.dataset.lessonTrack ?? "";
     const slug = el.getAttribute("href")!.replace("/lessons/", "");
     LESSON_SLUGS[id] = slug;
   });
 
+  // Open the track containing the user's next-undone-or-last-visited lesson,
+  // so returning visitors land on their active section without scanning.
+  function openActiveTrack() {
+    const cur = getProgress();
+    const target = LESSONS_IDS.find((id) => !cur.done.includes(id)) ?? cur.lastVisited;
+    const trackId = target ? LESSON_TRACK[target] : null;
+    if (!trackId) return;
+    const el = document.getElementById(`track-${trackId}`);
+    if (el instanceof HTMLDetailsElement) el.open = true;
+  }
+
   window.addEventListener("ct:progress", () => { paintCards(); paintContinue(); });
   paintCards();
   paintContinue();
+  openActiveTrack();
 </script>
