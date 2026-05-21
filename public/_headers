@@ -1,0 +1,9 @@
+# Cloudflare Pages response headers. One rule block per path pattern.
+# CSP keeps 'unsafe-inline' because Layout.astro emits an inline <script>
+# for no-flash theme apply and Astro emits inline component <style>.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
