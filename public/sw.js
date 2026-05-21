@@ -27,10 +27,11 @@ const OWNED_CACHES = new Set([
   VIDEOS_CACHE,
 ]);
 
-// Per-cache LRU-ish caps. Cache Storage preserves insertion order, so a
-// plain FIFO eviction (delete the first key when over cap) behaves like
-// LRU for a normal navigation pattern: revisiting a page re-puts it,
-// moving it back to the end.
+// Per-cache LRU caps. Cache.put() on an existing key leaves the key's
+// position in Cache.keys() unchanged (insertion-order is sticky), so a
+// plain put would give FIFO eviction. To get true LRU we delete then
+// put on a hit — see cachePut() below. Trimming evicts from the front
+// (the oldest by last-access).
 const CACHE_CAPS = {
   [HTML_CACHE]: 50,
   [STATIC_CACHE]: 80,
@@ -77,12 +78,18 @@ function routeFor(request, url) {
   if (request.method !== "GET") return { strategy: "bypass" };
   // Cross-origin: never touch. YouTube embeds, font CDN, etc.
   if (url.origin !== self.location.origin) return { strategy: "bypass" };
+  // Range requests must go to network. Cache.match returns the full
+  // 200 response we stored; serving that for a Range request returns
+  // 200 instead of 206 Partial and breaks video seeking on Safari +
+  // some Chromium versions.
+  if (request.headers.has("range")) return { strategy: "bypass" };
 
   const path = url.pathname;
-  const accept = request.headers.get("accept") || "";
 
-  // HTML navigations
-  if (request.mode === "navigate" || accept.includes("text/html")) {
+  // HTML navigations. Use mode==="navigate" only — `Accept: text/html`
+  // appears on plain fetch() calls (client-side router prefetches,
+  // analytics pings, etc.) that should not poison the page cache.
+  if (request.mode === "navigate") {
     return { strategy: "swr", cache: HTML_CACHE };
   }
 
@@ -140,13 +147,22 @@ async function trimCache(name) {
   if (!cap) return;
   const cache = await caches.open(name);
   const keys = await cache.keys();
-  // Cache.keys() returns in insertion order. The oldest entries are at
-  // the front; trim from there.
   const excess = keys.length - cap;
   if (excess <= 0) return;
   for (let i = 0; i < excess; i++) {
     await cache.delete(keys[i]);
   }
+}
+
+// Delete-then-put so the key appears at the *end* of Cache.keys(),
+// making the eviction-from-front trim genuinely LRU.
+async function cachePut(cache, request, response) {
+  try {
+    await cache.delete(request);
+  } catch {
+    /* nothing cached to delete */
+  }
+  await cache.put(request, response);
 }
 
 async function staleWhileRevalidate(request, cacheName) {
@@ -155,20 +171,13 @@ async function staleWhileRevalidate(request, cacheName) {
   const networkPromise = fetch(request)
     .then(async (response) => {
       if (response && response.ok) {
-        await cache.put(request, response.clone());
+        await cachePut(cache, request, response.clone());
         await trimCache(cacheName);
       }
       return response;
     })
     .catch(() => undefined);
-  // Cached → return immediately; revalidate in the background.
-  if (cached) {
-    networkPromise.catch(() => {}); // don't unhandle-reject
-    return cached;
-  }
-  // No cached version → wait on the network. If it fails, fall through
-  // to the offline page (#124 will install one). For now, rethrow so
-  // the browser shows its own offline page.
+  if (cached) return cached;
   const fresh = await networkPromise;
   if (fresh) return fresh;
   throw new Error("offline");
@@ -179,7 +188,7 @@ async function networkFirst(request, cacheName) {
   try {
     const response = await fetch(request);
     if (response && response.ok) {
-      await cache.put(request, response.clone());
+      await cachePut(cache, request, response.clone());
       await trimCache(cacheName);
     }
     return response;
@@ -193,10 +202,16 @@ async function networkFirst(request, cacheName) {
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  if (cached) return cached;
+  if (cached) {
+    // Re-put to move to the end (LRU touch). We do this lazily — clone
+    // the response we're about to return, swap the position, then hand
+    // the original to the page.
+    cachePut(cache, request, cached.clone()).catch(() => {});
+    return cached;
+  }
   const response = await fetch(request);
   if (response && response.ok) {
-    await cache.put(request, response.clone());
+    await cachePut(cache, request, response.clone());
     await trimCache(cacheName);
   }
   return response;
