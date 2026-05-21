@@ -87,7 +87,7 @@ if (unique.length || missing.length) {
     if (unique.length > 50) console.log(`  … and ${unique.length - 50} more`);
   }
   if (missing.length) {
-    console.log(`Missing required artifacts:`);
+    console.log(`Missing required artifacts (${missing.length}):`);
     for (const name of missing) console.log(`  ✗ dist/${name}`);
   }
   process.exit(1);
