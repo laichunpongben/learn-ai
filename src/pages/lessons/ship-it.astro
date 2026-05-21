@@ -6,6 +6,9 @@ import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "ship-it")!;
 
+// Ordered by friction so a first-time builder hits the easiest path first.
+// `badge` surfaces the dominant requirement; `recommended` flags the
+// suggested starter. See ADR-0007.
 const paths = [
   {
     kind: "chat" as const,
@@ -13,6 +16,8 @@ const paths = [
     title: "A · Writing assistant",
     desc: "Build a saved Project / Custom GPT / Gem you'll use whenever you need to draft writing.",
     time: "~10 min · no install",
+    badge: "Easiest",
+    recommended: true,
   },
   {
     kind: "design" as const,
@@ -20,6 +25,8 @@ const paths = [
     title: "B · Live webpage",
     desc: "A working one-page website (portfolio, event invite, calculator) you can share.",
     time: "~15 min · no install",
+    badge: "No-install",
+    recommended: false,
   },
   {
     kind: "code" as const,
@@ -27,6 +34,8 @@ const paths = [
     title: "C · Personal script",
     desc: "A tiny CLI tool on your machine — rename photos by EXIF date — via a coding CLI.",
     time: "~20 min · coding CLI required",
+    badge: "Terminal",
+    recommended: false,
   },
   {
     kind: "agents" as const,
@@ -34,6 +43,8 @@ const paths = [
     title: "D · Slack digest bot",
     desc: "A bot that posts a daily channel summary. Real API tokens + scheduling.",
     time: "~25 min · coding CLI + Slack workspace",
+    badge: "Terminal · Slack",
+    recommended: false,
   },
   {
     kind: "cowork" as const,
@@ -41,6 +52,8 @@ const paths = [
     title: "E · Scheduled watcher",
     desc: "A Cowork agent that scans a feed every hour and pings you when something matters. Plan → build → schedule.",
     time: "~30 min · Claude Cowork (Pro/Max)",
+    badge: "Paid plan",
+    recommended: false,
   },
 ];
 ---
@@ -51,12 +64,17 @@ const paths = [
         Five paths, all ending with a tool you actually keep. Each is a step-by-step walkthrough
         you'll follow in the real product while reading. Pick the closest to what you do.
       </p>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        <strong>First build?</strong> Start with <strong>A</strong>. It needs nothing installed —
+        just a chat app you already use.
+      </p>
 
       <div class="paths">
         {paths.map((p) => (
-          <a class="path-card" href={p.href}>
+          <a class={`path-card${p.recommended ? " recommended" : ""}`} href={p.href}>
             <div class="ph">
               <ProductIcon kind={p.kind} size={36} />
+              <span class="badge">{p.badge}</span>
               <span class="time">{p.time}</span>
             </div>
             <h3>{p.title}</h3>
@@ -99,8 +117,9 @@ const paths = [
   .path-card .ph {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.5rem;
     margin-bottom: 0.2rem;
+    flex-wrap: wrap;
   }
   .path-card .time {
     font-size: 0.7rem;
@@ -108,6 +127,27 @@ const paths = [
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 500;
+    margin-left: auto;
+  }
+  .path-card .badge {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+  }
+  .path-card.recommended {
+    border-color: var(--accent);
+    border-left-width: 2px;
+  }
+  .path-card.recommended .badge {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent);
   }
   .path-card h3 { margin: 0 0 0.2rem; font-size: 1rem; }
   .path-card p { margin: 0; color: var(--ink-soft); font-size: 0.88rem; flex: 1; }
