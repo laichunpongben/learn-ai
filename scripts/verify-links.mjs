@@ -73,7 +73,7 @@ for (const file of htmlFiles) {
   }
 }
 
-const REQUIRED = ["sitemap-index.xml", "sitemap-0.xml", "robots.txt"];
+const REQUIRED = ["sitemap-index.xml", "sitemap-0.xml", "robots.txt", "rss.xml"];
 const missing = [];
 for (const name of REQUIRED) {
   if (!(await exists(join(DIST, name)))) missing.push(name);

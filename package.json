@@ -18,6 +18,7 @@
     "links": "node scripts/verify-links.mjs"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^5.14.0"
   },

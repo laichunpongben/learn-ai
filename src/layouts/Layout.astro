@@ -28,6 +28,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="Learn AI · Lessons" href="/rss.xml" />
     <title>{title}</title>
     <!-- No-flash theme apply. Only sets [data-theme] from localStorage before paint;
          all interaction logic lives in src/scripts/ui.ts, imported below. -->
@@ -71,7 +72,7 @@ const ogTitle = title.includes(" · ") ? title.split(" · ")[0] : title;
     </div>
     <div class="sidebar-backdrop" data-ui-action="close-sidebar"></div>
     <footer>
-      <p>Self-paced. Progress lives only in your browser. <a href="/">Curriculum</a> · <a href="/cookbook">Cookbook</a> · <a href="/glossary">Glossary</a></p>
+      <p>Self-paced. Progress lives only in your browser. <a href="/">Curriculum</a> · <a href="/cookbook">Cookbook</a> · <a href="/glossary">Glossary</a> · <a href="/rss.xml">RSS</a></p>
     </footer>
     <script>
       import "../scripts/ui";
