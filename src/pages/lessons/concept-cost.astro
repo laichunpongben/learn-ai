@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-cost")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-cost">
-    <LessonShell lesson={lesson} hero="claude">
+    <LessonShell lesson={lesson}>
       <p>
         AI assistants are not free. Chat apps come with monthly subscriptions; APIs and agents
         charge per use. Three concepts let you predict and control your bill.

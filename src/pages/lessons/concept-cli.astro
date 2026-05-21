@@ -9,7 +9,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-cli")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-cli">
-    <LessonShell lesson={lesson} hero="code">
+    <LessonShell lesson={lesson}>
       <p>
         The <strong>CLI</strong> (command-line interface) is a plain text window where you tell your
         computer what to do — instead of clicking buttons. Most AI coding tools live there because

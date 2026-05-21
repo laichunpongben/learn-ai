@@ -8,7 +8,7 @@ const lesson = LESSONS.find((l) => l.id === "concept-mcp")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="concept-mcp">
-    <LessonShell lesson={lesson} hero="agents">
+    <LessonShell lesson={lesson}>
       <p>
         <strong>MCP</strong> (Model Context Protocol) is a standard for letting an AI assistant <em>reach
         into the rest of your stack</em> — your filesystem, your Slack, your Linear board, your database,

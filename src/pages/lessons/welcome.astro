@@ -9,7 +9,7 @@ const lesson = LESSONS.find((l) => l.id === "welcome")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="welcome">
-    <LessonShell lesson={lesson} hero="claude">
+    <LessonShell lesson={lesson}>
       <p>
         An <strong>AI assistant</strong> is software that takes a request in plain language and gives you
         something back — text, code, an answer, a working webpage. You type what you want; it types back.

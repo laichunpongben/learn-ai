@@ -7,7 +7,7 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
 ---
 
 <Layout title={`${lesson.title} · Learn AI`} description={lesson.blurb} currentId="agents-setup">
-    <LessonShell lesson={lesson} hero="agents">
+    <LessonShell lesson={lesson}>
       <p>
         Most autonomous agents install the same way: one command, an env var with your API key, optional config.
         Worked example: <strong>Hermes Agent</strong>. The pattern transfers to aider, OpenHands, Goose, OpenClaw.
