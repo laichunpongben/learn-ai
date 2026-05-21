@@ -45,9 +45,18 @@ function resolveTarget(urlPath) {
   return candidates;
 }
 
-const HREF_RE = /\b(?:href|src)\s*=\s*"(\/[^"#?]*)(?:[#?][^"]*)?"/g;
+const HREF_RE = /\b(?:href|src)\s*=\s*["'](\/[^"'#?]*)(?:[#?][^"']*)?["']/g;
 
-const htmlFiles = await walk(DIST);
+let htmlFiles;
+try {
+  htmlFiles = await walk(DIST);
+} catch (err) {
+  if (err?.code === "ENOENT") {
+    console.error(`${DIST}/ not found. Run 'npm run build' first.`);
+    process.exit(1);
+  }
+  throw err;
+}
 const broken = [];
 let checked = 0;
 
