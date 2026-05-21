@@ -12,28 +12,25 @@
  * can be tightened later.
  */
 
-import puppeteer from "puppeteer-core";
 import { AxePuppeteer } from "@axe-core/puppeteer";
-
-const BASE = process.env.SMOKE_URL ?? "http://localhost:4321";
-const CDP = process.env.CDP_URL ?? "http://localhost:9333";
+import { BASE, connect, exitWith } from "./lib/cdp.mjs";
 
 const PAGES = ["/", "/lessons/concept-mcp/", "/glossary/"];
 
-const browser = await puppeteer.connect({ browserURL: CDP });
+const browser = await connect();
 const fails = [];
 
 try {
   for (const path of PAGES) {
     const page = await browser.newPage();
     await page.goto(`${BASE}${path}`, { waitUntil: "networkidle2" });
-    await new Promise((r) => setTimeout(r, 500));
 
     const results = await new AxePuppeteer(page).analyze();
     const byImpact = { critical: [], serious: [], moderate: [], minor: [] };
     for (const v of results.violations) {
       const bucket = byImpact[v.impact ?? "minor"];
       if (bucket) bucket.push(v);
+      else console.log(`  ? unknown impact: ${v.impact} for ${v.id}`);
     }
 
     console.log(`\n=== ${path} ===`);
@@ -55,8 +52,4 @@ try {
   await browser.disconnect();
 }
 
-if (fails.length) {
-  console.log(`\n${fails.length} critical/serious a11y violation(s).`);
-  process.exit(1);
-}
-console.log("\nNo critical/serious a11y violations.");
+exitWith(fails, "No critical/serious a11y violations.");

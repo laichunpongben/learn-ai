@@ -14,12 +14,9 @@
  * native `<dialog>` semantics. A real browser is the only honest oracle.
  */
 
-import puppeteer from "puppeteer-core";
+import { BASE, connect, exitWith } from "./lib/cdp.mjs";
 
-const BASE = process.env.SMOKE_URL ?? "http://localhost:4321";
-const CDP = process.env.CDP_URL ?? "http://localhost:9333";
-
-const browser = await puppeteer.connect({ browserURL: CDP });
+const browser = await connect();
 const page = await browser.newPage();
 const fails = [];
 
@@ -89,8 +86,4 @@ try {
   await browser.disconnect();
 }
 
-if (fails.length) {
-  console.log(`\n${fails.length} check(s) failed.`);
-  process.exit(1);
-}
-console.log("\nAll UI smoke checks passed.");
+exitWith(fails, "All UI smoke checks passed.");

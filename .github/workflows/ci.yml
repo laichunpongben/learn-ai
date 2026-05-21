@@ -124,12 +124,12 @@ jobs:
       - name: Start Chrome with CDP
         run: |
           google-chrome --headless=new --disable-gpu --no-sandbox \
-            --remote-debugging-port=9334 \
-            --user-data-dir=/tmp/chrome-a11y about:blank &
+            --remote-debugging-port=9333 \
+            --user-data-dir=/tmp/chrome-prof about:blank &
           for i in 1 2 3 4 5 6 7 8 9 10; do
             sleep 1
             ok_srv=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/ || echo 000)
-            ok_cdp=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9334/json/version || echo 000)
+            ok_cdp=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9333/json/version || echo 000)
             echo "wait $i: server=$ok_srv cdp=$ok_cdp"
             if [ "$ok_srv" = "200" ] && [ "$ok_cdp" = "200" ]; then break; fi
           done
@@ -137,4 +137,4 @@ jobs:
         run: npm run a11y
         env:
           SMOKE_URL: http://localhost:4321
-          CDP_URL: http://localhost:9334
+          CDP_URL: http://localhost:9333
