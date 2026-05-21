@@ -60,6 +60,16 @@ if (import.meta.env.PROD && typeof navigator !== "undefined" && "serviceWorker" 
     waitingWorker.postMessage({ type: "SKIP_WAITING" });
   });
 
+  // If the user navigates before controllerchange fires, the flag would
+  // otherwise persist into the new page and double-reload (the SPA
+  // navigation already moved, then location.reload runs). Clear on
+  // both pagehide (covers normal nav + tab close) and beforeunload.
+  function clearReloadFlag() {
+    reloadOnControllerChange = false;
+  }
+  window.addEventListener("pagehide", clearReloadFlag);
+  window.addEventListener("beforeunload", clearReloadFlag);
+
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (reloadOnControllerChange) {
       reloadOnControllerChange = false;

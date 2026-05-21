@@ -86,7 +86,17 @@
       // calls location.reload() once the swap completes.
       window.dispatchEvent(new Event("pwa:apply-update"));
       reload.disabled = true;
+      const originalLabel = reload.textContent;
       reload.textContent = "Reloading…";
+      // If the new SW crashes during activation, controllerchange
+      // never fires and the button would be permanently stuck. Time
+      // it out so the user can retry instead of being trapped.
+      window.setTimeout(() => {
+        if (reload.disabled) {
+          reload.disabled = false;
+          reload.textContent = originalLabel ?? "Reload";
+        }
+      }, 10_000);
     });
 
     dismiss.addEventListener("click", () => {
