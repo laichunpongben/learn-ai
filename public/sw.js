@@ -39,7 +39,14 @@ const CACHE_CAPS = {
   [VIDEOS_CACHE]: 10,
 };
 
-const SHELL_ASSETS = ["/", "/favicon.svg", "/manifest.webmanifest"];
+const SHELL_ASSETS = [
+  "/",
+  "/favicon.svg",
+  "/manifest.webmanifest",
+  "/offline",
+];
+
+const OFFLINE_URL = "/offline";
 
 // -----------------------------------------------------------------------
 // Install / activate
@@ -180,6 +187,12 @@ async function staleWhileRevalidate(request, cacheName) {
   if (cached) return cached;
   const fresh = await networkPromise;
   if (fresh) return fresh;
+  // HTML navigation miss + network fail → /offline fallback page,
+  // which was precached at install time.
+  if (request.mode === "navigate") {
+    const offline = await caches.match(OFFLINE_URL);
+    if (offline) return offline;
+  }
   throw new Error("offline");
 }
 
