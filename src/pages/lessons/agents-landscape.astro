@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "agents-landscape")!;
@@ -24,6 +25,8 @@ const agents = [
         shape than a chat or a CLI. Background daemons, multi-agent runtimes, IDE plugins, web sandboxes.
         You self-host them, give them an API key, and they go to work.
       </p>
+
+      <Screencast slot="agents-loop" />
 
       <div class="agent-list">
         {agents.map((a) => (

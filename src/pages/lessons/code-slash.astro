@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import FakeTerminal from "../../components/FakeTerminal.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "code-slash")!;
@@ -13,6 +14,8 @@ const lesson = LESSONS.find((l) => l.id === "code-slash")!;
         Every modern coding CLI has the same three extensibility primitives, with slight name variations.
         Drive the imitation: press <kbd>/</kbd>, type, hit Enter. Watch streaming + approval prompts.
       </p>
+
+      <Screencast slot="code-loop" />
 
       <FakeTerminal cwd="~/my-project" />
 
