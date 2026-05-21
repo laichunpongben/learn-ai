@@ -75,18 +75,18 @@ import { TRACKS, lessonsInTrack } from "../data/curriculum";
     const c = document.getElementById("continue");
     if (!c) return;
     if (cur.done.length === 0 && !cur.lastVisited) {
-      c.innerHTML = '<a class="button" href="/lessons/welcome">Start the tour →</a>';
+      c.innerHTML = '<a class="button" href="/lessons/welcome" data-nav-next>Start the tour →</a>';
       return;
     }
     const firstUndone = LESSONS_IDS.find((id) => !cur.done.includes(id));
     const target = firstUndone ?? cur.lastVisited;
     if (!target) {
-      c.innerHTML = "<a class=\"button\" href=\"/whats-next\">You finished — what's next →</a>";
+      c.innerHTML = "<a class=\"button\" href=\"/whats-next\" data-nav-next>You finished — what's next →</a>";
       return;
     }
     const slug = LESSON_SLUGS[target] ?? "welcome";
     const label = firstUndone ? "Continue →" : "Revisit last lesson →";
-    c.innerHTML = `<a class="button" href="/lessons/${slug}">${label}</a>`;
+    c.innerHTML = `<a class="button" href="/lessons/${slug}" data-nav-next>${label}</a>`;
   }
 
   const LESSONS_IDS: string[] = [];
