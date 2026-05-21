@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import ChatSim from "../../components/ChatSim.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "chat-first")!;
@@ -16,6 +17,8 @@ const lesson = LESSONS.find((l) => l.id === "chat-first")!;
         <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>, or
         <a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com</a>.
       </p>
+
+      <Screencast slot="chat-loop" />
 
       <ChatSim prompts={["Hi", "Write a thank-you note", "Plan a 3-day Tokyo trip", "Build me a simple webpage"]} />
 

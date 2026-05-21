@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import LessonShell from "../../components/LessonShell.astro";
 import DesignSim from "../../components/DesignSim.astro";
+import Screencast from "../../components/Screencast.astro";
 import { LESSONS } from "../../data/curriculum";
 
 const lesson = LESSONS.find((l) => l.id === "design-first")!;
@@ -28,6 +29,8 @@ const lesson = LESSONS.find((l) => l.id === "design-first")!;
       </table>
 
       <p>The imitation below shows the shared pattern: prompt → canvas preview → variants. Try the chips and the Warm / Dark / Brutalist buttons.</p>
+
+      <Screencast slot="design-loop" />
 
       <DesignSim />
 

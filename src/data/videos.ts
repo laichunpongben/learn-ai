@@ -44,7 +44,7 @@ export const VIDEOS: VideoSlot[] = [
     id: "code-loop",
     mode: "loop",
     status: "missing",
-    lesson: "code-install",
+    lesson: "code-slash",
     posterAlt: "Coding CLI running in a real terminal",
   },
   {
