@@ -76,6 +76,16 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// The update-available toast (UpdateToast.astro) sends this from the
+// page when the user clicks Reload. self.skipWaiting() activates the
+// waiting SW immediately; controllerchange then fires on every
+// controlled tab, and pwa.ts reloads.
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 // -----------------------------------------------------------------------
 // Routing
 // -----------------------------------------------------------------------

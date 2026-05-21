@@ -1,0 +1,96 @@
+---
+/**
+ * "Update available" toast. See ADR-0011 piece 6.
+ *
+ * - Hidden by default.
+ * - Revealed when window.dispatchEvent(new Event("pwa:update-available"))
+ *   fires (pwa.ts dispatches it from `updatefound`).
+ * - Reload button posts {type:"SKIP_WAITING"} to the waiting SW, which
+ *   calls self.skipWaiting(). controllerchange then fires and the
+ *   tab reloads.
+ * - Dismiss hides for the session; the toast re-appears on the next
+ *   `pwa:update-available` (different deploy).
+ */
+---
+
+<div class="update-toast" data-update-toast hidden role="status" aria-live="polite">
+  <span>Update available</span>
+  <button type="button" data-update-reload class="primary">Reload</button>
+  <button type="button" data-update-dismiss aria-label="Dismiss update notice">×</button>
+</div>
+
+<style>
+  .update-toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.6rem 0.55rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-size: 0.9rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    max-width: calc(100vw - 2rem);
+  }
+  .update-toast[hidden] { display: none; }
+  .update-toast .primary {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--surface);
+    font: inherit;
+    cursor: pointer;
+  }
+  .update-toast .primary:hover,
+  .update-toast .primary:focus-visible {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .update-toast button[data-update-dismiss] {
+    background: none;
+    border: 0;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+  }
+  .update-toast button[data-update-dismiss]:hover { color: var(--ink); }
+</style>
+
+<script>
+  const toast = document.querySelector<HTMLElement>("[data-update-toast]");
+  const reload = document.querySelector<HTMLButtonElement>("[data-update-reload]");
+  const dismiss = document.querySelector<HTMLButtonElement>("[data-update-dismiss]");
+
+  if (toast && reload && dismiss) {
+    // pwa.ts dispatches this when a new SW finishes installing while
+    // an old SW still controls the page. First-install never fires it
+    // (there's no controller yet).
+    window.addEventListener("pwa:update-available", () => {
+      requestAnimationFrame(() => {
+        toast.hidden = false;
+      });
+    });
+
+    reload.addEventListener("click", () => {
+      // pwa.ts holds the registration and posts SKIP_WAITING to the
+      // waiting worker (it has direct access via reg.waiting). We just
+      // signal intent — pwa.ts also listens for controllerchange and
+      // calls location.reload() once the swap completes.
+      window.dispatchEvent(new Event("pwa:apply-update"));
+      reload.disabled = true;
+      reload.textContent = "Reloading…";
+    });
+
+    dismiss.addEventListener("click", () => {
+      toast.hidden = true;
+    });
+  }
+</script>
