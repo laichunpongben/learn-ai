@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Footer from "../components/Footer.astro";
 import Sidebar from "../components/Sidebar.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import SearchPalette from "../components/SearchPalette.astro";
@@ -81,9 +82,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).to
       <main id="main"><slot /></main>
     </div>
     <div class="sidebar-backdrop" data-ui-action="close-sidebar"></div>
-    <footer>
-      <p>Self-paced. Progress lives only in your browser. <a href="/">Curriculum</a> · <a href="/cookbook">Cookbook</a> · <a href="/glossary">Glossary</a> · <a href="/rss.xml">RSS</a></p>
-    </footer>
+    <Footer />
     <script>
       import "../scripts/ui";
     </script>
