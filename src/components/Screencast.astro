@@ -4,14 +4,17 @@
  *
  * mode="loop"        — silent autoplay loop. On prefers-reduced-motion
  *                      the poster is shown instead (no playback at all).
- *                      Implemented now.
- * mode="walkthrough" — YouTube facade. Lazy-loads iframe on click.
- *                      Implemented in #104.
+ * mode="walkthrough" — YouTube facade. The poster + play-button render
+ *                      inline; YouTube's iframe + JS are only fetched
+ *                      after the user explicitly clicks. WCAG 1.2.2 +
+ *                      1.2.3 are enforced by the registry contract
+ *                      (verify-videos.mjs blocks present walkthroughs
+ *                      missing captionsVerified or transcript).
  *
  * Slots with status:"missing" render nothing.
  *
- * Reduced-motion correctness: we deliberately omit the HTML `autoplay`
- * attribute. A small inline script calls `.play()` only when
+ * Reduced-motion correctness (loop): we deliberately omit the HTML
+ * `autoplay` attribute and start playback from script only when
  * prefers-reduced-motion is *not* reduce. This avoids the race where
  * removing `autoplay` after the browser has already started playback
  * does nothing.
@@ -23,8 +26,18 @@ interface Props {
 }
 const { slot } = Astro.props;
 const v = getVideoSlot(slot);
+
 const renderLoop =
   v && v.status === "present" && v.mode === "loop" && v.webm && v.mp4 && v.poster;
+
+const renderWalkthrough =
+  v &&
+  v.status === "present" &&
+  v.mode === "walkthrough" &&
+  v.youtubeId &&
+  v.transcript &&
+  v.captionsVerified === true &&
+  v.poster;
 ---
 
 {
@@ -47,14 +60,37 @@ const renderLoop =
   )
 }
 
+{
+  renderWalkthrough && (
+    <figure class="screencast" style={`--aspect: ${v.aspect ?? "16 / 9"};`}>
+      <button
+        type="button"
+        class="screencast-facade"
+        data-screencast-youtube={v.youtubeId}
+        aria-label={`Play video: ${v.posterAlt}`}
+      >
+        <img class="screencast-poster" src={v.poster} alt="" loading="lazy" />
+        <span class="screencast-play" aria-hidden="true">▶</span>
+      </button>
+      <details class="screencast-transcript">
+        <summary>Transcript</summary>
+        <div class="screencast-transcript-body">{v.transcript}</div>
+      </details>
+    </figure>
+  )
+}
+
 <style>
   .screencast {
     margin: 1.5rem 0;
-    aspect-ratio: var(--aspect);
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
+  }
+  /* Loop fills the figure. Walkthrough lets transcript hang below. */
+  .screencast > video.screencast-video {
+    aspect-ratio: var(--aspect);
   }
   .screencast-video {
     display: block;
@@ -62,12 +98,62 @@ const renderLoop =
     height: 100%;
     object-fit: cover;
   }
+  .screencast-facade {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--aspect);
+    padding: 0;
+    border: 0;
+    background: var(--surface-2);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .screencast-poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .screencast-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.18);
+    transition: background 120ms ease;
+  }
+  .screencast-facade:hover .screencast-play,
+  .screencast-facade:focus-visible .screencast-play {
+    background: rgba(0, 0, 0, 0.32);
+  }
+  .screencast-iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--aspect);
+    border: 0;
+  }
+  .screencast-transcript {
+    border-top: 1px solid var(--line);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+  .screencast-transcript summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .screencast-transcript-body {
+    margin-top: 0.5rem;
+    white-space: pre-wrap;
+    color: var(--ink-soft);
+  }
 </style>
 
 <script>
-  // No `autoplay` attribute is rendered. We start playback here, only
-  // for users who haven't opted out of motion. Reduced-motion users
-  // see the poster frame (the video's default before .play() is called).
+  // Loop: start playback only for users who haven't opted out of motion.
   if (typeof window !== "undefined") {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!reduce) {
@@ -77,5 +163,32 @@ const renderLoop =
         });
       }
     }
+  }
+
+  // Walkthrough: replace the facade button with an iframe on first click.
+  // No YouTube network requests fire until that click — verified by the
+  // empty network panel on initial page load.
+  for (const btn of document.querySelectorAll<HTMLButtonElement>(
+    "[data-screencast-youtube]",
+  )) {
+    btn.addEventListener(
+      "click",
+      () => {
+        const id = btn.getAttribute("data-screencast-youtube");
+        if (!id) return;
+        const iframe = document.createElement("iframe");
+        iframe.className = "screencast-iframe";
+        iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+          id,
+        )}?autoplay=1&rel=0`;
+        iframe.title = btn.getAttribute("aria-label") ?? "Video walkthrough";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        btn.replaceWith(iframe);
+        iframe.focus();
+      },
+      { once: true },
+    );
   }
 </script>
