@@ -29,5 +29,22 @@ const lesson = LESSONS.find((l) => l.id === "chat-artifacts")!;
         Casual replies stay in the conversation. Anything you'd want to keep moves to the panel,
         where you can edit, iterate, copy, or download.
       </p>
+
+      <h2>Artifact vs <em>inline visualization</em></h2>
+      <p>
+        A newer wrinkle: Claude (and ChatGPT's Canvas mode) can also render charts or small widgets
+        <em>inside</em> the conversation instead of breaking out into the side panel. Same code,
+        different placement.
+      </p>
+      <ul>
+        <li><strong>Artifact / Canvas:</strong> side panel. Persists. You can come back to it,
+          publish a share link, or download.</li>
+        <li><strong>Inline visualization:</strong> renders below the message it belongs to.
+          Lighter-weight, good for one-off charts and "show me the analytics" prompts.</li>
+      </ul>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        Rule of thumb: a thing you'd want to <em>keep</em> belongs in an artifact; a thing you'd want
+        to <em>glance at</em> belongs inline. Most apps let you promote inline → artifact when you change your mind.
+      </p>
     </LessonShell>
 </Layout>

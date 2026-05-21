@@ -32,5 +32,20 @@ const lesson = LESSONS.find((l) => l.id === "chat-first")!;
         which model brand you want to support; what files you need to upload; what your team already uses;
         which one feels best to you. Switch any time — your prompts move with you.
       </div>
+
+      <h2>First-run setting that's easy to miss</h2>
+      <p>
+        Every chat app has a "help improve our model" / "use my conversations for training" toggle.
+        It's usually <em>on</em> by default. Decide it intentionally before you paste anything sensitive.
+      </p>
+      <ul>
+        <li><strong>Claude.ai:</strong> Settings → Privacy → <em>Help improve Claude</em></li>
+        <li><strong>ChatGPT:</strong> Settings → Data Controls → <em>Improve the model for everyone</em></li>
+        <li><strong>Gemini:</strong> Activity → <em>Gemini Apps Activity</em></li>
+      </ul>
+      <p style="color: var(--ink-soft); font-size: 0.92rem;">
+        Off = your chats aren't used to train future models. The trade-off: some features
+        (memory, personalization) may be limited.
+      </p>
     </LessonShell>
 </Layout>
