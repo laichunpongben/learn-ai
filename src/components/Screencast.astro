@@ -153,6 +153,8 @@ const renderWalkthrough =
 </style>
 
 <script>
+  import { YOUTUBE_ID_RE } from "../data/videos";
+
   // Loop: start playback only for users who haven't opted out of motion.
   if (typeof window !== "undefined") {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -170,8 +172,9 @@ const renderWalkthrough =
   // empty network panel on initial page load.
   //
   // YouTube IDs are an exact 11-char [A-Za-z0-9_-] string. Anything else
-  // is either a typo or an injection attempt; refuse the click.
-  const YOUTUBE_ID = /^[\w-]{11}$/;
+  // is either a typo or an injection attempt; refuse the click. Regex
+  // is sourced from src/data/videos.ts so the test suite tracks the
+  // same constant — no drift possible.
   for (const btn of document.querySelectorAll<HTMLButtonElement>(
     "[data-screencast-youtube]",
   )) {
@@ -179,7 +182,7 @@ const renderWalkthrough =
       "click",
       () => {
         const id = btn.getAttribute("data-screencast-youtube");
-        if (!id || !YOUTUBE_ID.test(id)) return;
+        if (!id || !YOUTUBE_ID_RE.test(id)) return;
         const iframe = document.createElement("iframe");
         iframe.className = "screencast-iframe";
         iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;

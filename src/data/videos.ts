@@ -147,3 +147,25 @@ export const VIDEOS: VideoSlot[] = [
 export function getVideoSlot(id: string): VideoSlot | undefined {
   return VIDEOS.find((v) => v.id === id);
 }
+
+// YouTube IDs are an exact 11-char [A-Za-z0-9_-] string. The runtime
+// facade in Screencast.astro and the test suite both gate on this
+// regex; keep them sourced from the same constant.
+export const YOUTUBE_ID_RE = /^[\w-]{11}$/;
+
+// Validation predicates. Used by tests to assert that activated slots
+// satisfy the contract without depending on which slots happen to be
+// "present" at any given commit — the test fixtures exercise both
+// branches directly.
+export function loopFieldsComplete(v: VideoSlot): boolean {
+  return Boolean(v.webm && v.mp4 && v.poster);
+}
+export function walkthroughFieldsComplete(v: VideoSlot): boolean {
+  return Boolean(
+    v.youtubeId &&
+      YOUTUBE_ID_RE.test(v.youtubeId) &&
+      v.transcript &&
+      v.transcript.trim() !== "" &&
+      v.captionsVerified === true,
+  );
+}
