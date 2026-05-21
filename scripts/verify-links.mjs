@@ -79,8 +79,32 @@ for (const name of REQUIRED) {
   if (!(await exists(join(DIST, name)))) missing.push(name);
 }
 
+// JSON-LD: every lesson page emits a LearningResource block; homepage emits a Course block.
+const JSONLD_RE = /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g;
+const jsonldErrors = [];
+async function expectType(file, type) {
+  const html = await readFile(file, "utf8").catch(() => null);
+  if (html === null) {
+    jsonldErrors.push(`${file.replace(`${DIST}/`, "")}: file missing`);
+    return;
+  }
+  let foundType = false;
+  for (const m of html.matchAll(JSONLD_RE)) {
+    try {
+      const block = JSON.parse(m[1]);
+      if (block["@type"] === type) foundType = true;
+    } catch (e) {
+      jsonldErrors.push(`${file.replace(`${DIST}/`, "")}: invalid JSON in ld+json block — ${e.message}`);
+    }
+  }
+  if (!foundType) jsonldErrors.push(`${file.replace(`${DIST}/`, "")}: no JSON-LD block with @type=${type}`);
+}
+await expectType(`${DIST}/index.html`, "Course");
+const lessonFiles = htmlFiles.filter((f) => f.includes("/lessons/") && f.endsWith("/index.html"));
+for (const f of lessonFiles) await expectType(f, "LearningResource");
+
 const unique = Array.from(new Set(broken.map((b) => `${b.source} → ${b.url}`)));
-if (unique.length || missing.length) {
+if (unique.length || missing.length || jsonldErrors.length) {
   if (unique.length) {
     console.log(`Broken internal links (${unique.length}):`);
     for (const line of unique.slice(0, 50)) console.log(`  ✗ ${line}`);
@@ -90,7 +114,13 @@ if (unique.length || missing.length) {
     console.log(`Missing required artifacts (${missing.length}):`);
     for (const name of missing) console.log(`  ✗ dist/${name}`);
   }
+  if (jsonldErrors.length) {
+    console.log(`JSON-LD errors (${jsonldErrors.length}):`);
+    for (const e of jsonldErrors.slice(0, 20)) console.log(`  ✗ ${e}`);
+    if (jsonldErrors.length > 20) console.log(`  … and ${jsonldErrors.length - 20} more`);
+  }
   process.exit(1);
 }
 console.log(`All ${checked} internal links resolved across ${htmlFiles.length} pages.`);
 console.log(`Required artifacts present: ${REQUIRED.join(", ")}.`);
+console.log(`JSON-LD: Course on homepage + LearningResource on ${lessonFiles.length} lesson pages.`);
