@@ -3,33 +3,53 @@
 // This file is plain JS (no bundler) — it's served from /sw.js and runs
 // in the service-worker global scope. Don't import from src/.
 //
-// Versions: bump SHELL_VERSION whenever the precache list changes.
-// Runtime caches (html, static, images, videos) are added in #121.
+// Versions: bump *_VERSION constants whenever a cache's contents or
+// shape changes; the matching cache name will be new, and the activate
+// handler deletes any old `learn-ai-*` caches not in OWNED_CACHES.
 
 const SHELL_VERSION = "v1";
+const HTML_VERSION = "v1";
+const STATIC_VERSION = "v1";
+const IMAGES_VERSION = "v1";
+const VIDEOS_VERSION = "v1";
+
 const SHELL_CACHE = `learn-ai-shell-${SHELL_VERSION}`;
+const HTML_CACHE = `learn-ai-html-${HTML_VERSION}`;
+const STATIC_CACHE = `learn-ai-static-${STATIC_VERSION}`;
+const IMAGES_CACHE = `learn-ai-images-${IMAGES_VERSION}`;
+const VIDEOS_CACHE = `learn-ai-videos-${VIDEOS_VERSION}`;
 
-// All `learn-ai-*` caches we recognise. Anything outside this list and
-// owned by us is stale and gets deleted on `activate`.
-const OWNED_CACHES = new Set([SHELL_CACHE]);
+const OWNED_CACHES = new Set([
+  SHELL_CACHE,
+  HTML_CACHE,
+  STATIC_CACHE,
+  IMAGES_CACHE,
+  VIDEOS_CACHE,
+]);
 
-// Precache: small set of always-loaded resources. Total under 200KB —
-// don't precache lesson pages (lazy-cached at runtime in #121) or videos
-// (lazy-cached on first hit in #121).
-const SHELL_ASSETS = [
-  "/",
-  "/favicon.svg",
-  "/manifest.webmanifest",
-];
+// Per-cache LRU caps. Cache.put() on an existing key leaves the key's
+// position in Cache.keys() unchanged (insertion-order is sticky), so a
+// plain put would give FIFO eviction. To get true LRU we delete then
+// put on a hit — see cachePut() below. Trimming evicts from the front
+// (the oldest by last-access).
+const CACHE_CAPS = {
+  [HTML_CACHE]: 50,
+  [STATIC_CACHE]: 80,
+  [IMAGES_CACHE]: 30,
+  [VIDEOS_CACHE]: 10,
+};
+
+const SHELL_ASSETS = ["/", "/favicon.svg", "/manifest.webmanifest"];
+
+// -----------------------------------------------------------------------
+// Install / activate
+// -----------------------------------------------------------------------
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(SHELL_CACHE);
       await cache.addAll(SHELL_ASSETS);
-      // Activate immediately on first install so first navigation is
-      // controlled (otherwise the SW doesn't control the page until
-      // the next visit, which delays offline support by one session).
       await self.skipWaiting();
     })(),
   );
@@ -44,14 +64,178 @@ self.addEventListener("activate", (event) => {
           .filter((n) => n.startsWith("learn-ai-") && !OWNED_CACHES.has(n))
           .map((n) => caches.delete(n)),
       );
-      // Take control of any existing clients (open tabs) right away,
-      // so they start serving from the new caches without a manual
-      // reload.
       await self.clients.claim();
     })(),
   );
 });
 
-// Runtime fetch handling lands in #121. Until then, the network handles
-// every request — the precache only matters for `caches.match()` calls
-// the rest of the system makes (e.g. the offline page, when it ships).
+// -----------------------------------------------------------------------
+// Routing
+// -----------------------------------------------------------------------
+
+function routeFor(request, url) {
+  // Bypass anything not GET (POST/PUT etc. don't belong in caches).
+  if (request.method !== "GET") return { strategy: "bypass" };
+  // Cross-origin: never touch. YouTube embeds, font CDN, etc.
+  if (url.origin !== self.location.origin) return { strategy: "bypass" };
+  // Range requests must go to network. Cache.match returns the full
+  // 200 response we stored; serving that for a Range request returns
+  // 200 instead of 206 Partial and breaks video seeking on Safari +
+  // some Chromium versions.
+  if (request.headers.has("range")) return { strategy: "bypass" };
+
+  const path = url.pathname;
+
+  // HTML navigations. Use mode==="navigate" only — `Accept: text/html`
+  // appears on plain fetch() calls (client-side router prefetches,
+  // analytics pings, etc.) that should not poison the page cache.
+  if (request.mode === "navigate") {
+    return { strategy: "swr", cache: HTML_CACHE };
+  }
+
+  // Feeds + crawl-facing files: prefer fresh, fall back to cache
+  if (
+    path === "/rss.xml" ||
+    path === "/sitemap-index.xml" ||
+    path === "/sitemap-0.xml" ||
+    path === "/robots.txt" ||
+    path === "/llms.txt"
+  ) {
+    return { strategy: "network-first", cache: HTML_CACHE };
+  }
+
+  // Self-hosted loop videos: cache-first, populated on first hit only.
+  if (path.startsWith("/videos/loops/")) {
+    return { strategy: "cache-first", cache: VIDEOS_CACHE };
+  }
+
+  // Posters + favicon + og.png + manifest + any other image
+  if (
+    path.startsWith("/videos/posters/") ||
+    path.startsWith("/icons/") ||
+    path.endsWith(".svg") ||
+    path.endsWith(".png") ||
+    path.endsWith(".jpg") ||
+    path.endsWith(".webp") ||
+    path === "/manifest.webmanifest"
+  ) {
+    return { strategy: "cache-first", cache: IMAGES_CACHE };
+  }
+
+  // Astro emits hashed filenames under /_astro/ — safe to treat as immutable.
+  // Other JS / CSS likewise.
+  if (
+    path.startsWith("/_astro/") ||
+    path.endsWith(".js") ||
+    path.endsWith(".css") ||
+    path.endsWith(".woff") ||
+    path.endsWith(".woff2")
+  ) {
+    return { strategy: "cache-first", cache: STATIC_CACHE };
+  }
+
+  // Anything else: SWR against HTML cache (safe default).
+  return { strategy: "swr", cache: HTML_CACHE };
+}
+
+// -----------------------------------------------------------------------
+// Cache strategies
+// -----------------------------------------------------------------------
+
+async function trimCache(name) {
+  const cap = CACHE_CAPS[name];
+  if (!cap) return;
+  const cache = await caches.open(name);
+  const keys = await cache.keys();
+  const excess = keys.length - cap;
+  if (excess <= 0) return;
+  for (let i = 0; i < excess; i++) {
+    await cache.delete(keys[i]);
+  }
+}
+
+// Delete-then-put so the key appears at the *end* of Cache.keys(),
+// making the eviction-from-front trim genuinely LRU.
+async function cachePut(cache, request, response) {
+  try {
+    await cache.delete(request);
+  } catch {
+    /* nothing cached to delete */
+  }
+  await cache.put(request, response);
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const networkPromise = fetch(request)
+    .then(async (response) => {
+      if (response && response.ok) {
+        await cachePut(cache, request, response.clone());
+        await trimCache(cacheName);
+      }
+      return response;
+    })
+    .catch(() => undefined);
+  if (cached) return cached;
+  const fresh = await networkPromise;
+  if (fresh) return fresh;
+  throw new Error("offline");
+}
+
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      await cachePut(cache, request, response.clone());
+      await trimCache(cacheName);
+    }
+    return response;
+  } catch {
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    throw new Error("offline");
+  }
+}
+
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  if (cached) {
+    // Re-put to move to the end (LRU touch). We do this lazily — clone
+    // the response we're about to return, swap the position, then hand
+    // the original to the page.
+    cachePut(cache, request, cached.clone()).catch(() => {});
+    return cached;
+  }
+  const response = await fetch(request);
+  if (response && response.ok) {
+    await cachePut(cache, request, response.clone());
+    await trimCache(cacheName);
+  }
+  return response;
+}
+
+// -----------------------------------------------------------------------
+// Fetch dispatcher
+// -----------------------------------------------------------------------
+
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  const route = routeFor(event.request, url);
+
+  if (route.strategy === "bypass") return;
+
+  switch (route.strategy) {
+    case "swr":
+      event.respondWith(staleWhileRevalidate(event.request, route.cache));
+      break;
+    case "network-first":
+      event.respondWith(networkFirst(event.request, route.cache));
+      break;
+    case "cache-first":
+      event.respondWith(cacheFirst(event.request, route.cache));
+      break;
+  }
+});
