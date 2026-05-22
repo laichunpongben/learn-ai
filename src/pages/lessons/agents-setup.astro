@@ -10,7 +10,7 @@ const lesson = LESSONS.find((l) => l.id === "agents-setup")!;
     <LessonShell lesson={lesson}>
       <p>
         Most autonomous agents install the same way: one command, an env var with your API key, optional config.
-        Worked example: <strong>Hermes Agent</strong>. The pattern transfers to aider, OpenHands, Goose, OpenClaw.
+        Worked example: <strong>Hermes Agent</strong>. The pattern transfers to aider, OpenHands, Goose, OpenClaw, nanoclaw.
       </p>
 
       <h2>Path A · As a Claude Code plugin (easiest)</h2>
@@ -47,6 +47,10 @@ npm install -g openclaw
 openclaw init
 export ANTHROPIC_API_KEY=sk-ant-…
 openclaw run
+
+# nanoclaw (Docker — runs on Anthropic Agent SDK)
+docker run -e ANTHROPIC_API_KEY=sk-ant-… \\
+    ghcr.io/nanocoai/nanoclaw:latest
 
 # Goose
 brew install pressly/tap/goose

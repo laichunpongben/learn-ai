@@ -50,7 +50,7 @@ export const TRACKS: Track[] = [
   {
     id: "code",
     title: "Coding assistants",
-    tagline: "Cursor, Claude Code, Codex CLI, Windsurf, GitHub Copilot.",
+    tagline: "Cursor, Claude Code, Codex CLI, Antigravity, Windsurf, GitHub Copilot.",
     accent: "#7a9eaf",
   },
   {
@@ -74,7 +74,7 @@ export const TRACKS: Track[] = [
   {
     id: "agents",
     title: "Open-source autonomous agents",
-    tagline: "Hermes, OpenClaw, aider, OpenHands — agents you self-host.",
+    tagline: "Hermes, OpenClaw, nanoclaw, aider, OpenHands — agents you self-host.",
     accent: "#5b9aa0",
   },
   {
@@ -261,7 +261,7 @@ export const LESSONS: Lesson[] = [
     id: "agents-landscape",
     slug: "agents-landscape",
     title: "The open-source agent ecosystem",
-    blurb: "Hermes, OpenClaw, aider, OpenHands, Goose, Continue, Cline.",
+    blurb: "Hermes, OpenClaw, nanoclaw, aider, OpenHands, Goose, Continue, Cline.",
     minutes: 4,
     track: "agents",
   },
