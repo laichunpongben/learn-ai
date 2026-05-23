@@ -226,6 +226,15 @@ export const LESSONS: Lesson[] = [
     track: "code",
   },
   {
+    id: "code-skills",
+    slug: "code-skills",
+    title: "Skills — recipes your assistant loads on demand",
+    blurb:
+      "A folder of markdown that teaches your CLI a procedure. Auto-triggered by description, model-loaded as needed.",
+    minutes: 5,
+    track: "code",
+  },
+  {
     id: "cowork-what",
     slug: "cowork-what",
     title: "Why run things in parallel?",
