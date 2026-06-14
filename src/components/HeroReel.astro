@@ -275,11 +275,27 @@ const heroAgents = getVideoSlot("hero-agents");
     const moments = reel.querySelectorAll<HTMLElement>(".moment");
     const bar = reel.querySelector<HTMLElement>(".bar");
     if (!bar || moments.length === 0) return;
+    const progressBar = bar;
 
     let idx = 0;
-    let paused = false;
+    let hoverPaused = false;
+    let inViewport = !("IntersectionObserver" in window);
     let timer: number | null = null;
+    let frame: number | null = null;
     let active: HTMLElement | null = null;
+
+    function shouldRun() {
+      return !reducedMotion && !hoverPaused && inViewport && !document.hidden;
+    }
+
+    function clearSchedule() {
+      window.clearTimeout(timer ?? 0);
+      timer = null;
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+        frame = null;
+      }
+    }
 
     // play() returns a promise. Calling pause() before it resolves
     // throws AbortError on some browsers and is a no-op on others —
@@ -310,7 +326,8 @@ const heroAgents = getVideoSlot("hero-agents");
       }
     }
 
-    function show(i: number) {
+    function show(i: number, arm = true) {
+      clearSchedule();
       if (active) {
         active.classList.remove("is-active");
         pauseVideoIn(active);
@@ -320,14 +337,14 @@ const heroAgents = getVideoSlot("hero-agents");
       playVideoIn(active);
 
       const hold = Number(active.dataset.hold) || 3500;
-      bar!.style.transition = "none";
-      bar!.style.width = "0%";
-      requestAnimationFrame(() => {
-        bar!.style.transition = `width ${hold}ms linear`;
-        bar!.style.width = "100%";
+      progressBar.style.transition = "none";
+      progressBar.style.width = "0%";
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        progressBar.style.transition = `width ${hold}ms linear`;
+        progressBar.style.width = "100%";
       });
-      window.clearTimeout(timer ?? 0);
-      if (!paused && !reducedMotion) {
+      if (arm && shouldRun()) {
         timer = window.setTimeout(() => {
           idx = (idx + 1) % moments.length;
           show(idx);
@@ -335,29 +352,48 @@ const heroAgents = getVideoSlot("hero-agents");
       }
     }
 
-    reel.addEventListener("mouseenter", () => {
-      paused = true;
-      window.clearTimeout(timer ?? 0);
-      bar.style.transition = "none";
+    function stop() {
+      clearSchedule();
+      progressBar.style.transition = "none";
       if (active) pauseVideoIn(active);
+    }
+
+    function start() {
+      if (shouldRun()) show(idx);
+    }
+
+    reel.addEventListener("mouseenter", () => {
+      hoverPaused = true;
+      stop();
     });
     reel.addEventListener("mouseleave", () => {
-      paused = false;
-      show(idx);
+      hoverPaused = false;
+      start();
     });
 
     // Pause the timer when the tab is hidden — saves wakeups, and avoids
     // the bar/progress getting out of sync after a long backgrounded gap.
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        window.clearTimeout(timer ?? 0);
-        timer = null;
-        if (active) pauseVideoIn(active);
-      } else if (!paused) {
-        show(idx);
+        stop();
+      } else {
+        start();
       }
     });
 
-    show(0);
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          inViewport = Boolean(entry?.isIntersecting);
+          if (inViewport) start();
+          else stop();
+        },
+        { threshold: 0.2 }
+      );
+      io.observe(reel);
+    }
+
+    show(0, false);
+    start();
   });
 </script>
