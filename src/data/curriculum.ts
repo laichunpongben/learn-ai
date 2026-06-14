@@ -341,10 +341,6 @@ export const LESSONS: Lesson[] = [
   },
 ];
 
-export function lessonByIndex(i: number): Lesson | undefined {
-  return LESSONS[i];
-}
-
 export function lessonIndex(id: string): number {
   return LESSONS.findIndex((l) => l.id === id);
 }
@@ -358,6 +354,7 @@ export function neighbors(id: string): { prev?: Lesson; next?: Lesson } {
 }
 
 export function trackById(id: TrackId): Track {
+  // Throws on unknown ids; lessonIndex returns -1 and neighbors returns undefined.
   const t = TRACKS.find((t) => t.id === id);
   if (!t) throw new Error(`unknown track: ${id}`);
   return t;

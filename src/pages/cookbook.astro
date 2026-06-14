@@ -150,8 +150,8 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
                   <span class="track-pill">{r.product}</span>
                 </header>
                 <p class="recipe-outcome"><strong>You'll get:</strong> {r.outcome}</p>
-                <div class="recipe-prompt">
-                  <button class="copy-btn" data-copy>Copy</button>
+                <div class="recipe-prompt" data-copy-root>
+                  <button class="copy-btn" data-ui-action="copy-nearest" data-copy-source="[data-prompt]">Copy</button>
                   <pre data-prompt>{r.prompt}</pre>
                 </div>
               </article>
@@ -223,20 +223,3 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     border-color: rgba(255, 255, 255, 0.3);
   }
 </style>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const pre = btn.parentElement?.querySelector<HTMLElement>("[data-prompt]");
-      const text = pre?.textContent ?? "";
-      try {
-        await navigator.clipboard.writeText(text);
-        const old = btn.textContent;
-        btn.textContent = "Copied ✓";
-        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
-      } catch {
-        btn.textContent = "Press Ctrl/⌘+C";
-      }
-    });
-  });
-</script>

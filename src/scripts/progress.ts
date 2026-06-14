@@ -4,6 +4,7 @@
  * Resumable: returning learners see what they've already done.
  */
 
+// Bumping this suffix intentionally resets stored lesson progress.
 const KEY = "learn-ai.progress.v1";
 
 interface Progress {
@@ -17,9 +18,13 @@ function read(): Progress {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { done: [] };
-    const parsed = JSON.parse(raw) as Progress;
+    const parsed = JSON.parse(raw) as Partial<Progress>;
     if (!Array.isArray(parsed.done)) return { done: [] };
-    return parsed;
+    return {
+      done: parsed.done.filter((id): id is string => typeof id === "string"),
+      ...(typeof parsed.lastVisited === "string" ? { lastVisited: parsed.lastVisited } : {}),
+      ...(typeof parsed.startedAt === "string" ? { startedAt: parsed.startedAt } : {}),
+    };
   } catch {
     return { done: [] };
   }

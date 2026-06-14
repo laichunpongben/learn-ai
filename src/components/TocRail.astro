@@ -2,7 +2,7 @@
 /**
  * Sticky right-rail table of contents for lesson pages.
  * After the page loads, scans <main> for h2/h3 elements, slugifies any without an id,
- * and builds a nested navigation. IntersectionObserver highlights the current section.
+ * and builds a nested navigation. A throttled scroll handler highlights the current section.
  *
  * Only renders the rail visibly on screens >= 1280px and when 3+ headings are found.
  */
@@ -163,9 +163,18 @@
       }
       setActive(current ?? headings[0]?.id ?? null);
     }
+    let scheduled = false;
+    function scheduleUpdate() {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => {
+        scheduled = false;
+        update();
+      });
+    }
     update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
   }
 
   const headings = collectHeadings();

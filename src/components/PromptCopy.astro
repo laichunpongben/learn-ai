@@ -6,10 +6,10 @@ interface Props {
 const { label = "Paste this prompt", prompt } = Astro.props;
 ---
 
-<div class="pc">
+<div class="pc" data-copy-root>
   <div class="pc-head">
     <span class="pc-label">{label}</span>
-    <button class="copy-prompt" data-copy-prompt>Copy</button>
+    <button class="copy-prompt" data-ui-action="copy-nearest" data-copy-source="[data-prompt-body]">Copy</button>
   </div>
   <pre data-prompt-body>{prompt}</pre>
 </div>
@@ -63,20 +63,3 @@ const { label = "Paste this prompt", prompt } = Astro.props;
     word-wrap: break-word;
   }
 </style>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>("[data-copy-prompt]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const pre = btn.parentElement?.parentElement?.querySelector<HTMLElement>("[data-prompt-body]");
-      const text = pre?.textContent ?? "";
-      try {
-        await navigator.clipboard.writeText(text);
-        const old = btn.textContent;
-        btn.textContent = "Copied ✓";
-        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
-      } catch {
-        btn.textContent = "Press Ctrl/⌘+C";
-      }
-    });
-  });
-</script>

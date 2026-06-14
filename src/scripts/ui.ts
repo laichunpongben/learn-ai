@@ -11,9 +11,16 @@
  * to one function. No per-component listeners, no onclick attributes.
  */
 
+// Bumping this suffix intentionally resets stored theme preference.
 const THEME_KEY = "learn-ai.theme.v1";
 
-type Action = "toggle-theme" | "open-search" | "close-search" | "toggle-sidebar" | "close-sidebar";
+type Action =
+  | "toggle-theme"
+  | "open-search"
+  | "close-search"
+  | "toggle-sidebar"
+  | "close-sidebar"
+  | "copy-nearest";
 
 type Mode = "light" | "dark" | "auto";
 
@@ -76,12 +83,28 @@ function closeSidebar(): void {
   setSidebarToggleAria(false);
 }
 
-const ACTIONS: Record<Action, () => void> = {
+async function copyNearest(actionEl: HTMLElement): Promise<void> {
+  const root = actionEl.closest<HTMLElement>("[data-copy-root]");
+  const selector = actionEl.dataset.copySource;
+  const source = root && selector ? root.querySelector<HTMLElement>(selector) : null;
+  const text = source?.textContent ?? "";
+  const old = actionEl.textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    actionEl.textContent = "Copied ✓";
+    window.setTimeout(() => (actionEl.textContent = old ?? "Copy"), 1500);
+  } catch {
+    actionEl.textContent = "Press Ctrl/⌘+C";
+  }
+}
+
+const ACTIONS: Record<Action, (actionEl: HTMLElement) => void | Promise<void>> = {
   "toggle-theme": toggleTheme,
   "open-search": openSearch,
   "close-search": closeSearch,
   "toggle-sidebar": toggleSidebar,
   "close-sidebar": closeSidebar,
+  "copy-nearest": copyNearest,
 };
 
 document.addEventListener("click", (e) => {
@@ -100,9 +123,13 @@ document.addEventListener("click", (e) => {
 
   const actionEl = target.closest<HTMLElement>("[data-ui-action]");
   const action = actionEl?.dataset.uiAction as Action | undefined;
-  if (action && ACTIONS[action]) {
+  if (actionEl && action && ACTIONS[action]) {
     e.preventDefault();
-    ACTIONS[action]();
+    ACTIONS[action](actionEl);
+    return;
+  }
+  if (actionEl) {
+    e.preventDefault();
     return;
   }
 
@@ -156,13 +183,14 @@ function pointInside(x: number, y: number, r: DOMRect): boolean {
 
 const progressFill = document.querySelector<HTMLElement>("[data-read-progress] > span");
 if (progressFill) {
+  const fill = progressFill;
   let raf = 0;
   function paintProgress(): void {
     raf = 0;
     const doc = document.documentElement;
     const max = doc.scrollHeight - doc.clientHeight;
     const pct = max > 0 ? Math.min(100, (doc.scrollTop / max) * 100) : 0;
-    progressFill!.style.width = `${pct}%`;
+    fill.style.width = `${pct}%`;
   }
   function schedule(): void {
     if (raf) return;

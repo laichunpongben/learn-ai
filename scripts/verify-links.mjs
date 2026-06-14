@@ -40,7 +40,6 @@ function resolveTarget(urlPath) {
     join(DIST, noTrail),
     join(DIST, noTrail + ".html"),
     join(DIST, noTrail, "index.html"),
-    join(DIST, clean),
   ];
   return candidates;
 }

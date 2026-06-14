@@ -1,11 +1,13 @@
 ---
 import { LESSONS, TRACKS, lessonsInTrack } from "../data/curriculum";
+import { STATIC_PAGES } from "../data/static-pages";
 
 interface Props {
   currentId?: string;
 }
 const { currentId } = Astro.props;
 const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.track : undefined;
+const referencePages = STATIC_PAGES.filter((p) => p.sidebar);
 ---
 
 <aside class="sidebar" data-sidebar aria-label="Curriculum">
@@ -38,18 +40,14 @@ const currentTrackId = currentId ? LESSONS.find((l) => l.id === currentId)?.trac
     <details class="side-group" data-track-id="reference" open>
       <summary class="side-group-title">Reference</summary>
       <ul>
-        <li>
-          <a href="/cookbook" class={`side-link ${currentId === "cookbook" ? "active" : ""}`}>
-            <span class="dot"></span>
-            <span class="label">Cookbook</span>
-          </a>
-        </li>
-        <li>
-          <a href="/glossary" class={`side-link ${currentId === "glossary" ? "active" : ""}`}>
-            <span class="dot"></span>
-            <span class="label">Glossary</span>
-          </a>
-        </li>
+        {referencePages.map((p) => (
+          <li>
+            <a href={p.href} class={`side-link ${currentId === p.id ? "active" : ""}`}>
+              <span class="dot"></span>
+              <span class="label">{p.title}</span>
+            </a>
+          </li>
+        ))}
       </ul>
     </details>
   </nav>

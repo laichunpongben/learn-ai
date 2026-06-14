@@ -223,6 +223,7 @@ const { cwd = "~/my-project" } = Astro.props;
       match: /^\/model$/i,
       scenario: {
         steps: [
+          { kind: "out", text: "Model names change; these are example labels from the current family." },
           { kind: "out", text: "Available: claude-opus-4-7 · claude-sonnet-4-6 · claude-haiku-4-5" },
           { kind: "out", text: "Currently using: claude-sonnet-4-6 (the default — fast, strong on code)" },
         ],
