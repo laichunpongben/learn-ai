@@ -259,6 +259,8 @@
 </style>
 
 <script>
+  import { prefersReducedMotion } from "../scripts/sim-motion";
+
   type Kind = "hero" | "pricing" | "login" | "generic";
   type Variant = "warm" | "dark" | "brutalist";
 
@@ -350,6 +352,11 @@
       genBtn.disabled = true;
       currentVariant = detectVariant(promptEl.value);
       paintVariants();
+      if (prefersReducedMotion()) {
+        regenerate();
+        genBtn.disabled = false;
+        return;
+      }
       frame.innerHTML = `<div class="ds-empty">✨ Generating…</div>`;
       setTimeout(() => {
         regenerate();

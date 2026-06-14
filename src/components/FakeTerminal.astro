@@ -175,6 +175,8 @@ const { cwd = "~/my-project" } = Astro.props;
 </style>
 
 <script>
+  import { motionDelay, prefersReducedMotion } from "../scripts/sim-motion";
+
   type Step = { kind: "tool" | "out" | "assistant"; text: string; needsApproval?: boolean };
 
   interface Scenario {
@@ -283,10 +285,6 @@ const { cwd = "~/my-project" } = Astro.props;
     };
   }
 
-  function delay(ms: number) {
-    return new Promise<void>((r) => setTimeout(r, ms));
-  }
-
   document.querySelectorAll<HTMLElement>("[data-term]").forEach((root) => {
     const body = root.querySelector<HTMLElement>("[data-term-body]")!;
     const input = root.querySelector<HTMLInputElement>("[data-term-input]")!;
@@ -343,13 +341,17 @@ const { cwd = "~/my-project" } = Astro.props;
     }
 
     async function streamLine(kind: string, text: string) {
+      if (prefersReducedMotion()) {
+        pushLine(kind, text);
+        return;
+      }
       const div = pushLine(kind, "");
       for (let i = 0; i < text.length; i++) {
         div.textContent = text.slice(0, i + 1);
         body.scrollTop = body.scrollHeight;
         // groups of multiple chars per tick for speed
         if (i % 3 !== 0) continue;
-        await delay(8);
+        await motionDelay(8);
       }
     }
 
@@ -359,7 +361,7 @@ const { cwd = "~/my-project" } = Astro.props;
       pushLine(cmd.startsWith("/") ? "cmd" : "you", cmd);
       const sc = pickScenario(cmd);
       for (const step of sc.steps) {
-        await delay(200);
+        await motionDelay(200);
         if (step.kind === "tool" && step.needsApproval) {
           const ok = await askApproval(step.text);
           if (!ok) {

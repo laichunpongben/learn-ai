@@ -310,6 +310,8 @@ const tasksJSON = JSON.stringify(TASKS);
 </style>
 
 <script>
+  import { motionDelay, prefersReducedMotion } from "../scripts/sim-motion";
+
   type State = "queued" | "running" | "done" | "merged";
 
   interface Task {
@@ -318,10 +320,6 @@ const tasksJSON = JSON.stringify(TASKS);
     prompt: string;
     diff: string;
     state: State;
-  }
-
-  function delay(ms: number) {
-    return new Promise<void>((r) => setTimeout(r, ms));
   }
 
   document.querySelectorAll<HTMLElement>("[data-cowork]").forEach((root) => {
@@ -383,14 +381,23 @@ const tasksJSON = JSON.stringify(TASKS);
       runBtn.disabled = true;
       const currentRun = ++runId;
       const ids = Object.keys(states).filter((k) => states[k] === "queued");
+      if (prefersReducedMotion()) {
+        for (const id of ids) {
+          states[id] = "done";
+          paintState(id);
+        }
+        if (ids.includes(selected)) selectTask(selected);
+        runBtn.disabled = false;
+        return;
+      }
       // Kick off in parallel with staggered completion to show "concurrent" feel.
       const promises = ids.map(async (id, idx) => {
-        await delay(150 + idx * 90);
+        await motionDelay(150 + idx * 90);
         if (currentRun !== runId || states[id] !== "queued") return;
         states[id] = "running";
         paintState(id);
         if (id === selected) selectTask(id);
-        await delay(1100 + Math.random() * 900);
+        await motionDelay(1100 + Math.random() * 900);
         if (currentRun !== runId || states[id] !== "running") return;
         states[id] = "done";
         paintState(id);

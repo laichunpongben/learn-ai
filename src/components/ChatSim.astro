@@ -324,6 +324,8 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
 </style>
 
 <script>
+  import { prefersReducedMotion } from "../scripts/sim-motion";
+
   type Reply = { text: string; artifact?: { title: string; html: string } };
 
   const REPLIES: { match: RegExp; reply: Reply }[] = [
@@ -429,6 +431,13 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
       setTimer: (timer: number | undefined) => void;
     }
   ) {
+    if (prefersReducedMotion()) {
+      if (!options.isCurrent() || !target.isConnected) return;
+      target.textContent = text;
+      options.setTimer(undefined);
+      options.onDone();
+      return;
+    }
     target.classList.add("streaming");
     let i = 0;
     const tick = () => {
@@ -508,8 +517,7 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
       if (bubbles.querySelectorAll(".bubble.you").length === 1) setTitleFromFirst(t);
 
       const r = reply(t);
-      // tiny "thinking" delay
-      thinkingTimer = window.setTimeout(() => {
+      const finish = () => {
         thinkingTimer = undefined;
         if (runId !== generation) return;
         const claude = pushBubble("claude", "");
@@ -525,7 +533,12 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
             sendBtn.disabled = false;
           },
         });
-      }, 280);
+      };
+      if (prefersReducedMotion()) finish();
+      else {
+        // tiny "thinking" delay
+        thinkingTimer = window.setTimeout(finish, 280);
+      }
     }
 
     form.addEventListener("submit", (e) => {
