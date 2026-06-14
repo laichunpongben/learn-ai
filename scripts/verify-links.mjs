@@ -58,6 +58,7 @@ try {
   throw err;
 }
 const broken = [];
+const guardErrors = [];
 let checked = 0;
 
 for (const file of htmlFiles) {
@@ -107,7 +108,15 @@ for (const f of lessonFiles) {
 }
 
 const unique = Array.from(new Set(broken.map((b) => `${b.source} → ${b.url}`)));
-if (unique.length || missing.length || jsonldErrors.length) {
+if (htmlFiles.length === 0) guardErrors.push(`No HTML files found in ${DIST}/.`);
+if (checked === 0) guardErrors.push("No internal links checked.");
+if (lessonFiles.length === 0) guardErrors.push("No lesson pages checked for JSON-LD.");
+
+if (unique.length || missing.length || jsonldErrors.length || guardErrors.length) {
+  if (guardErrors.length) {
+    console.log(`Verification guard errors (${guardErrors.length}):`);
+    for (const e of guardErrors) console.log(`  ✗ ${e}`);
+  }
   if (unique.length) {
     console.log(`Broken internal links (${unique.length}):`);
     for (const line of unique.slice(0, 50)) console.log(`  ✗ ${line}`);

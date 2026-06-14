@@ -12,7 +12,11 @@ export async function connect() {
   return puppeteer.connect({ browserURL: CDP });
 }
 
-export function exitWith(fails, okMessage) {
+export function exitWith(fails, okMessage, options = {}) {
+  const { checked = null, minChecks = 1, label = "checks" } = options;
+  if (checked !== null && checked < minChecks) {
+    fails.push(`ran ${checked}/${minChecks} ${label}`);
+  }
   if (fails.length) {
     console.log(`\n${fails.length} check(s) failed.`);
     process.exit(1);

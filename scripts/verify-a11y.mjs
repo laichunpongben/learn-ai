@@ -19,18 +19,25 @@ const PAGES = ["/", "/lessons/concept-mcp/", "/glossary/"];
 
 const browser = await connect();
 const fails = [];
+let checked = 0;
 
 try {
   for (const path of PAGES) {
     const page = await browser.newPage();
+    page.setDefaultTimeout(15000);
+    page.setDefaultNavigationTimeout(15000);
     await page.goto(`${BASE}${path}`, { waitUntil: "networkidle2" });
+    checked++;
 
     const results = await new AxePuppeteer(page).analyze();
     const byImpact = { critical: [], serious: [], moderate: [], minor: [] };
     for (const v of results.violations) {
       const bucket = byImpact[v.impact ?? "minor"];
       if (bucket) bucket.push(v);
-      else console.log(`  ? unknown impact: ${v.impact} for ${v.id}`);
+      else {
+        console.log(`  ✗ unknown impact: ${v.impact} for ${v.id}`);
+        fails.push(`${path}: ${v.id} has unknown impact ${v.impact}`);
+      }
     }
 
     console.log(`\n=== ${path} ===`);
@@ -52,4 +59,8 @@ try {
   await browser.disconnect();
 }
 
-exitWith(fails, "No critical/serious a11y violations.");
+exitWith(fails, "No critical/serious a11y violations.", {
+  checked,
+  minChecks: PAGES.length,
+  label: "a11y pages",
+});
