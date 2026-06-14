@@ -27,6 +27,12 @@ describe("curriculum data invariants", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
+  it("lesson ids match slugs", () => {
+    for (const l of LESSONS) {
+      expect(l.slug, `lesson ${l.id} slug`).toBe(l.id);
+    }
+  });
+
   it("every lesson references a known track", () => {
     const trackIds = new Set(TRACKS.map((t) => t.id));
     for (const l of LESSONS) {
@@ -49,6 +55,24 @@ describe("curriculum data invariants", () => {
     for (const t of TRACKS) {
       expect(t.accent, `track ${t.id} accent`).toMatch(/^#[0-9a-fA-F]{6}$/);
     }
+  });
+
+  it("lessons are grouped contiguously in TRACKS order", () => {
+    const seen = new Set<string>();
+    const orderedTrackIds: string[] = [];
+    let previousTrack: string | undefined;
+
+    for (const l of LESSONS) {
+      if (l.track !== previousTrack) {
+        expect(seen.has(l.track), `track ${l.track} is split across LESSONS`).toBe(false);
+        seen.add(l.track);
+        orderedTrackIds.push(l.track);
+        previousTrack = l.track;
+      }
+    }
+
+    const expectedOrder = TRACKS.map((t) => t.id).filter((id) => seen.has(id));
+    expect(orderedTrackIds).toEqual(expectedOrder);
   });
 });
 
