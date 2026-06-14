@@ -4,6 +4,76 @@
  * Clicking "Run all" makes the queued tasks progress through running → done.
  * Each completed task reveals a diff and approve/discard actions.
  */
+
+const TASKS = {
+  t1: {
+    id: "t1",
+    title: "Add dark mode toggle to header",
+    prompt:
+      "On the header, add a sun/moon toggle button. Clicking it should toggle a `.dark` class on the document root and persist in localStorage. Match the existing icon style. Don't change any auth.",
+    diff:
+      `<span class="hd">diff --git a/src/Header.tsx b/src/Header.tsx</span>
+@@
+   <nav>
+     <Logo />
++    <ThemeToggle />
+     <UserMenu />
+   </nav>
+<span class="hd">diff --git a/src/hooks/useTheme.ts b/src/hooks/useTheme.ts</span> (new file)
+<span class="ad">+ export function useTheme() {
++   const [theme, setTheme] = useState&lt;'light' | 'dark'&gt;(
++     () =&gt; (localStorage.getItem('theme') as any) ?? 'light'
++   );
++   useEffect(() =&gt; {
++     document.documentElement.classList.toggle('dark', theme === 'dark');
++     localStorage.setItem('theme', theme);
++   }, [theme]);
++   return { theme, toggle: () =&gt; setTheme(t =&gt; t === 'dark' ? 'light' : 'dark') };
++ }</span>`,
+  },
+  t2: {
+    id: "t2",
+    title: "Footer is missing the copyright year",
+    prompt: "The footer says '© Acme'. Make it '© {current year} Acme' — automatically updating.",
+    diff:
+      `<span class="hd">diff --git a/src/Footer.tsx b/src/Footer.tsx</span>
+@@
+-  <p>© Acme</p>
++  <p>© {new Date().getFullYear()} Acme</p>`,
+  },
+  t3: {
+    id: "t3",
+    title: "Bump deps to latest minor, run tests",
+    prompt: "Run a minor bump on all dependencies. If tests stay green, ship it. If anything breaks, stop and report.",
+    diff:
+      `<span class="hd">diff --git a/package.json b/package.json</span>
+@@
+-    "astro": "^5.10.0",
+-    "react": "^18.2.0",
+-    "zod": "^3.22.0"
+<span class="ad">+    "astro": "^5.14.0",
++    "react": "^18.3.1",
++    "zod": "^3.23.8"</span>
+
+<span class="hd">tests: 87 passed, 0 failed</span>`,
+  },
+  t4: {
+    id: "t4",
+    title: "Loading spinner on the upload form",
+    prompt: "When the user submits the upload form, show a spinner inside the button and disable the form until the response returns.",
+    diff:
+      `<span class="hd">diff --git a/src/UploadForm.tsx b/src/UploadForm.tsx</span>
+@@
+-  <button type="submit">Upload</button>
++  <button type="submit" disabled={uploading}>
++    {uploading ? <Spinner /> : 'Upload'}
++  </button>`,
+  },
+};
+
+const taskList = Object.values(TASKS);
+const initialTask = taskList[0];
+const tasksJSON = JSON.stringify(TASKS);
 ---
 
 <div class="cowork" data-cowork>
@@ -14,33 +84,23 @@
       <button class="cw-run" data-cw-run>▶ Run all</button>
     </div>
     <ul class="cw-list" data-cw-list>
-      <li class="cw-row sel" data-task="t1">
-        <span class="cw-st" data-st="t1">queued</span>
-        <span class="cw-name">Add dark mode toggle to header</span>
-      </li>
-      <li class="cw-row" data-task="t2">
-        <span class="cw-st" data-st="t2">queued</span>
-        <span class="cw-name">Footer is missing the copyright year</span>
-      </li>
-      <li class="cw-row" data-task="t3">
-        <span class="cw-st" data-st="t3">queued</span>
-        <span class="cw-name">Bump deps to latest minor, run tests</span>
-      </li>
-      <li class="cw-row" data-task="t4">
-        <span class="cw-st" data-st="t4">queued</span>
-        <span class="cw-name">Loading spinner on the upload form</span>
-      </li>
+      {taskList.map((task, idx) => (
+        <li class:list={["cw-row", { sel: idx === 0 }]} data-task={task.id}>
+          <span class="cw-st" data-st={task.id}>queued</span>
+          <span class="cw-name">{task.title}</span>
+        </li>
+      ))}
     </ul>
     <button class="cw-new" data-cw-new>+ New task</button>
   </aside>
   <section class="cw-main">
     <div class="cw-detail" data-cw-detail>
       <div class="cw-head">
-        <h3 data-cw-title>Add dark mode toggle to header</h3>
+        <h3 data-cw-title>{initialTask.title}</h3>
         <span class="cw-st-big" data-cw-status>queued</span>
       </div>
       <p class="cw-prompt" data-cw-prompt>
-        On the header, add a sun/moon toggle button. Clicking it should toggle a `.dark` class on the document root and persist in localStorage. Match the existing icon style. Don't change any auth.
+        {initialTask.prompt}
       </p>
       <div class="cw-section" data-cw-empty>
         <p style="color: var(--ink-soft); margin: 0;">Press <strong>▶ Run all</strong> to see Cowork pick this up.</p>
@@ -57,6 +117,7 @@
       </div>
     </div>
   </section>
+  <script is:inline type="application/json" data-cw-tasks set:html={tasksJSON} />
 </div>
 
 <style>
@@ -145,7 +206,6 @@
   }
   .cw-st[data-state="running"] { background: #fff4e0; color: #9a5b00; border-color: #f0d099; }
   .cw-st[data-state="done"]    { background: #e8f3ea; color: #1f5b2d; border-color: #b8d8be; }
-  .cw-st[data-state="failed"]  { background: #fbe6e3; color: #8a261d; border-color: #e1a89e; }
   .cw-st[data-state="merged"]  { background: #e5ecf5; color: #1f3d6e; border-color: #b9c8df; }
   .cw-new {
     background: transparent;
@@ -250,7 +310,7 @@
 </style>
 
 <script>
-  type State = "queued" | "running" | "done" | "merged" | "failed";
+  type State = "queued" | "running" | "done" | "merged";
 
   interface Task {
     id: string;
@@ -259,72 +319,6 @@
     diff: string;
     state: State;
   }
-
-  const TASKS: Record<string, Omit<Task, "state">> = {
-    t1: {
-      id: "t1",
-      title: "Add dark mode toggle to header",
-      prompt:
-        "On the header, add a sun/moon toggle button. Clicking it should toggle a `.dark` class on the document root and persist in localStorage. Match the existing icon style. Don't change any auth.",
-      diff:
-        `<span class="hd">diff --git a/src/Header.tsx b/src/Header.tsx</span>
-@@
-   <nav>
-     <Logo />
-+    <ThemeToggle />
-     <UserMenu />
-   </nav>
-<span class="hd">diff --git a/src/hooks/useTheme.ts b/src/hooks/useTheme.ts</span> (new file)
-<span class="ad">+ export function useTheme() {
-+   const [theme, setTheme] = useState&lt;'light' | 'dark'&gt;(
-+     () =&gt; (localStorage.getItem('theme') as any) ?? 'light'
-+   );
-+   useEffect(() =&gt; {
-+     document.documentElement.classList.toggle('dark', theme === 'dark');
-+     localStorage.setItem('theme', theme);
-+   }, [theme]);
-+   return { theme, toggle: () =&gt; setTheme(t =&gt; t === 'dark' ? 'light' : 'dark') };
-+ }</span>`,
-    },
-    t2: {
-      id: "t2",
-      title: "Footer is missing the copyright year",
-      prompt: "The footer says '© Acme'. Make it '© {current year} Acme' — automatically updating.",
-      diff:
-        `<span class="hd">diff --git a/src/Footer.tsx b/src/Footer.tsx</span>
-@@
--  <p>© Acme</p>
-+  <p>© {new Date().getFullYear()} Acme</p>`,
-    },
-    t3: {
-      id: "t3",
-      title: "Bump deps to latest minor, run tests",
-      prompt: "Run a minor bump on all dependencies. If tests stay green, ship it. If anything breaks, stop and report.",
-      diff:
-        `<span class="hd">diff --git a/package.json b/package.json</span>
-@@
--    "astro": "^5.10.0",
--    "react": "^18.2.0",
--    "zod": "^3.22.0"
-<span class="ad">+    "astro": "^5.14.0",
-+    "react": "^18.3.1",
-+    "zod": "^3.23.8"</span>
-
-<span class="hd">tests: 87 passed, 0 failed</span>`,
-    },
-    t4: {
-      id: "t4",
-      title: "Loading spinner on the upload form",
-      prompt: "When the user submits the upload form, show a spinner inside the button and disable the form until the response returns.",
-      diff:
-        `<span class="hd">diff --git a/src/UploadForm.tsx b/src/UploadForm.tsx</span>
-@@
--  <button type="submit">Upload</button>
-+  <button type="submit" disabled={uploading}>
-+    {uploading ? <Spinner /> : 'Upload'}
-+  </button>`,
-    },
-  };
 
   function delay(ms: number) {
     return new Promise<void>((r) => setTimeout(r, ms));
@@ -344,9 +338,12 @@
     const discard = root.querySelector<HTMLButtonElement>("[data-cw-discard]")!;
     const flash = root.querySelector<HTMLElement>("[data-cw-flash]")!;
     const newBtn = root.querySelector<HTMLButtonElement>("[data-cw-new]")!;
+    const taskData = root.querySelector<HTMLScriptElement>("[data-cw-tasks]")!;
+    const TASKS = JSON.parse(taskData.textContent ?? "{}") as Record<string, Omit<Task, "state">>;
+    const taskIds = Object.keys(TASKS);
 
-    const states: Record<string, State> = { t1: "queued", t2: "queued", t3: "queued", t4: "queued" };
-    let selected = "t1";
+    const states = Object.fromEntries(taskIds.map((id) => [id, "queued"])) as Record<string, State>;
+    let selected = taskIds[0];
     let runId = 0;
 
     function paintState(id: string) {
@@ -429,8 +426,10 @@
       setTimeout(() => (flash.textContent = ""), 2200);
     });
 
+    if (!selected) return;
+
     // initial paint
     Object.keys(states).forEach(paintState);
-    selectTask("t1");
+    selectTask(selected);
   });
 </script>
