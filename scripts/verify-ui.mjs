@@ -19,8 +19,11 @@ import { BASE, connect, exitWith } from "./lib/cdp.mjs";
 const browser = await connect();
 const page = await browser.newPage();
 const fails = [];
+const EXPECTED_ASSERTIONS = 14;
+let assertions = 0;
 
 function assert(name, cond, got) {
+  assertions += 1;
   if (cond) console.log(`  ✓ ${name}`);
   else {
     console.log(`  ✗ ${name} (got ${JSON.stringify(got)})`);
@@ -145,8 +148,16 @@ try {
     return el ? Number.parseFloat(el.style.width) || 0 : -1;
   });
   assert("read-progress bar grows from top to bottom", widthAtBottom > widthAtTop && widthAtBottom >= 80, { widthAtTop, widthAtBottom });
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(error);
+  fails.push(`threw: ${message}`);
 } finally {
   await browser.disconnect();
+}
+
+if (assertions < EXPECTED_ASSERTIONS) {
+  fails.push(`ran ${assertions}/${EXPECTED_ASSERTIONS} UI smoke assertions`);
 }
 
 exitWith(fails, "All UI smoke checks passed.");
