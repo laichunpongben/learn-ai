@@ -27,8 +27,12 @@ function read(): Progress {
 
 function write(next: Progress): void {
   if (typeof localStorage === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(next));
-  window.dispatchEvent(new CustomEvent("ct:progress", { detail: next }));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(next));
+  } catch {
+    /* private mode / disabled storage / quota exceeded */
+  }
+  notify(next);
 }
 
 /** Snapshot of the whole progress object. Use when a caller needs more than `done`. */
@@ -71,8 +75,16 @@ export function getLastVisited(): string | undefined {
 
 export function reset(): void {
   if (typeof localStorage === "undefined") return;
-  localStorage.removeItem(KEY);
-  window.dispatchEvent(new CustomEvent("ct:progress", { detail: { done: [] } }));
+  try {
+    localStorage.removeItem(KEY);
+  } catch {
+    /* private mode / disabled storage */
+  }
+  notify({ done: [] });
+}
+
+function notify(next: Progress): void {
+  window.dispatchEvent(new CustomEvent("ct:progress", { detail: next }));
 }
 
 export type { Progress };
