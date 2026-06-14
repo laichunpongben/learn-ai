@@ -347,6 +347,7 @@
 
     const states: Record<string, State> = { t1: "queued", t2: "queued", t3: "queued", t4: "queued" };
     let selected = "t1";
+    let runId = 0;
 
     function paintState(id: string) {
       const pill = root.querySelector<HTMLElement>(`[data-st="${id}"]`);
@@ -383,14 +384,17 @@
 
     runBtn.addEventListener("click", async () => {
       runBtn.disabled = true;
+      const currentRun = ++runId;
       const ids = Object.keys(states).filter((k) => states[k] === "queued");
       // Kick off in parallel with staggered completion to show "concurrent" feel.
       const promises = ids.map(async (id, idx) => {
         await delay(150 + idx * 90);
+        if (currentRun !== runId || states[id] !== "queued") return;
         states[id] = "running";
         paintState(id);
         if (id === selected) selectTask(id);
         await delay(1100 + Math.random() * 900);
+        if (currentRun !== runId || states[id] !== "running") return;
         states[id] = "done";
         paintState(id);
         if (id === selected) selectTask(id);
