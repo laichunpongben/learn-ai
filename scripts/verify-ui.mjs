@@ -18,6 +18,8 @@ import { BASE, connect, exitWith } from "./lib/cdp.mjs";
 
 const browser = await connect();
 const page = await browser.newPage();
+page.setDefaultTimeout(15000);
+page.setDefaultNavigationTimeout(15000);
 const fails = [];
 const EXPECTED_ASSERTIONS = 14;
 let assertions = 0;
@@ -33,10 +35,10 @@ function assert(name, cond, got) {
 
 try {
   await page.goto(`${BASE}/lessons/welcome/`, { waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 400));
+  await page.waitForSelector("[data-ui-action='toggle-theme']");
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 400));
+  await page.waitForSelector("[data-ui-action='toggle-theme']");
 
   // 1. Click on the toggle button must reach something INSIDE the toggle —
   //    any descendant is fine (svg, path, circle, …); the test exists to catch
@@ -51,30 +53,30 @@ try {
 
   // 2. Theme actually toggles between light and dark.
   await page.click("[data-ui-action='toggle-theme']");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.documentElement.hasAttribute("data-theme"));
   const t1 = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
   await page.click("[data-ui-action='toggle-theme']");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction((previous) => document.documentElement.getAttribute("data-theme") !== previous, {}, t1);
   const t2 = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
   assert("first toggle sets a theme", t1 === "dark" || t1 === "light", t1);
   assert("second toggle flips the theme", t1 !== t2, { t1, t2 });
 
   // 3. Dialog open + close.
   await page.click("[data-ui-action='open-search']");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === true);
   const o = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("open-search button opens the dialog", o === true, o);
 
   await page.click("[data-ui-action='close-search']");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === false);
   const c = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("close-search button closes the dialog", c === false, c);
 
   // 4. Esc closes the dialog (native dialog behavior).
   await page.click("[data-ui-action='open-search']");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === true);
   await page.keyboard.press("Escape");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === false);
   const esc = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("Esc closes the dialog", esc === false, esc);
 
@@ -82,7 +84,7 @@ try {
   await page.keyboard.down("Meta");
   await page.keyboard.press("k");
   await page.keyboard.up("Meta");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === true);
   const k = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("Cmd+K opens the dialog", k === true, k);
 
@@ -94,36 +96,40 @@ try {
 
   // 5c. `/` opens the dialog (close first).
   await page.keyboard.press("Escape");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === false);
   await page.keyboard.press("/");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === true);
   const slash = await page.evaluate(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open"));
   assert("'/' opens the dialog", slash === true, slash);
 
   // 6. `n` navigates to the next lesson (close dialog first).
   await page.keyboard.press("Escape");
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForFunction(() => document.querySelector("[data-search-dialog]")?.hasAttribute("open") === false);
   const before = page.url();
-  await page.keyboard.press("n");
-  await new Promise((r) => setTimeout(r, 500));
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+    page.keyboard.press("n"),
+  ]);
   const after = page.url();
   assert("'n' navigates forward in the curriculum", before !== after, { before, after });
 
   // 7. From the homepage, `n` should hop to the continue/start button target.
   await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 300));
+  await page.waitForSelector("[data-nav-next]");
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 400));
+  await page.waitForSelector("[data-nav-next]");
   const homeBefore = page.url();
-  await page.keyboard.press("n");
-  await new Promise((r) => setTimeout(r, 500));
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+    page.keyboard.press("n"),
+  ]);
   const homeAfter = page.url();
   assert("'n' from homepage hops to a lesson", homeBefore !== homeAfter && homeAfter.includes("/lessons/"), { homeBefore, homeAfter });
 
   // 8. 404 page renders with curriculum suggestions.
   await page.goto(`${BASE}/404.html`, { waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 200));
+  await page.waitForSelector(".suggestions-grid a");
   const has404 = await page.evaluate(() => {
     const h1 = document.querySelector("h1");
     const suggestions = document.querySelectorAll(".suggestions-grid a").length;
@@ -134,7 +140,7 @@ try {
 
   // 9. Read-progress bar grows as the page scrolls.
   await page.goto(`${BASE}/lessons/concept-mcp/`, { waitUntil: "domcontentloaded" });
-  await new Promise((r) => setTimeout(r, 400));
+  await page.waitForSelector("[data-read-progress] > span");
   const widthAtTop = await page.evaluate(() => {
     const el = document.querySelector("[data-read-progress] > span");
     return el ? Number.parseFloat(el.style.width) || 0 : -1;
@@ -142,7 +148,10 @@ try {
   await page.evaluate(() => {
     window.scrollTo(0, document.documentElement.scrollHeight);
   });
-  await new Promise((r) => setTimeout(r, 300));
+  await page.waitForFunction(() => {
+    const el = document.querySelector("[data-read-progress] > span");
+    return el && (Number.parseFloat(el.style.width) || 0) >= 80;
+  });
   const widthAtBottom = await page.evaluate(() => {
     const el = document.querySelector("[data-read-progress] > span");
     return el ? Number.parseFloat(el.style.width) || 0 : -1;

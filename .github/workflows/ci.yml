@@ -29,6 +29,7 @@ jobs:
   source:
     name: Source (type, lint, unit, build)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -56,6 +57,7 @@ jobs:
   browser:
     name: Browser (smoke + a11y)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
