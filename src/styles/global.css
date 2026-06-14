@@ -15,6 +15,8 @@
   --accent-soft: #f6e7d8;
   --good: #1f7a3a;
   --bad: #b3261e;
+  --ink-hover: #2a2a2a;
+  --accent-hover: color-mix(in srgb, var(--accent) 78%, black);
   --header-bg: rgba(251, 251, 250, 0.85);
   --radius: 8px;
   --radius-sm: 6px;
@@ -39,6 +41,8 @@
   --accent-soft: #2d2117;
   --good: #5fb87a;
   --bad: #e07b6a;
+  --ink-hover: #c8c8c8;
+  --accent-hover: color-mix(in srgb, var(--accent) 82%, white);
   --header-bg: rgba(13, 14, 16, 0.78);
 }
 
@@ -61,7 +65,6 @@
 /* Status pills in CoworkSim */
 [data-theme="dark"] .cw-st[data-state="running"] { background: #2a1f10; color: #f0a05a; border-color: #4a361c; }
 [data-theme="dark"] .cw-st[data-state="done"]    { background: #14241a; color: #9fd1ad; border-color: #2d4a35; }
-[data-theme="dark"] .cw-st[data-state="failed"]  { background: #2a1614; color: #e07b6a; border-color: #4a2825; }
 [data-theme="dark"] .cw-st[data-state="merged"]  { background: #161e2a; color: #9ab5d8; border-color: #2d3d54; }
 
 /* Git timeline strokes */
@@ -89,6 +92,8 @@
     --accent-soft: #2d2117;
     --good: #5fb87a;
     --bad: #e07b6a;
+    --ink-hover: #c8c8c8;
+    --accent-hover: color-mix(in srgb, var(--accent) 82%, white);
     --header-bg: rgba(13, 14, 16, 0.78);
   }
 }
@@ -433,10 +438,9 @@ button, .button {
   letter-spacing: -0.005em;
 }
 button:hover, .button:hover {
-  background: #2a2a2a;
-  border-color: #2a2a2a;
+  background: var(--ink-hover);
+  border-color: var(--ink-hover);
 }
-button:active { transform: translateY(0); }
 button.ghost {
   background: transparent;
   color: var(--ink-soft);
@@ -453,8 +457,8 @@ button.accent {
   color: #fff;
 }
 button.accent:hover {
-  background: #803600;
-  border-color: #803600;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 [data-theme="dark"] button.accent {
   color: #1a0a00;
@@ -469,8 +473,8 @@ a.button {
   background: var(--ink);
   color: var(--bg);
 }
-a.button:hover { background: #2a2a2a; border-color: #2a2a2a; color: #fff; }
-[data-theme="dark"] a.button:hover { background: #c8c8c8; border-color: #c8c8c8; color: var(--bg); }
+a.button:hover { background: var(--ink-hover); border-color: var(--ink-hover); color: #fff; }
+[data-theme="dark"] a.button:hover { color: var(--bg); }
 
 /* Progress */
 .progress-bar {
@@ -529,10 +533,8 @@ a.button:hover { background: #2a2a2a; border-color: #2a2a2a; color: #fff; }
   .lesson-card:nth-child(3n) { border-right: none; }
   .lesson-card:not(:nth-child(3n)) { border-right: 1px solid var(--line); }
 }
-.lesson-card { border-bottom: 1px solid var(--line); }
 .lesson-card:hover {
   background: var(--surface-2);
-  border-bottom: 1px solid var(--line);
   text-decoration: none;
 }
 .lesson-card.done .blurb { color: var(--ink-faint); }
@@ -867,7 +869,6 @@ pre code { font-family: inherit; }
   h1, h2, h3, h4 { color: #000 !important; page-break-after: avoid; }
   /* Reveal: force open and show the body */
   .reveal { border-top: 1px solid #ccc !important; }
-  .reveal[open], .reveal:not([open]) { /* both */ }
   .reveal summary::before { content: "" !important; }
   .reveal .body { display: block !important; margin-top: 0.4rem; }
   details:not([open]) > *:not(summary) { display: block !important; }

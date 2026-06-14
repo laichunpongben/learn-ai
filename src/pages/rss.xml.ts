@@ -19,5 +19,5 @@ export const GET: APIRoute = (context) =>
       categories: [trackById(l.track).title],
       pubDate: FEED_PUB_DATE,
     })),
-    customData: `<language>en-us</language><lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`,
+    customData: `<language>en-us</language><lastBuildDate>${FEED_PUB_DATE.toUTCString()}</lastBuildDate>`,
   });

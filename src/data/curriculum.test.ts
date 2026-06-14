@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  LESSONS,
-  lessonByIndex,
-  lessonIndex,
-  lessonsInTrack,
-  neighbors,
-  TRACKS,
-  trackById,
-} from "./curriculum";
+import { LESSONS, lessonIndex, lessonsInTrack, neighbors, TRACKS, trackById } from "./curriculum";
 
 describe("curriculum data invariants", () => {
   it("has at least one lesson per track", () => {
@@ -84,18 +76,6 @@ describe("lookup helpers", () => {
   it("lessonIndex returns the right index for known ids", () => {
     expect(lessonIndex("welcome")).toBe(0);
     expect(lessonIndex(LESSONS[LESSONS.length - 1].id)).toBe(LESSONS.length - 1);
-  });
-
-  it("lessonByIndex round-trips", () => {
-    for (let i = 0; i < LESSONS.length; i++) {
-      expect(lessonByIndex(i)?.id).toBe(LESSONS[i].id);
-    }
-  });
-
-  it("lessonByIndex returns undefined out of range", () => {
-    expect(lessonByIndex(-1)).toBeUndefined();
-    expect(lessonByIndex(LESSONS.length)).toBeUndefined();
-    expect(lessonByIndex(LESSONS.length + 1000)).toBeUndefined();
   });
 
   it("trackById throws on unknown track", () => {

@@ -1,5 +1,7 @@
 ---
 import { LESSONS, TRACKS } from "../data/curriculum";
+import { STATIC_PAGES } from "../data/static-pages";
+import SearchIcon from "./SearchIcon.astro";
 
 type Entry = { kind: "lesson" | "page"; title: string; blurb: string; href: string; track?: string };
 
@@ -13,29 +15,25 @@ const entries: Entry[] = [
     href: `/lessons/${l.slug}`,
     track: trackMap.get(l.track),
   })),
-  { kind: "page", title: "Curriculum", blurb: "All lessons grouped by track.", href: "/" },
-  { kind: "page", title: "Cookbook", blurb: "Copy-paste starter prompts.", href: "/cookbook" },
-  { kind: "page", title: "Glossary", blurb: "Definitions for the AI terms tutorials drop without warning.", href: "/glossary" },
-  { kind: "page", title: "What's next", blurb: "Where to go after you've finished the tutorial.", href: "/whats-next" },
+  ...STATIC_PAGES.filter((p) => p.search).map<Entry>((p) => ({
+    kind: "page",
+    title: p.title,
+    blurb: p.blurb,
+    href: p.href,
+  })),
 ];
 
 const indexJSON: string = JSON.stringify(entries);
 ---
 
 <button type="button" class="search-trigger" data-ui-action="open-search" aria-label="Search (⌘K)" title="Search (⌘K)">
-  <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true">
-    <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-    <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  </svg>
+  <SearchIcon size={15} />
 </button>
 
 <!-- Native <dialog>: UA stylesheet handles show/hide. Closed = display:none. -->
 <dialog class="search-dialog" data-search-dialog aria-label="Search">
   <form method="dialog" class="search-input-row">
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="search-icon">
-      <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
+    <SearchIcon class="search-icon" />
     <input
       type="text"
       aria-label="Search lessons and pages"
@@ -234,17 +232,25 @@ const indexJSON: string = JSON.stringify(entries);
       .slice(0, 10);
   }
 
-  function highlight(text: string, q: string): string {
-    if (!q.trim()) return text;
-    const safe = text.replace(/[&<>"']/g, (c) =>
+  function escapeHTML(text: string): string {
+    return text.replace(/[&<>"']/g, (c) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
     );
+  }
+
+  function highlight(text: string, q: string): string {
     const tokens = q.toLowerCase().split(/\s+/).filter(Boolean);
-    let out = safe;
-    for (const t of tokens) {
-      const re = new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
-      out = out.replace(re, "<mark>$1</mark>");
+    if (tokens.length === 0) return escapeHTML(text);
+    const re = new RegExp(tokens.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "ig");
+    let out = "";
+    let last = 0;
+    for (const match of text.matchAll(re)) {
+      const start = match.index ?? 0;
+      out += escapeHTML(text.slice(last, start));
+      out += `<mark>${escapeHTML(match[0])}</mark>`;
+      last = start + match[0].length;
     }
+    out += escapeHTML(text.slice(last));
     return out;
   }
 

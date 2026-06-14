@@ -1,19 +1,20 @@
 ---
+import { STATIC_PAGES } from "../data/static-pages";
+
 const now = new Date();
 const year = now.getFullYear();
 const builtOn = now.toISOString().slice(0, 10);
+const footerPages = STATIC_PAGES.filter((p) => p.footer);
 ---
 <footer class="site-footer">
   <nav class="footer-nav" aria-label="Site links">
-    <a href="/">Curriculum</a>
-    <a href="/cookbook">Cookbook</a>
-    <a href="/glossary">Glossary</a>
+    {footerPages.map((p) => <a href={p.href}>{p.title}</a>)}
     <a href="/rss.xml">RSS</a>
     <a href="/llms.txt">llms.txt</a>
-    <a href="https://github.com/laichunpongben/learn-ai" rel="noopener noreferrer">GitHub</a>
+    <a href="https://github.com/laichunpongben/learn-ai" target="_blank" rel="noopener noreferrer">GitHub</a>
   </nav>
   <p class="footer-line">
-    © {year} Learn AI · part of <a class="ft-home" href="https://databookman.com">databookman.com</a>
+    © {year} Learn AI · part of <a class="ft-home" href="https://databookman.com" target="_blank" rel="noopener noreferrer">databookman.com</a>
     · <time class="ft-built" datetime={builtOn}>Updated {builtOn}</time>
   </p>
 </footer>
