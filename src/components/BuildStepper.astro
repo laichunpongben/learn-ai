@@ -1,18 +1,18 @@
 ---
 /**
  * Wraps a sequence of <Step> elements. Renders a sticky progress strip at the top
- * that counts completed steps. State lives in localStorage under a per-build key.
+ * that counts completed required steps. State lives in localStorage under a per-build key.
  */
 interface Props {
   id: string;       // unique build id (e.g. "build-writing")
-  total: number;    // total step count (used for the progress bar)
+  total: number;    // required step count (used for the progress bar before JS paints)
 }
 const { id, total } = Astro.props;
 ---
 
 <div class="build" data-build={id} data-build-total={total}>
   <div class="build-bar">
-    <div class="build-pill"><span data-build-done>0</span> of {total} steps</div>
+    <div class="build-pill"><span data-build-done>0</span> of <span data-build-total-label>{total}</span> steps</div>
     <div class="build-track"><span data-build-fill></span></div>
     <button class="build-reset ghost" data-build-reset>Reset</button>
   </div>
@@ -107,11 +107,12 @@ const { id, total } = Astro.props;
 
   function paint(root: HTMLElement) {
     const id = root.dataset.build!;
-    const total = parseInt(root.dataset.buildTotal || "1", 10);
     const state = read(id);
     let done = 0;
+    let total = 0;
     root.querySelectorAll<HTMLElement>("[data-step-id]").forEach((s) => {
       const sid = s.dataset.stepId!;
+      const isOptional = s.dataset.stepOptional === "true";
       const isDone = !!state[sid];
       s.classList.toggle("done", isDone);
       const btn = s.querySelector<HTMLButtonElement>("[data-step-toggle]");
@@ -120,13 +121,18 @@ const { id, total } = Astro.props;
         btn.classList.toggle("accent", !isDone);
         btn.classList.toggle("ghost", isDone);
       }
-      if (isDone) done++;
+      if (!isOptional) {
+        total++;
+        if (isDone) done++;
+      }
     });
     const fill = root.querySelector<HTMLElement>("[data-build-fill]");
     const counter = root.querySelector<HTMLElement>("[data-build-done]");
+    const totalLabel = root.querySelector<HTMLElement>("[data-build-total-label]");
     const celeb = root.querySelector<HTMLElement>("[data-build-celebrate]");
     if (fill) fill.style.width = `${total ? (done / total) * 100 : 0}%`;
     if (counter) counter.textContent = String(done);
+    if (totalLabel) totalLabel.textContent = String(total);
     if (celeb) celeb.hidden = done < total;
   }
 

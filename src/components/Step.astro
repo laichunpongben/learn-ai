@@ -9,7 +9,7 @@ const { n, title, id, optional } = Astro.props;
 const stepId = id ?? `s${n}`;
 ---
 
-<section class="step" data-step-id={stepId}>
+<section class="step" data-step-id={stepId} data-step-optional={optional ? "true" : undefined}>
   <header class="step-head">
     <span class="step-num">{n}</span>
     <h3 class="step-title">{title}{optional ? <span class="opt">optional</span> : null}</h3>
