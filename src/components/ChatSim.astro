@@ -420,17 +420,31 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
     };
   }
 
-  function streamText(target: HTMLElement, text: string, onDone: () => void) {
+  function streamText(
+    target: HTMLElement,
+    text: string,
+    options: {
+      isCurrent: () => boolean;
+      onDone: () => void;
+      setTimer: (timer: number | undefined) => void;
+    }
+  ) {
     target.classList.add("streaming");
     let i = 0;
     const tick = () => {
+      if (!options.isCurrent() || !target.isConnected) {
+        target.classList.remove("streaming");
+        options.setTimer(undefined);
+        return;
+      }
       i = Math.min(text.length, i + Math.max(1, Math.round(Math.random() * 4)));
       target.textContent = text.slice(0, i);
       if (i < text.length) {
-        setTimeout(tick, 18 + Math.random() * 18);
+        options.setTimer(window.setTimeout(tick, 18 + Math.random() * 18));
       } else {
         target.classList.remove("streaming");
-        onDone();
+        options.setTimer(undefined);
+        options.onDone();
       }
     };
     tick();
@@ -451,6 +465,9 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
     const title = root.querySelector<HTMLElement>("[data-chat-title]")!;
 
     let busy = false;
+    let generation = 0;
+    let thinkingTimer: number | undefined;
+    let streamTimer: number | undefined;
 
     function pushBubble(role: "you" | "claude", text: string): HTMLElement {
       empty.style.display = "none";
@@ -484,6 +501,7 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
       if (!t) return;
       busy = true;
       sendBtn.disabled = true;
+      const runId = ++generation;
       pushBubble("you", t);
       input.value = "";
       input.style.height = "auto";
@@ -491,12 +509,21 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
 
       const r = reply(t);
       // tiny "thinking" delay
-      setTimeout(() => {
+      thinkingTimer = window.setTimeout(() => {
+        thinkingTimer = undefined;
+        if (runId !== generation) return;
         const claude = pushBubble("claude", "");
-        streamText(claude, r.text, () => {
-          if (r.artifact) openArtifact(r.artifact.title, r.artifact.html);
-          busy = false;
-          sendBtn.disabled = false;
+        streamText(claude, r.text, {
+          isCurrent: () => runId === generation,
+          setTimer: (timer) => {
+            streamTimer = timer;
+          },
+          onDone: () => {
+            if (runId !== generation || !claude.isConnected) return;
+            if (r.artifact) openArtifact(r.artifact.title, r.artifact.html);
+            busy = false;
+            sendBtn.disabled = false;
+          },
         });
       }, 280);
     }
@@ -523,6 +550,13 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
     );
 
     newChat.addEventListener("click", () => {
+      generation += 1;
+      if (thinkingTimer !== undefined) window.clearTimeout(thinkingTimer);
+      if (streamTimer !== undefined) window.clearTimeout(streamTimer);
+      thinkingTimer = undefined;
+      streamTimer = undefined;
+      busy = false;
+      sendBtn.disabled = false;
       bubbles.innerHTML = "";
       bubbles.appendChild(empty);
       empty.style.display = "";
