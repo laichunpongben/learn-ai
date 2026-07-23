@@ -29,6 +29,12 @@
   @media (min-width: 1280px) {
     .toc { display: block; }
   }
+  /* The `hidden` attribute must win even inside the desktop media query.
+     `.toc { display: block }` is an author rule that beats the UA
+     `[hidden] { display: none }` on origin regardless of specificity, so an
+     explicit `.toc[hidden]` rule (specificity 0,2,0) is required — otherwise
+     the empty rail shows on <3-heading lessons and flashes before hydration. */
+  .toc[hidden] { display: none; }
   .toc-label {
     font-size: 0.7rem;
     text-transform: uppercase;
