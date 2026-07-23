@@ -39,12 +39,11 @@ const CACHE_CAPS = {
   [VIDEOS_CACHE]: 10,
 };
 
-const SHELL_ASSETS = [
-  "/",
-  "/favicon.svg",
-  "/manifest.webmanifest",
-  "/offline",
-];
+// Only /offline needs precaching. routeFor() serves "/" via stale-while-
+// revalidate (HTML_CACHE) and favicon/manifest cache-first (IMAGES_CACHE),
+// so none of those are ever read back from SHELL_CACHE. /offline is the
+// global navigation fallback and must exist before the first offline load.
+const SHELL_ASSETS = ["/offline"];
 
 const OFFLINE_URL = "/offline";
 

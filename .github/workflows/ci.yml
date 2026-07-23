@@ -40,6 +40,7 @@ jobs:
       - run: npm run check
       - run: npm run lint
       - run: npm run test
+      - run: npm run videos:check
       - run: npm run build
       - name: Verify expected page count
         run: |
