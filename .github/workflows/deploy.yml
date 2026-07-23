@@ -48,7 +48,7 @@ jobs:
           # Sanity-check the env vars are populated (lengths only — never log secret values).
           test -n "$CLOUDFLARE_API_TOKEN" && echo "token len=${#CLOUDFLARE_API_TOKEN}" || (echo "token missing"; exit 1)
           test -n "$CLOUDFLARE_ACCOUNT_ID" && echo "account len=${#CLOUDFLARE_ACCOUNT_ID}" || (echo "account missing"; exit 1)
-          npx --yes wrangler@latest pages deploy dist \
+          npx --yes wrangler@4 pages deploy dist \
             --project-name=learn-ai \
             --branch=main \
             --commit-dirty=true
