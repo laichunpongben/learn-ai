@@ -6,6 +6,7 @@ interface Recipe {
   product: string;
   outcome: string;
   prompt: string;
+  note?: string;
 }
 
 const RECIPES: { group: string; recipes: Recipe[] }[] = [
@@ -115,6 +116,7 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
         outcome: "A persistent background assistant",
         prompt:
           "(Run in Claude Code)\n/plugin marketplace add sypsyp97/claude-hermes\n/plugin install claude-hermes@claude-hermes\n/claude-hermes:start\n\nThen send Hermes:\n\"Every weekday at 9am, read my Linear inbox and draft three follow-up replies for me to review.\"",
+        note: "This is a third-party community plugin that runs a persistent agent over your Linear inbox. Read the source before installing and scope its tool access — the same 'review every approval' habit from the rest of this course applies.",
       },
       {
         title: "Quick aider session",
@@ -154,6 +156,9 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
                   <button class="copy-btn" data-ui-action="copy-nearest" data-copy-source="[data-prompt]">Copy</button>
                   <pre data-prompt>{r.prompt}</pre>
                 </div>
+                {r.note && (
+                  <p class="recipe-note"><strong>⚠ Heads up:</strong> {r.note}</p>
+                )}
               </article>
             ))}
           </div>
@@ -196,6 +201,13 @@ const RECIPES: { group: string; recipes: Recipe[] }[] = [
     font-size: 0.88rem;
     margin: 0.3rem 0 0.65rem;
   }
+  .recipe-note {
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    margin: 0.6rem 0 0;
+  }
+  .recipe-note strong { color: var(--ink); }
   .recipe-prompt {
     position: relative;
   }
