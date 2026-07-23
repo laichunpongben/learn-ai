@@ -35,6 +35,7 @@ const validWalkthrough: VideoSlot = {
   youtubeId: "abcDEF12345",
   transcript: "Hello world.",
   captionsVerified: true,
+  poster: "/videos/posters/fixture.png",
 };
 
 describe("loopFieldsComplete (predicate)", () => {
@@ -79,6 +80,10 @@ describe("walkthroughFieldsComplete (predicate)", () => {
   it("rejects when captionsVerified is not exactly true (WCAG 1.2.2)", () => {
     expect(walkthroughFieldsComplete({ ...validWalkthrough, captionsVerified: false })).toBe(false);
     expect(walkthroughFieldsComplete({ ...validWalkthrough, captionsVerified: undefined })).toBe(false);
+  });
+
+  it("rejects when poster is missing (Screencast facade needs it to render)", () => {
+    expect(walkthroughFieldsComplete({ ...validWalkthrough, poster: undefined })).toBe(false);
   });
 });
 

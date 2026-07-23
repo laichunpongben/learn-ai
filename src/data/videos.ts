@@ -21,8 +21,9 @@ export interface VideoSlot {
   // loop-only
   webm?: string;
   mp4?: string;
-  poster?: string;
   aspect?: string; // e.g. "16 / 9"
+  // both modes: the walkthrough facade shows the poster before play
+  poster?: string;
   // walkthrough-only
   youtubeId?: string;
   transcript?: string;
@@ -166,6 +167,9 @@ export function walkthroughFieldsComplete(v: VideoSlot): boolean {
       YOUTUBE_ID_RE.test(v.youtubeId) &&
       v.transcript &&
       v.transcript.trim() !== "" &&
-      v.captionsVerified === true,
+      v.captionsVerified === true &&
+      // Screencast.astro gates the whole <figure> on poster; without it an
+      // activated walkthrough would render neither the facade nor the transcript.
+      v.poster,
   );
 }
