@@ -168,19 +168,7 @@ const { id, total } = Astro.props;
     paint(root);
   });
 
-  // Wire copy-prompt buttons within the build.
-  document.querySelectorAll<HTMLButtonElement>(".copy-prompt").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const pre = btn.parentElement?.querySelector<HTMLElement>("pre, [data-prompt-body]");
-      const text = pre?.textContent ?? "";
-      try {
-        await navigator.clipboard.writeText(text);
-        const old = btn.textContent;
-        btn.textContent = "Copied ✓";
-        setTimeout(() => (btn.textContent = old ?? "Copy"), 1500);
-      } catch {
-        btn.textContent = "Press Ctrl/⌘+C";
-      }
-    });
-  });
+  // NOTE: `.copy-prompt` buttons (rendered by PromptCopy) are owned by the
+  // single `data-ui-action="copy-nearest"` delegate in ui.ts. Do NOT add a
+  // second handler here — see CLAUDE.md rule #3 (one interaction = one handler).
 </script>
