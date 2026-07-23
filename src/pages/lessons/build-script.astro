@@ -161,9 +161,13 @@ python rename.py ~/Pictures/SomeFolder`}
 
 # Then:
 chmod +x rename.py
+mkdir -p ~/.local/bin
 mv rename.py ~/.local/bin/photo-renamer
 
-# Now from anywhere:
+# Put ~/.local/bin on your PATH (once), then open a NEW terminal:
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+
+# Now, from any folder:
 photo-renamer ~/Pictures/SomeFolder --dry-run`}
           />
           <Expect>
