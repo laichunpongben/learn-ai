@@ -74,3 +74,94 @@ describe("progress persistence", () => {
     expect(events).toEqual([{ done: [] }]);
   });
 });
+
+const KEY = "learn-ai.progress.v1";
+
+describe("read() data integrity", () => {
+  it("recovers from corrupt JSON without throwing", async () => {
+    store.set(KEY, "{not valid json");
+    const { getDone } = await import("./progress");
+    expect(() => getDone()).not.toThrow();
+    expect(getDone()).toEqual([]);
+  });
+
+  it("returns empty when stored done is not an array", async () => {
+    store.set(KEY, JSON.stringify({ done: "welcome" }));
+    const { getDone } = await import("./progress");
+    expect(getDone()).toEqual([]);
+  });
+
+  it("filters non-string entries out of done", async () => {
+    store.set(KEY, JSON.stringify({ done: ["welcome", 42, null, "capabilities"] }));
+    const { getDone } = await import("./progress");
+    expect(getDone()).toEqual(["welcome", "capabilities"]);
+  });
+
+  it("preserves valid lastVisited and startedAt", async () => {
+    store.set(
+      KEY,
+      JSON.stringify({ done: ["welcome"], lastVisited: "chat-first", startedAt: "2026-01-01T00:00:00.000Z" }),
+    );
+    const { getProgress } = await import("./progress");
+    expect(getProgress()).toEqual({
+      done: ["welcome"],
+      lastVisited: "chat-first",
+      startedAt: "2026-01-01T00:00:00.000Z",
+    });
+  });
+
+  it("ignores non-string lastVisited/startedAt", async () => {
+    store.set(KEY, JSON.stringify({ done: [], lastVisited: 5, startedAt: {} }));
+    const { getProgress } = await import("./progress");
+    expect(getProgress()).toEqual({ done: [] });
+  });
+});
+
+describe("progress mutators", () => {
+  it("markDone adds an id and is idempotent", async () => {
+    const { markDone, getDone } = await import("./progress");
+    markDone("welcome");
+    markDone("welcome");
+    expect(getDone()).toEqual(["welcome"]);
+  });
+
+  it("markDone stamps startedAt exactly once", async () => {
+    const { markDone, getProgress } = await import("./progress");
+    markDone("welcome");
+    const first = getProgress().startedAt;
+    expect(first).toBeTypeOf("string");
+    markDone("capabilities");
+    expect(getProgress().startedAt).toBe(first);
+  });
+
+  it("markUndone removes an id and no-ops when absent", async () => {
+    const { markDone, markUndone, getDone } = await import("./progress");
+    markDone("welcome");
+    markDone("capabilities");
+    markUndone("welcome");
+    expect(getDone()).toEqual(["capabilities"]);
+    expect(() => markUndone("not-there")).not.toThrow();
+    expect(getDone()).toEqual(["capabilities"]);
+  });
+
+  it("isDone reflects stored state", async () => {
+    const { markDone, isDone } = await import("./progress");
+    expect(isDone("welcome")).toBe(false);
+    markDone("welcome");
+    expect(isDone("welcome")).toBe(true);
+  });
+
+  it("setLastVisited / getLastVisited round-trip", async () => {
+    const { setLastVisited, getLastVisited } = await import("./progress");
+    expect(getLastVisited()).toBeUndefined();
+    setLastVisited("chat-first");
+    expect(getLastVisited()).toBe("chat-first");
+  });
+
+  it("reset clears stored progress", async () => {
+    const { markDone, reset, getDone } = await import("./progress");
+    markDone("welcome");
+    reset();
+    expect(getDone()).toEqual([]);
+  });
+});
