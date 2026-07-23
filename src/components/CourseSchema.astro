@@ -9,7 +9,7 @@
 import { LESSONS, TRACKS, lessonsInTrack } from "../data/curriculum";
 
 const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
-const provider = Astro.site?.host ?? "Learn AI";
+const providerUrl = Astro.site?.origin ?? Astro.url.origin;
 
 const data = {
   "@context": "https://schema.org",
@@ -20,7 +20,7 @@ const data = {
   inLanguage: "en",
   educationalLevel: "Beginner",
   isAccessibleForFree: true,
-  provider: { "@type": "Organization", name: provider },
+  provider: { "@type": "Organization", name: "Learn AI", url: providerUrl },
   hasCourseInstance: {
     "@type": "CourseInstance",
     courseMode: "online",
