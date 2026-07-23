@@ -57,7 +57,11 @@ self.addEventListener("install", (event) => {
     (async () => {
       const cache = await caches.open(SHELL_CACHE);
       await cache.addAll(SHELL_ASSETS);
-      await self.skipWaiting();
+      // Do NOT skipWaiting() here: the new worker must park in "waiting" so
+      // the update toast can gate activation on the user clicking Reload
+      // (which posts SKIP_WAITING). Auto-activating here fires controllerchange
+      // before the click and breaks the toast's reload. First-install control
+      // still works via clients.claim() in "activate".
     })(),
   );
 });
