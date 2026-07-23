@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { LESSONS, lessonIndex, lessonsInTrack, neighbors, TRACKS, trackById } from "./curriculum";
+import {
+  CRITICAL_PATH,
+  criticalPathLessons,
+  LESSONS,
+  lessonIndex,
+  lessonsInTrack,
+  neighbors,
+  TRACKS,
+  trackById,
+} from "./curriculum";
 
 describe("curriculum data invariants", () => {
   it("has at least one lesson per track", () => {
@@ -135,10 +144,35 @@ describe("expected curriculum shape (regression guard)", () => {
     expect(lessonIndex("concept-evals")).toBeGreaterThanOrEqual(0);
   });
 
-  it("includes the four guided builds", () => {
+  it("includes the five guided builds", () => {
     expect(lessonIndex("build-writing")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("build-webpage")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("build-script")).toBeGreaterThanOrEqual(0);
     expect(lessonIndex("build-slackbot")).toBeGreaterThanOrEqual(0);
+    expect(lessonIndex("build-watcher")).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("critical path (ADR-0007)", () => {
+  it("every step resolves to a real lesson", () => {
+    expect(() => criticalPathLessons()).not.toThrow();
+    expect(criticalPathLessons()).toHaveLength(CRITICAL_PATH.length);
+  });
+
+  it("is a strictly forward subsequence of LESSONS (never jumps backward)", () => {
+    const indices = CRITICAL_PATH.map((id) => lessonIndex(id));
+    for (const i of indices) expect(i).toBeGreaterThanOrEqual(0);
+    for (let k = 1; k < indices.length; k++) {
+      expect(
+        indices[k],
+        `step "${CRITICAL_PATH[k]}" must come after "${CRITICAL_PATH[k - 1]}" in LESSONS`,
+      ).toBeGreaterThan(indices[k - 1]);
+    }
+  });
+
+  it("starts at the first lesson and ends in the ship track", () => {
+    expect(CRITICAL_PATH[0]).toBe(LESSONS[0].id);
+    const lessons = criticalPathLessons();
+    expect(lessons[lessons.length - 1].track).toBe("ship");
   });
 });
