@@ -260,6 +260,17 @@ const heroAgents = getVideoSlot("hero-agents");
   @media (prefers-reduced-motion: reduce) {
     .moment, .moment * { animation: none !important; transition: none !important; }
     .bar { display: none; }
+    /* Without auto-advance, a single active moment would hide the other four
+       value props. Stack every moment statically so all the copy is readable. */
+    .reel { min-height: 0 !important; }
+    .moment {
+      position: static;
+      inset: auto;
+      opacity: 1;
+      visibility: visible;
+      border-bottom: 1px solid var(--line);
+    }
+    .moment:last-of-type { border-bottom: none; }
   }
 
   @media (max-width: 600px) {
