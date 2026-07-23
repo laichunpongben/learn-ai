@@ -14,8 +14,17 @@ describe("static pages invariants", () => {
   });
 
   it("exposes at least one page per surface flag", () => {
-    expect(STATIC_PAGES.some((p) => p.search), "no search page").toBe(true);
-    expect(STATIC_PAGES.some((p) => p.sidebar), "no sidebar page").toBe(true);
-    expect(STATIC_PAGES.some((p) => p.footer), "no footer page").toBe(true);
+    expect(
+      STATIC_PAGES.some((p) => p.search),
+      "no search page",
+    ).toBe(true);
+    expect(
+      STATIC_PAGES.some((p) => p.sidebar),
+      "no sidebar page",
+    ).toBe(true);
+    expect(
+      STATIC_PAGES.some((p) => p.footer),
+      "no footer page",
+    ).toBe(true);
   });
 });
