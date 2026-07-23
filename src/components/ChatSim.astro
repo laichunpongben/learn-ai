@@ -31,7 +31,7 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
       <span class="title" data-chat-title>New chat</span>
     </header>
 
-    <div class="bubbles" data-bubbles>
+    <div class="bubbles" data-bubbles role="log" aria-live="polite" aria-label="Conversation">
       <div class="empty" data-empty>
         <h3>What can I help with?</h3>
         <p>This is a faithful imitation. Click a suggestion or type your own message.</p>
@@ -46,6 +46,7 @@ const { prompts = ["Write a thank-you note", "Plan a 3-day Tokyo trip", "Build m
       <textarea
         rows="1"
         placeholder="Reply to Claude…"
+        aria-label="Reply to Claude"
         data-input
         autocomplete="off"
         spellcheck="false"

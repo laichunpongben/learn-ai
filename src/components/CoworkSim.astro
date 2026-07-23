@@ -119,8 +119,10 @@ const tasksJSON = JSON.stringify(TASKS);
           <button class="cw-comment" data-cw-comment>Request changes</button>
           <button class="cw-discard" data-cw-discard>Discard</button>
         </div>
-        <div class="cw-flash" data-cw-flash></div>
       </div>
+      <!-- Lives OUTSIDE data-cw-diff: discard/new-task hide the diff section,
+           and a flash nested inside it would never render. -->
+      <div class="cw-flash" data-cw-flash aria-live="polite"></div>
     </div>
   </section>
   <script is:inline type="application/json" data-cw-tasks set:html={tasksJSON} />
@@ -341,6 +343,14 @@ const tasksJSON = JSON.stringify(TASKS);
     const comment = root.querySelector<HTMLButtonElement>("[data-cw-comment]")!;
     const discard = root.querySelector<HTMLButtonElement>("[data-cw-discard]")!;
     const flash = root.querySelector<HTMLElement>("[data-cw-flash]")!;
+    let flashTimer = 0;
+    function showFlash(msg: string): void {
+      flash.textContent = msg;
+      window.clearTimeout(flashTimer);
+      flashTimer = window.setTimeout(() => {
+        flash.textContent = "";
+      }, 2200);
+    }
     const newBtn = root.querySelector<HTMLButtonElement>("[data-cw-new]")!;
     const taskData = root.querySelector<HTMLScriptElement>("[data-cw-tasks]")!;
     const TASKS = JSON.parse(taskData.textContent ?? "{}") as Record<string, Omit<Task, "state">>;
@@ -436,18 +446,15 @@ const tasksJSON = JSON.stringify(TASKS);
       states[selected] = "queued";
       paintState(selected);
       selectTask(selected);
-      flash.textContent = "Discarded. Task is back in the queue.";
-      setTimeout(() => (flash.textContent = ""), 2200);
+      showFlash("Discarded. Task is back in the queue.");
     });
 
     comment.addEventListener("click", () => {
-      flash.textContent = "Comment sent. Cowork would re-run with your feedback.";
-      setTimeout(() => (flash.textContent = ""), 2200);
+      showFlash("Comment sent. Cowork would re-run with your feedback.");
     });
 
     newBtn.addEventListener("click", () => {
-      flash.textContent = "(In the real app, a 'New task' form opens here.)";
-      setTimeout(() => (flash.textContent = ""), 2200);
+      showFlash("(In the real app, a 'New task' form opens here.)");
     });
 
     if (!selected) return;

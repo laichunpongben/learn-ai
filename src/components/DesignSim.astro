@@ -279,6 +279,15 @@
     return "warm";
   }
 
+  // The generic preview interpolates the user's free-text prompt into an
+  // innerHTML string, so it must be escaped to avoid a (self-)XSS sink.
+  function escapeHtml(s: string): string {
+    return s.replace(
+      /[&<>"']/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c,
+    );
+  }
+
   function render(kind: Kind, variant: Variant, prompt: string): string {
     const cls = `preview ${variant}`;
     if (kind === "pricing") {
@@ -321,7 +330,7 @@
         </div>
       </div>`;
     }
-    return `<div class="${cls}"><div class="pv-hero"><h1>Generic preview</h1><p>${prompt.slice(0, 140)}</p><a href="#" class="pv-cta">Primary action</a></div></div>`;
+    return `<div class="${cls}"><div class="pv-hero"><h1>Generic preview</h1><p>${escapeHtml(prompt.slice(0, 140))}</p><a href="#" class="pv-cta">Primary action</a></div></div>`;
   }
 
   document.querySelectorAll<HTMLElement>("[data-dsim]").forEach((root) => {

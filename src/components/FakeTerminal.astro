@@ -15,7 +15,7 @@ const { cwd = "~/my-project" } = Astro.props;
     <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
     <span class="tt">{cwd} — claude</span>
   </div>
-  <div class="term-body" data-term-body>
+  <div class="term-body" data-term-body role="log" aria-live="polite" aria-label="Terminal output">
     <div class="line out">Welcome to Claude Code (pretend edition).</div>
     <div class="line out muted">Try: <code>/help</code> · <code>fix the bug</code> · <code>list files</code></div>
   </div>
@@ -32,7 +32,7 @@ const { cwd = "~/my-project" } = Astro.props;
   <div class="prompt-row" data-prompt-row>
     <span class="cwd">{cwd}</span>
     <span class="caret">›</span>
-    <input type="text" data-term-input placeholder="Type a request, or / for commands…" autocomplete="off" spellcheck="false" />
+    <input type="text" data-term-input aria-label="Terminal input" placeholder="Type a request, or / for commands…" autocomplete="off" spellcheck="false" />
   </div>
 </div>
 
