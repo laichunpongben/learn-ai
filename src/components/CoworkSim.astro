@@ -85,7 +85,13 @@ const tasksJSON = JSON.stringify(TASKS);
     </div>
     <ul class="cw-list" data-cw-list>
       {taskList.map((task, idx) => (
-        <li class:list={["cw-row", { sel: idx === 0 }]} data-task={task.id}>
+        <li
+          class:list={["cw-row", { sel: idx === 0 }]}
+          data-task={task.id}
+          role="button"
+          tabindex="0"
+          aria-current={idx === 0 ? "true" : undefined}
+        >
           <span class="cw-st" data-st={task.id}>queued</span>
           <span class="cw-name">{task.title}</span>
         </li>
@@ -358,7 +364,12 @@ const tasksJSON = JSON.stringify(TASKS);
       prompt.textContent = t.prompt;
       const st = states[id];
       status.textContent = st;
-      list.querySelectorAll<HTMLElement>(".cw-row").forEach((r) => r.classList.toggle("sel", r.dataset.task === id));
+      list.querySelectorAll<HTMLElement>(".cw-row").forEach((r) => {
+        const isSel = r.dataset.task === id;
+        r.classList.toggle("sel", isSel);
+        if (isSel) r.setAttribute("aria-current", "true");
+        else r.removeAttribute("aria-current");
+      });
       // diff visible only for done/merged
       if (st === "done" || st === "merged") {
         empty.hidden = true;
@@ -375,6 +386,12 @@ const tasksJSON = JSON.stringify(TASKS);
 
     list.querySelectorAll<HTMLElement>(".cw-row").forEach((row) => {
       row.addEventListener("click", () => selectTask(row.dataset.task!));
+      row.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectTask(row.dataset.task!);
+        }
+      });
     });
 
     runBtn.addEventListener("click", async () => {
