@@ -59,7 +59,10 @@ const items = [
   }
   @media (max-width: 720px) {
     .product-row { grid-template-columns: 1fr 1fr; }
-    .prod:nth-child(2) { border-right: none; }
+    /* Right-column items and a lone trailing item (odd count) must not keep
+       a border-right, or it renders as a stray line beside an empty cell. */
+    .prod:nth-child(even),
+    .prod:last-child { border-right: none; }
     .prod { border-bottom: 1px solid var(--line); }
     .prod:nth-last-child(-n+2) { border-bottom: none; }
   }

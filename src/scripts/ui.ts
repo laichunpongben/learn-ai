@@ -34,6 +34,22 @@ function readMode(): Mode {
   return "auto";
 }
 
+// Keep the mobile browser-chrome color in sync with a MANUAL light/dark
+// choice. In auto mode we remove this tag and defer to the two
+// <meta name="theme-color" media="(prefers-color-scheme: …)"> tags in <head>.
+function applyThemeColor(m: Mode): void {
+  const existing = document.getElementById("js-theme-color") as HTMLMetaElement | null;
+  if (m === "auto") {
+    existing?.remove();
+    return;
+  }
+  const meta = existing ?? document.createElement("meta");
+  meta.id = "js-theme-color";
+  meta.setAttribute("name", "theme-color");
+  meta.setAttribute("content", m === "dark" ? "#0d0e10" : "#fbfbfa");
+  if (!existing) document.head.appendChild(meta);
+}
+
 function applyMode(m: Mode): void {
   if (m === "auto") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", m);
@@ -43,7 +59,12 @@ function applyMode(m: Mode): void {
   } catch {
     /* private mode / disabled storage */
   }
+  applyThemeColor(m);
 }
+
+// Sync the theme-color tag with any stored preference on first load
+// (the no-flash inline script only sets the data-theme attribute).
+applyThemeColor(readMode());
 
 const dialog = document.querySelector<HTMLDialogElement>("[data-search-dialog]");
 const html = document.documentElement;
