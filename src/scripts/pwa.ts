@@ -62,13 +62,13 @@ if (import.meta.env.PROD && typeof navigator !== "undefined" && "serviceWorker" 
 
   // If the user navigates before controllerchange fires, the flag would
   // otherwise persist into the new page and double-reload (the SPA
-  // navigation already moved, then location.reload runs). Clear on
-  // both pagehide (covers normal nav + tab close) and beforeunload.
+  // navigation already moved, then location.reload runs). pagehide covers
+  // normal nav + tab close and is bfcache-friendly; a second beforeunload
+  // listener would be redundant and can inhibit the back/forward cache.
   function clearReloadFlag() {
     reloadOnControllerChange = false;
   }
   window.addEventListener("pagehide", clearReloadFlag);
-  window.addEventListener("beforeunload", clearReloadFlag);
 
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (reloadOnControllerChange) {

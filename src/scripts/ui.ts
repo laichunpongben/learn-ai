@@ -83,19 +83,40 @@ function closeSidebar(): void {
   setSidebarToggleAria(false);
 }
 
+// Remember each button's canonical label and pending restore timer so a
+// rapid second click can't latch the transient "Copied ✓" as the label,
+// and a failed copy doesn't strand the button on the fallback hint.
+const copyLabels = new WeakMap<HTMLElement, string>();
+const copyTimers = new WeakMap<HTMLElement, number>();
+
 async function copyNearest(actionEl: HTMLElement): Promise<void> {
   const root = actionEl.closest<HTMLElement>("[data-copy-root]");
   const selector = actionEl.dataset.copySource;
   const source = root && selector ? root.querySelector<HTMLElement>(selector) : null;
   const text = source?.textContent ?? "";
-  const old = actionEl.textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    actionEl.textContent = "Copied ✓";
-    window.setTimeout(() => (actionEl.textContent = old ?? "Copy"), 1500);
-  } catch {
-    actionEl.textContent = "Press Ctrl/⌘+C";
+
+  if (!copyLabels.has(actionEl)) copyLabels.set(actionEl, actionEl.textContent ?? "Copy");
+  const label = copyLabels.get(actionEl) ?? "Copy";
+  window.clearTimeout(copyTimers.get(actionEl) ?? 0);
+
+  if (!text) {
+    // Markup mismatch (missing [data-copy-root] or source) — fail visibly
+    // instead of silently "copying" an empty string.
+    actionEl.textContent = "Nothing to copy";
+  } else {
+    try {
+      await navigator.clipboard.writeText(text);
+      actionEl.textContent = "Copied ✓";
+    } catch {
+      actionEl.textContent = "Press Ctrl/⌘+C";
+    }
   }
+  copyTimers.set(
+    actionEl,
+    window.setTimeout(() => {
+      actionEl.textContent = label;
+    }, 1500),
+  );
 }
 
 const ACTIONS: Record<Action, (actionEl: HTMLElement) => void | Promise<void>> = {
