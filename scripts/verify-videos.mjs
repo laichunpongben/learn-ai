@@ -82,6 +82,9 @@ function checkWalkthrough(slot) {
   if (slot.captionsVerified !== true) {
     err(slot.id, "present walkthrough requires captionsVerified:true (WCAG 1.2.2)");
   }
+  if (!slot.poster) {
+    err(slot.id, "present walkthrough missing poster (Screencast facade renders nothing without it)");
+  }
 }
 
 function checkStaleness(slot) {
