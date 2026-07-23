@@ -96,6 +96,26 @@
     --accent-hover: color-mix(in srgb, var(--accent) 82%, white);
     --header-bg: rgba(13, 14, 16, 0.78);
   }
+
+  /* Appearance overrides for the DEFAULT 'auto' theme under OS dark. The
+     [data-theme="dark"] rules above only match when the user has explicitly
+     toggled dark; on 'auto' no data-theme attribute is set, so without these
+     the green callouts / pills / diagrams keep their light backgrounds on an
+     otherwise-dark page. Keep in sync with the [data-theme="dark"] block. */
+  html:not([data-theme]) .reveal summary::before { color: var(--ink-soft); }
+  html:not([data-theme]) .lesson-card.done { background: var(--surface-2); }
+  html:not([data-theme]) .expect { background: #14241a; }
+  html:not([data-theme]) .expect-label,
+  html:not([data-theme]) .expect-body { color: #9fd1ad; }
+  html:not([data-theme]) .step.done .step-head { background: #14241a; border-bottom-color: #1f3a29; }
+  html:not([data-theme]) .build-done { background: #14241a; border-color: #2d6b3f; }
+  html:not([data-theme]) .build-done strong { color: #9fd1ad; }
+  html:not([data-theme]) .build-done p { color: #9fd1ad; }
+  html:not([data-theme]) .cw-st[data-state="running"] { background: #2a1f10; color: #f0a05a; border-color: #4a361c; }
+  html:not([data-theme]) .cw-st[data-state="done"]    { background: #14241a; color: #9fd1ad; border-color: #2d4a35; }
+  html:not([data-theme]) .cw-st[data-state="merged"]  { background: #161e2a; color: #9ab5d8; border-color: #2d3d54; }
+  html:not([data-theme]) .git-pic svg line { stroke: var(--line-strong) !important; }
+  html:not([data-theme]) .git-pic svg text { fill: var(--ink-soft); }
 }
 
 * { box-sizing: border-box; }
