@@ -49,7 +49,9 @@ const { items, intro } = Astro.props;
   }
   .open-card:hover {
     background: var(--ink);
-    color: #fff;
+    /* Use --bg (the opposite of --ink) so the label stays legible in both
+       themes. Hardcoded #fff was invisible on the near-white --ink in dark. */
+    color: var(--bg);
     border-color: var(--ink);
   }
   .open-label {
@@ -65,10 +67,10 @@ const { items, intro } = Astro.props;
     font-size: 0.74rem;
     color: var(--ink-soft);
   }
-  .open-card:hover .open-url { color: #b6ad9b; }
+  .open-card:hover .open-url { color: color-mix(in srgb, var(--bg) 68%, transparent); }
   .open-hint {
     font-size: 0.72rem;
     color: var(--ink-faint);
   }
-  .open-card:hover .open-hint { color: #9a907e; }
+  .open-card:hover .open-hint { color: color-mix(in srgb, var(--bg) 55%, transparent); }
 </style>
