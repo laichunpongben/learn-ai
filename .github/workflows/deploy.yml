@@ -1,54 +1,81 @@
 name: Deploy to Cloudflare Pages
 
 on:
-  # Only deploy after CI passes on main, or via manual dispatch.
   workflow_run:
     workflows: ["CI"]
     types: [completed]
     branches: [main]
-  workflow_dispatch: {}
 
 permissions:
   contents: read
-  deployments: write
 
 concurrency:
-  group: cloudflare-pages-${{ github.ref }}
+  group: cloudflare-pages-production
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    # Only deploy on direct push/dispatch, or when CI succeeded.
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+  build:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: ${{ steps.deploy.outputs.deployment-url }}
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
           cache: npm
 
       - run: npm ci
 
-      - name: Build
+      - name: Build the revision that passed CI
         env:
           SITE_URL: https://learnai.databookman.com
         run: npm run build
 
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: production-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Verify the tested revision is still production main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          actual=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          test "$actual" = "$EXPECTED_SHA"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: production-dist
+          path: dist
+
       - name: Deploy to Cloudflare Pages
-        id: deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          # Sanity-check the env vars are populated (lengths only — never log secret values).
-          test -n "$CLOUDFLARE_API_TOKEN" && echo "token len=${#CLOUDFLARE_API_TOKEN}" || (echo "token missing"; exit 1)
-          test -n "$CLOUDFLARE_ACCOUNT_ID" && echo "account len=${#CLOUDFLARE_ACCOUNT_ID}" || (echo "account missing"; exit 1)
-          npx --yes wrangler@4 pages deploy dist \
-            --project-name=learn-ai \
-            --branch=main \
-            --commit-dirty=true
+        run: >-
+          npx --yes wrangler@4.110.0 pages deploy dist
+          --project-name=learn-ai --branch=main
+          --commit-dirty=true
